@@ -71,13 +71,40 @@ platform :ios do
     build_number = (latest.to_i + 1).to_s
     UI.message("Resolved marketing version=#{marketing_version} next build_number=#{build_number}")
 
+    # Write ExportOptions.plist to force manual export with our profile
+    export_plist_path = File.expand_path("export_options.plist", __dir__)
+    export_plist = <<~PLIST
+      <?xml version="1.0" encoding="UTF-8"?>
+      <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+      <plist version="1.0">
+      <dict>
+        <key>method</key>
+        <string>app-store</string>
+        <key>signingStyle</key>
+        <string>manual</string>
+        <key>teamID</key>
+        <string>#{ENV['APPLE_TEAM_ID']}</string>
+        <key>provisioningProfiles</key>
+        <dict>
+          <key>#{ENV['APP_BUNDLE_ID']}</key>
+          <string>match AppStore #{ENV['APP_BUNDLE_ID']}</string>
+        </dict>
+        <key>destination</key>
+        <string>export</string>
+        <key>compileBitcode</key>
+        <false/>
+      </dict>
+      </plist>
+    PLIST
+    File.write(export_plist_path, export_plist)
+
     # Build and upload with a small retry if a concurrent build wins the race
     try_count = 0
     begin
       # Build the Flutter IPA (signed) with explicit build-name and build-number
       sh("flutter", "--version")
       sh("flutter", "pub", "get")
-      sh("flutter", "build", "ipa", "--verbose", "--release", "--build-name", marketing_version, "--build-number", build_number)
+      sh("flutter", "build", "ipa", "--verbose", "--release", "--build-name", marketing_version, "--build-number", build_number, "--export-options-plist", export_plist_path)
 
       ipa_path = Dir[File.expand_path("../../build/ios/ipa/*.ipa", __dir__)].first
       UI.user_error!("IPA not found in build/ios/ipa") unless ipa_path
