@@ -12,12 +12,15 @@ platform :ios do
       key_content: ENV['APP_STORE_CONNECT_API_KEY']
     )
 
-    UI.message("Preparing CI keychain to avoid UI prompts")
-    begin
-      setup_ci
-    rescue => e
-      UI.important("setup_ci warning: #{e}")
-    end
+    UI.message("Creating CI keychain to avoid UI prompts")
+    create_keychain(
+      name: "fastlane_tmp_keychain",
+      password: ENV['KEYCHAIN_PASSWORD'],
+      default_keychain: true,
+      unlock: true,
+      timeout: 3600,
+      add_to_search_list: true
+    )
 
     UI.message("Syncing code signing via match (readonly in CI)")
     match(
