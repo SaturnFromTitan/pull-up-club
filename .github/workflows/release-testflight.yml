@@ -31,27 +31,29 @@ jobs:
       - name: Generate iOS app icons
         run: |
           dart run flutter_launcher_icons
+          echo ok > ios/Runner/Assets.xcassets/AppIcon.appiconset/_write_test.txt
           ls -la ios/Runner/Assets.xcassets/AppIcon.appiconset
+          cat ios/Runner/Assets.xcassets/AppIcon.appiconset/Contents.json
 
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.3'
-          bundler-cache: true
-          working-directory: ios
+      # - name: Setup Ruby
+      #   uses: ruby/setup-ruby@v1
+      #   with:
+      #     ruby-version: '3.3'
+      #     bundler-cache: true
+      #     working-directory: ios
 
-      - name: Bundle install
-        working-directory: ios
-        run: bundle install --path vendor/bundle
+      # - name: Bundle install
+      #   working-directory: ios
+      #   run: bundle install --path vendor/bundle
 
-      - name: Fastlane beta → TestFlight
-        working-directory: ios
-        env:
-          NSUnbufferedIO: 'YES'
-          APPLE_TEAM_ID: ${{ vars.APPLE_TEAM_ID }}
-          APP_STORE_CONNECT_KEY_ID: ${{ vars.APP_STORE_CONNECT_KEY_ID }}
-          APP_STORE_CONNECT_ISSUER_ID: ${{ vars.APP_STORE_CONNECT_ISSUER_ID }}
-          APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
-          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
-        run: bundle exec fastlane beta
+      # - name: Fastlane beta → TestFlight
+      #   working-directory: ios
+      #   env:
+      #     NSUnbufferedIO: 'YES'
+      #     APPLE_TEAM_ID: ${{ vars.APPLE_TEAM_ID }}
+      #     APP_STORE_CONNECT_KEY_ID: ${{ vars.APP_STORE_CONNECT_KEY_ID }}
+      #     APP_STORE_CONNECT_ISSUER_ID: ${{ vars.APP_STORE_CONNECT_ISSUER_ID }}
+      #     APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
+      #     MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+      #     KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+      #   run: bundle exec fastlane beta
