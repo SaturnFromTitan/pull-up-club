@@ -4,6 +4,7 @@ platform :ios do
   desc "Build and upload to TestFlight (internal) on push to main"
   lane :beta do
     require 'yaml'
+    require 'fileutils'
 
     UI.message("Setting up App Store Connect API key")
     api_key = app_store_connect_api_key(
@@ -12,12 +13,15 @@ platform :ios do
       key_content: ENV['APP_STORE_CONNECT_API_KEY']
     )
 
-    UI.message("Preparing CI keychain to avoid UI prompts")
-    begin
-      setup_ci
-    rescue => e
-      UI.important("setup_ci warning: #{e}")
-    end
+    UI.message("Creating CI keychain to avoid UI prompts")
+    create_keychain(
+      name: "fastlane_tmp_keychain",
+      password: ENV['KEYCHAIN_PASSWORD'],
+      default_keychain: true,
+      unlock: true,
+      timeout: 30,
+      add_to_search_list: true
+    )
 
     UI.message("Syncing code signing via match (readonly in CI)")
     match(
@@ -36,13 +40,23 @@ platform :ios do
       use_automatic_signing: false,
       team_id: ENV['APPLE_TEAM_ID']
     )
+    # Apply manual signing for Runner (Release + Profile) with profile
     update_code_signing_settings(
       use_automatic_signing: false,
       path: "Runner.xcodeproj",
       targets: ["Runner"],
-      build_configurations: ["Release"],
+      build_configurations: ["Release", "Profile"],
+      team_id: ENV['APPLE_TEAM_ID'],
       code_sign_identity: "Apple Distribution",
       profile_name: "match AppStore #{ENV['APP_BUNDLE_ID']}"
+    )
+    # Ensure tests target is manual too (no profile needed)
+    update_code_signing_settings(
+      use_automatic_signing: false,
+      path: "Runner.xcodeproj",
+      targets: ["RunnerTests"],
+      build_configurations: ["Release", "Profile"],
+      team_id: ENV['APPLE_TEAM_ID']
     )
 
     UI.message("Reading version from pubspec.yaml")
@@ -58,34 +72,49 @@ platform :ios do
     build_number = (latest.to_i + 1).to_s
     UI.message("Resolved marketing version=#{marketing_version} next build_number=#{build_number}")
 
-    # Build and upload with a small retry if a concurrent build wins the race
-    try_count = 0
-    begin
-      # Build the Flutter IPA (signed) with explicit build-name and build-number
-      sh("flutter", "--version")
-      sh("flutter", "pub", "get")
-      sh("flutter", "build", "ipa", "--release", "--build-name", marketing_version, "--build-number", build_number)
+    # Persist build info for CI summary
+    build_info_path = File.expand_path("../../build/build_info.env", __dir__)
+    FileUtils.mkdir_p(File.dirname(build_info_path)) unless Dir.exist?(File.dirname(build_info_path))
+    File.write(build_info_path, "MARKETING_VERSION=#{marketing_version}\nBUILD_NUMBER=#{build_number}\n")
 
-      ipa_path = Dir[File.expand_path("../../build/ios/ipa/*.ipa", __dir__)].first
-      UI.user_error!("IPA not found in build/ios/ipa") unless ipa_path
+    # Build and upload
+    # Ensure deps are up to date and build IPA via gym with explicit signing/export options
+    sh("flutter", "--version")
+    sh("flutter", "pub", "get")
 
-      UI.message("Uploading IPA to TestFlight (internal)")
-      pilot(
-        ipa: ipa_path,
-        distribute_external: false,
-        api_key: api_key,
-        skip_submission: true,
-        skip_waiting_for_build_processing: false
-      )
-    rescue => e
-      if try_count == 0 && e.to_s.downcase.include?("build number")
-        try_count += 1
-        build_number = (build_number.to_i + 1).to_s
-        UI.important("Retrying with incremented build_number=#{build_number} due to: #{e}")
-        retry
-      else
-        raise
-      end
-    end
+    UI.message("Building IPA via gym (build_ios_app)")
+    output_dir = File.expand_path("../../build/ios/ipa", __dir__)
+    FileUtils.mkdir_p(output_dir) unless Dir.exist?(output_dir)
+
+    build_ios_app(
+      workspace: "Runner.xcworkspace",
+      scheme: "Runner",
+      configuration: "Release",
+      export_method: "app-store",
+      export_options: {
+        signingStyle: "manual",
+        teamID: ENV['APPLE_TEAM_ID'],
+        provisioningProfiles: {
+          ENV['APP_BUNDLE_ID'] => "match AppStore #{ENV['APP_BUNDLE_ID']}"
+        },
+        compileBitcode: false,
+        destination: "export"
+      },
+      output_directory: output_dir,
+      output_name: "Runner",
+      xcargs: "FLUTTER_BUILD_NAME=#{marketing_version} FLUTTER_BUILD_NUMBER=#{build_number}"
+    )
+
+    ipa_path = Actions.lane_context[SharedValues::IPA_OUTPUT_PATH] || Dir[File.join(output_dir, "*.ipa")].first
+    UI.user_error!("IPA not found in build/ios/ipa") unless ipa_path
+
+    UI.message("Uploading IPA to TestFlight (internal)")
+    pilot(
+      ipa: ipa_path,
+      distribute_external: false,
+      api_key: api_key,
+      skip_submission: true,
+      skip_waiting_for_build_processing: false
+    )
   end
 end
