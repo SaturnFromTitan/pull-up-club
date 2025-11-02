@@ -72,6 +72,11 @@ platform :ios do
     build_number = (latest.to_i + 1).to_s
     UI.message("Resolved marketing version=#{marketing_version} next build_number=#{build_number}")
 
+    # Persist build info for CI summary
+    build_info_path = File.expand_path("../../build/build_info.env", __dir__)
+    FileUtils.mkdir_p(File.dirname(build_info_path)) unless Dir.exist?(File.dirname(build_info_path))
+    File.write(build_info_path, "MARKETING_VERSION=#{marketing_version}\nBUILD_NUMBER=#{build_number}\n")
+
     # Build and upload
     # Ensure deps are up to date and build IPA via gym with explicit signing/export options
     sh("flutter", "--version")

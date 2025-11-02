@@ -57,3 +57,20 @@ jobs:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
         run: bundle exec fastlane beta
+
+      - name: Publish build info to summary
+        if: always()
+        run: |
+          if [ -f build/build_info.env ]; then
+            set -a
+            . build/build_info.env
+            set +a
+            {
+              echo "### Release Info"
+              echo ""
+              echo "- Marketing version: ${MARKETING_VERSION}"
+              echo "- Build number: ${BUILD_NUMBER}"
+            } >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Build info not found at build/build_info.env" >> "$GITHUB_STEP_SUMMARY"
+          fi
