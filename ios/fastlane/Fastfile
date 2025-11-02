@@ -18,7 +18,7 @@ platform :ios do
       password: ENV['KEYCHAIN_PASSWORD'],
       default_keychain: true,
       unlock: true,
-      timeout: 3600,
+      timeout: 30,
       add_to_search_list: true
     )
 
@@ -104,7 +104,7 @@ platform :ios do
       # Build the Flutter IPA (signed) with explicit build-name and build-number
       sh("flutter", "--version")
       sh("flutter", "pub", "get")
-      sh("flutter", "build", "ipa", "--verbose", "--release", "--build-name", marketing_version, "--build-number", build_number, "--export-options-plist", export_plist_path)
+      sh("flutter", "build", "ipa", "--release", "--build-name", marketing_version, "--build-number", build_number, "--export-options-plist", export_plist_path)
 
       ipa_path = Dir[File.expand_path("../../build/ios/ipa/*.ipa", __dir__)].first
       UI.user_error!("IPA not found in build/ios/ipa") unless ipa_path
