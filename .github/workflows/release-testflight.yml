@@ -29,7 +29,9 @@ jobs:
         run: flutter pub get
 
       - name: Generate iOS app icons
-        run: flutter pub run flutter_launcher_icons
+        run: |
+          dart run flutter_launcher_icons
+          ls -la ios/Runner/Assets.xcassets/AppIcon.appiconset
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1

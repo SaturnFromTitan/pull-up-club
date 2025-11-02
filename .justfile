@@ -19,4 +19,4 @@ lint: install
 
 # generate iOS app icons from assets/app_icon.png via flutter_launcher_icons
 icons: install
-    flutter pub run flutter_launcher_icons:main
+    dart run flutter_launcher_icons
