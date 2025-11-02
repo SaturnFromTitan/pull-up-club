@@ -30,8 +30,7 @@ jobs:
 
       - name: Generate iOS app icons
         run: |
-          dart run flutter_launcher_icons
-          echo ok > ios/Runner/Assets.xcassets/AppIcon.appiconset/_write_test.txt
+          dart run flutter_launcher_icons --file pubspec.yaml --verbose
           ls -la ios/Runner/Assets.xcassets/AppIcon.appiconset
           cat ios/Runner/Assets.xcassets/AppIcon.appiconset/Contents.json
 
