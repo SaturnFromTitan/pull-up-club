@@ -4,6 +4,7 @@ platform :ios do
   desc "Build and upload to TestFlight (internal) on push to main"
   lane :beta do
     require 'yaml'
+    require 'fileutils'
 
     UI.message("Setting up App Store Connect API key")
     api_key = app_store_connect_api_key(
@@ -71,61 +72,44 @@ platform :ios do
     build_number = (latest.to_i + 1).to_s
     UI.message("Resolved marketing version=#{marketing_version} next build_number=#{build_number}")
 
-    # Write ExportOptions.plist to force manual export with our profile
-    export_plist_path = File.expand_path("export_options.plist", __dir__)
-    export_plist = <<~PLIST
-      <?xml version="1.0" encoding="UTF-8"?>
-      <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-      <plist version="1.0">
-      <dict>
-        <key>method</key>
-        <string>app-store</string>
-        <key>signingStyle</key>
-        <string>manual</string>
-        <key>teamID</key>
-        <string>#{ENV['APPLE_TEAM_ID']}</string>
-        <key>provisioningProfiles</key>
-        <dict>
-          <key>#{ENV['APP_BUNDLE_ID']}</key>
-          <string>match AppStore #{ENV['APP_BUNDLE_ID']}</string>
-        </dict>
-        <key>destination</key>
-        <string>export</string>
-        <key>compileBitcode</key>
-        <false/>
-      </dict>
-      </plist>
-    PLIST
-    File.write(export_plist_path, export_plist)
+    # Build and upload
+    # Ensure deps are up to date and build IPA via gym with explicit signing/export options
+    sh("flutter", "--version")
+    sh("flutter", "pub", "get")
 
-    # Build and upload with a small retry if a concurrent build wins the race
-    try_count = 0
-    begin
-      # Build the Flutter IPA (signed) with explicit build-name and build-number
-      sh("flutter", "--version")
-      sh("flutter", "pub", "get")
-      sh("flutter", "build", "ipa", "--release", "--build-name", marketing_version, "--build-number", build_number, "--export-options-plist", export_plist_path)
+    UI.message("Building IPA via gym (build_ios_app)")
+    output_dir = File.expand_path("../../build/ios/ipa", __dir__)
+    FileUtils.mkdir_p(output_dir) unless Dir.exist?(output_dir)
 
-      ipa_path = Dir[File.expand_path("../../build/ios/ipa/*.ipa", __dir__)].first
-      UI.user_error!("IPA not found in build/ios/ipa") unless ipa_path
+    build_ios_app(
+      workspace: "Runner.xcworkspace",
+      scheme: "Runner",
+      configuration: "Release",
+      export_method: "app-store",
+      export_options: {
+        signingStyle: "manual",
+        teamID: ENV['APPLE_TEAM_ID'],
+        provisioningProfiles: {
+          ENV['APP_BUNDLE_ID'] => "match AppStore #{ENV['APP_BUNDLE_ID']}"
+        },
+        compileBitcode: false,
+        destination: "export"
+      },
+      output_directory: output_dir,
+      output_name: "Runner",
+      xcargs: "FLUTTER_BUILD_NAME=#{marketing_version} FLUTTER_BUILD_NUMBER=#{build_number}"
+    )
 
-      UI.message("Uploading IPA to TestFlight (internal)")
-      pilot(
-        ipa: ipa_path,
-        distribute_external: false,
-        api_key: api_key,
-        skip_submission: true,
-        skip_waiting_for_build_processing: false
-      )
-    rescue => e
-      if try_count == 0 && e.to_s.downcase.include?("build number")
-        try_count += 1
-        build_number = (build_number.to_i + 1).to_s
-        UI.important("Retrying with incremented build_number=#{build_number} due to: #{e}")
-        retry
-      else
-        raise
-      end
-    end
+    ipa_path = Actions.lane_context[SharedValues::IPA_OUTPUT_PATH] || Dir[File.join(output_dir, "*.ipa")].first
+    UI.user_error!("IPA not found in build/ios/ipa") unless ipa_path
+
+    UI.message("Uploading IPA to TestFlight (internal)")
+    pilot(
+      ipa: ipa_path,
+      distribute_external: false,
+      api_key: api_key,
+      skip_submission: true,
+      skip_waiting_for_build_processing: false
+    )
   end
 end
