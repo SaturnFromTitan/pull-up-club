@@ -18,6 +18,8 @@ be published to the App Store.
 
 ### Certificates for Fastlane
 
+The certificates that fastlane uses to sign the app for releasing it are stored in a separate, [private github repo](https://github.com/SaturnFromTitan/pull-up-club-certificates).
+
 #### Initial Certificate setup
 
 Please run the following locally: Firstly, install the Ruby dependencies:
@@ -31,7 +33,7 @@ bundle config set --local path 'vendor/bundle'
 bundle install
 ```
 
-Then publish the certificates to the dedicated privat GitHub repo
+Then publish the certificates to the repository via
 
 ```sh
 bundle exec fastlane match appstore \

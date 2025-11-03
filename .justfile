@@ -10,13 +10,17 @@ set shell := ["bash", "-c"]
 
 # install flutter dependencies
 install:
-    flutter pub get
+  flutter pub get
+
+# update dependencies
+upgrade:
+  flutter pub upgrade
 
 # run linter and formatter
 lint: install
-    flutter analyze
-    dart format --set-exit-if-changed .
+  flutter analyze
+  dart format --set-exit-if-changed .
 
 # generate iOS app icons from assets/app_icon.png via flutter_launcher_icons
 icons: install
-    dart run flutter_launcher_icons
+  dart run flutter_launcher_icons
