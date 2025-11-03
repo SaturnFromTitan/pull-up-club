@@ -17,11 +17,11 @@ upgrade:
   flutter pub upgrade
 
 # run linter and formatter
-lint: install
+lint:
   dart fix --apply
   dart format --set-exit-if-changed .
   flutter analyze
 
 # generate iOS app icons from assets/app_icon.png via flutter_launcher_icons
-icons: install
+icons:
   dart run flutter_launcher_icons
