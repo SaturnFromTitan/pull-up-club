@@ -1,11 +1,11 @@
-import 'package:flutter/material.dart';
-import 'package:pull_up_club/common/themes/app_colors.dart';
-import 'package:pull_up_club/common/themes/app_spacing.dart';
-import 'package:pull_up_club/common/widgets/gradient_button.dart';
-import 'package:pull_up_club/features/workout/providers/workout_provider.dart';
-import 'package:pull_up_club/common/providers/app_provider.dart';
-import 'package:pull_up_club/features/workout/widgets/reps_form.dart';
-import '_base_workout_screen.dart';
+import "package:flutter/material.dart";
+import "package:pull_up_club/common/themes/app_colors.dart";
+import "package:pull_up_club/common/themes/app_spacing.dart";
+import "package:pull_up_club/common/widgets/gradient_button.dart";
+import "package:pull_up_club/features/workout/providers/workout_provider.dart";
+import "package:pull_up_club/common/providers/app_provider.dart";
+import "package:pull_up_club/features/workout/widgets/reps_form.dart";
+import "_base_workout_screen.dart";
 
 class LaddersScreen extends BaseWorkoutScreen {
   const LaddersScreen({super.key});
@@ -41,7 +41,7 @@ class _LaddersState extends BaseWorkoutState<LaddersScreen> {
           );
           _targetReps++;
         },
-        text: 'Done, continue this ladder',
+        text: "Done, continue this ladder",
         icon: Icons.trending_up,
         gradient: AppGradients.accentGreen,
       ),
@@ -59,8 +59,8 @@ class _LaddersState extends BaseWorkoutState<LaddersScreen> {
           _targetReps = 1;
         },
         text: isLastGroup(workoutProvider)
-            ? 'Finish Workout'
-            : 'Done, start new ladder',
+            ? "Finish Workout"
+            : "Done, start new ladder",
         icon: isLastGroup(workoutProvider) ? Icons.check : Icons.refresh,
         gradient: AppGradients.accentPurple,
       ),
@@ -70,7 +70,7 @@ class _LaddersState extends BaseWorkoutState<LaddersScreen> {
             _showCustomRepsForm = !_showCustomRepsForm;
           });
         },
-        text: 'I did fewer',
+        text: "I did fewer",
         icon: Icons.close,
         gradient: AppGradients.light,
       ),

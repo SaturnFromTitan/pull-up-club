@@ -1,7 +1,7 @@
-import 'dart:math' as math;
+import "dart:math" as math;
 
-import 'package:flutter/material.dart';
-import 'package:pull_up_club/common/themes/app_colors.dart';
+import "package:flutter/material.dart";
+import "package:pull_up_club/common/themes/app_colors.dart";
 
 class AnimatedTrophy extends StatefulWidget {
   final double size;

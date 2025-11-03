@@ -1,13 +1,13 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:pull_up_club/common/themes/app_colors.dart';
-import 'package:pull_up_club/common/themes/app_spacing.dart';
-import 'package:pull_up_club/common/themes/app_typography.dart';
-import 'package:pull_up_club/common/widgets/total_card.dart';
-import 'package:pull_up_club/features/workout/widgets/set_cards.dart';
-import 'package:pull_up_club/common/providers/app_provider.dart';
-import 'package:pull_up_club/features/workout/models.dart';
-import 'package:pull_up_club/common/utils/utils.dart';
+import "package:flutter/material.dart";
+import "package:provider/provider.dart";
+import "package:pull_up_club/common/themes/app_colors.dart";
+import "package:pull_up_club/common/themes/app_spacing.dart";
+import "package:pull_up_club/common/themes/app_typography.dart";
+import "package:pull_up_club/common/widgets/total_card.dart";
+import "package:pull_up_club/features/workout/widgets/set_cards.dart";
+import "package:pull_up_club/common/providers/app_provider.dart";
+import "package:pull_up_club/features/workout/models.dart";
+import "package:pull_up_club/common/utils/utils.dart";
 
 class HistoryScreen extends StatelessWidget {
   const HistoryScreen({super.key});

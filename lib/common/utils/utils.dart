@@ -1,7 +1,7 @@
-import 'package:pull_up_club/features/workout/models.dart';
+import "package:pull_up_club/features/workout/models.dart";
 
 String twoDigits(int n) {
-  return n.toString().padLeft(2, '0');
+  return n.toString().padLeft(2, "0");
 }
 
 String formatMinutesSeconds(int totalSeconds) {
@@ -49,7 +49,7 @@ String datetimeToString(DateTime dt) {
   String weekday =
       weekdayNames[dt.weekday % 7]; // DateTime.weekday 1=Mon ... 7=Sun
   String month = monthNames[dt.month - 1];
-  String day = dt.day.toString().padLeft(2, '0');
+  String day = dt.day.toString().padLeft(2, "0");
   String year = dt.year.toString();
 
   return "$weekday, $month $day $year";

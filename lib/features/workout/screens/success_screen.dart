@@ -1,15 +1,15 @@
-import 'package:flutter/material.dart';
-import 'package:pull_up_club/common/themes/app_colors.dart';
-import 'package:pull_up_club/common/themes/app_spacing.dart';
-import 'package:pull_up_club/common/themes/app_typography.dart';
-import 'package:pull_up_club/common/widgets/screen_scaffold.dart';
-import 'package:pull_up_club/common/widgets/home_button.dart';
-import 'package:pull_up_club/common/widgets/total_card.dart';
-import 'package:pull_up_club/features/workout/widgets/animated_trophy.dart';
-import 'package:pull_up_club/features/workout/widgets/set_cards.dart';
+import "package:flutter/material.dart";
+import "package:pull_up_club/common/themes/app_colors.dart";
+import "package:pull_up_club/common/themes/app_spacing.dart";
+import "package:pull_up_club/common/themes/app_typography.dart";
+import "package:pull_up_club/common/widgets/screen_scaffold.dart";
+import "package:pull_up_club/common/widgets/home_button.dart";
+import "package:pull_up_club/common/widgets/total_card.dart";
+import "package:pull_up_club/features/workout/widgets/animated_trophy.dart";
+import "package:pull_up_club/features/workout/widgets/set_cards.dart";
 
-import 'package:pull_up_club/features/workout/models.dart';
-import 'package:pull_up_club/common/utils/utils.dart';
+import "package:pull_up_club/features/workout/models.dart";
+import "package:pull_up_club/common/utils/utils.dart";
 
 class SuccessScreen extends StatefulWidget {
   final Workout workout;
@@ -77,7 +77,7 @@ class _SuccessScreenState extends State<SuccessScreen>
                   child: SlideTransition(
                     position: _headlineOffset,
                     child: Text(
-                      'Workout Completed!',
+                      "Workout Completed!",
                       style: AppTypography.displayLarge,
                       textAlign: TextAlign.center,
                     ),

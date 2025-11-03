@@ -1,18 +1,18 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:pull_up_club/common/themes/app_colors.dart';
-import 'package:pull_up_club/common/themes/app_theme.dart';
-import 'package:pull_up_club/common/widgets/gradient_surface.dart';
-import 'package:pull_up_club/features/workout/models.dart';
-import 'package:pull_up_club/features/workout/providers/workout_provider.dart';
-import 'package:pull_up_club/features/workout/screens/workouts/max_sets_screen.dart';
-import 'package:pull_up_club/features/workout/screens/workouts/ladders_screen.dart';
-import 'package:pull_up_club/features/workout/screens/workouts/submax_volume_screen.dart';
-import 'package:pull_up_club/features/workout/widgets/reps_form.dart';
-import 'package:pull_up_club/common/widgets/gradient_button.dart';
-import 'package:pull_up_club/common/themes/app_spacing.dart';
-import 'package:pull_up_club/common/themes/app_typography.dart';
-import 'package:pull_up_club/common/constants/app_constants.dart';
+import "package:flutter/material.dart";
+import "package:provider/provider.dart";
+import "package:pull_up_club/common/themes/app_colors.dart";
+import "package:pull_up_club/common/themes/app_theme.dart";
+import "package:pull_up_club/common/widgets/gradient_surface.dart";
+import "package:pull_up_club/features/workout/models.dart";
+import "package:pull_up_club/features/workout/providers/workout_provider.dart";
+import "package:pull_up_club/features/workout/screens/workouts/max_sets_screen.dart";
+import "package:pull_up_club/features/workout/screens/workouts/ladders_screen.dart";
+import "package:pull_up_club/features/workout/screens/workouts/submax_volume_screen.dart";
+import "package:pull_up_club/features/workout/widgets/reps_form.dart";
+import "package:pull_up_club/common/widgets/gradient_button.dart";
+import "package:pull_up_club/common/themes/app_spacing.dart";
+import "package:pull_up_club/common/themes/app_typography.dart";
+import "package:pull_up_club/common/constants/app_constants.dart";
 
 class WorkoutSelectionScreen extends StatefulWidget {
   const WorkoutSelectionScreen({super.key});
@@ -37,17 +37,17 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  '🎯\nEnter Your Target Reps',
+                  "🎯\nEnter Your Target Reps",
                   style: AppTypography.headlineLarge,
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(height: AppSpacing.md),
                 RepsForm(
-                  submitText: 'Start',
+                  submitText: "Start",
                   submitIcon: Icons.play_arrow,
                   onValidSubmit: (int reps) => Navigator.pop(context, reps),
                   minValue: 1,
-                  cancelText: 'Cancel',
+                  cancelText: "Cancel",
                   cancelIcon: Icons.close,
                   onCancel: () => Navigator.pop(context),
                 ),
@@ -103,7 +103,7 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
 
               // Subtitle - centered
               Text(
-                'The plan for doubling your max pull ups!',
+                "The plan for doubling your max pull ups!",
                 style: AppTypography.headlineSmall.copyWith(
                   color: AppColors.onColorSecondary,
                 ),
@@ -120,8 +120,8 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
           child: Column(
             children: [
               _WorkoutCard(
-                title: 'Max Sets',
-                description: '3x max reps with 5 minutes rest',
+                title: "Max Sets",
+                description: "3x max reps with 5 minutes rest",
                 icon: const Icon(Icons.speed, size: _iconSize),
                 gradient: AppGradients.primary,
                 isSelected: _selected == WorkoutType.maxSets,
@@ -131,8 +131,8 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
               const SizedBox(height: _cardGap),
 
               _WorkoutCard(
-                title: 'Submax Volume',
-                description: '10 sets at 50% max reps with\n1 minute rest',
+                title: "Submax Volume",
+                description: "10 sets at 50% max reps with\n1 minute rest",
                 icon: const Icon(Icons.center_focus_strong, size: _iconSize),
                 gradient: AppGradients.accentPurple,
                 isSelected: _selected == WorkoutType.submaxVolume,
@@ -143,9 +143,9 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
               const SizedBox(height: _cardGap),
 
               _WorkoutCard(
-                title: 'Ladders',
+                title: "Ladders",
                 description:
-                    '5 ladders (1, 2, 3, ... reps) with\n30 seconds rest',
+                    "5 ladders (1, 2, 3, ... reps) with\n30 seconds rest",
                 icon: const Icon(Icons.trending_up, size: _iconSize),
                 gradient: AppGradients.accentGreen,
                 isSelected: _selected == WorkoutType.ladders,
@@ -159,7 +159,7 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
 
         // Start workout button
         GradientButton(
-          text: 'Start Workout',
+          text: "Start Workout",
           icon: Icons.play_arrow,
           onPressed: _handleSubmit,
           gradient: AppGradients.primary,

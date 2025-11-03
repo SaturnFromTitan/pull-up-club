@@ -1,8 +1,8 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:pull_up_club/common/themes/app_colors.dart';
-import 'package:pull_up_club/common/themes/app_spacing.dart';
-import 'package:pull_up_club/common/widgets/gradient_button.dart';
+import "package:flutter/material.dart";
+import "package:flutter/services.dart";
+import "package:pull_up_club/common/themes/app_colors.dart";
+import "package:pull_up_club/common/themes/app_spacing.dart";
+import "package:pull_up_club/common/widgets/gradient_button.dart";
 
 class RepsForm extends StatefulWidget {
   final String submitText;
@@ -14,11 +14,11 @@ class RepsForm extends StatefulWidget {
   final void Function()? onCancel;
   RepsForm({
     super.key,
-    this.submitText = 'Submit',
+    this.submitText = "Submit",
     this.submitIcon = Icons.check,
     required this.onValidSubmit,
     this.minValue = 0,
-    this.cancelText = 'Back',
+    this.cancelText = "Back",
     this.cancelIcon = Icons.arrow_back,
     this.onCancel,
   });
@@ -66,7 +66,7 @@ class _RepsFormState extends State<RepsForm> {
             ),
             textAlign: TextAlign.center,
             inputFormatters: [
-              FilteringTextInputFormatter(RegExp(r'[0-9]'), allow: true),
+              FilteringTextInputFormatter(RegExp(r"[0-9]"), allow: true),
             ],
             keyboardType: TextInputType.number,
             onChanged: (_) {
@@ -75,7 +75,7 @@ class _RepsFormState extends State<RepsForm> {
             },
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Required';
+                return "Required";
               }
               if (int.parse(value) < widget.minValue) {
                 return "Must be at least ${widget.minValue}";

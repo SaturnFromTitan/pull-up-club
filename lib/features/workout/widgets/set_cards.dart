@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:pull_up_club/common/themes/app_colors.dart';
-import 'package:pull_up_club/common/themes/app_spacing.dart';
-import 'package:pull_up_club/common/themes/app_theme.dart';
-import 'package:pull_up_club/common/themes/app_typography.dart';
-import 'package:pull_up_club/common/widgets/gradient_surface.dart';
+import "package:flutter/material.dart";
+import "package:pull_up_club/common/themes/app_colors.dart";
+import "package:pull_up_club/common/themes/app_spacing.dart";
+import "package:pull_up_club/common/themes/app_theme.dart";
+import "package:pull_up_club/common/themes/app_typography.dart";
+import "package:pull_up_club/common/widgets/gradient_surface.dart";
 
 class SetCards extends StatelessWidget {
   final List<String> values;
@@ -16,7 +16,7 @@ class SetCards extends StatelessWidget {
     this.withContainer = true,
   }) : assert(
          numExpectedCards == null || numExpectedCards >= values.length,
-         'numExpectedCards must be >= values.length',
+         "numExpectedCards must be >= values.length",
        ),
        numExpectedCards = numExpectedCards ?? values.length;
 

@@ -1,10 +1,10 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:pull_up_club/common/widgets/screen_scaffold.dart';
-import 'package:pull_up_club/features/history/screens/history_screen.dart';
-import 'package:pull_up_club/features/workout/screens/selection_screen.dart';
-import 'package:pull_up_club/common/providers/app_provider.dart';
-import 'package:pull_up_club/common/widgets/gradient_navigation_bar.dart';
+import "package:flutter/material.dart";
+import "package:provider/provider.dart";
+import "package:pull_up_club/common/widgets/screen_scaffold.dart";
+import "package:pull_up_club/features/history/screens/history_screen.dart";
+import "package:pull_up_club/features/workout/screens/selection_screen.dart";
+import "package:pull_up_club/common/providers/app_provider.dart";
+import "package:pull_up_club/common/widgets/gradient_navigation_bar.dart";
 
 class Shell extends StatelessWidget {
   static final String route = "/shell";
@@ -22,12 +22,12 @@ class Shell extends StatelessWidget {
           NavigationDestination(
             icon: Icon(Icons.home_outlined),
             selectedIcon: Icon(Icons.home),
-            label: 'Workout',
+            label: "Workout",
           ),
           NavigationDestination(
             icon: Icon(Icons.history),
             selectedIcon: Icon(Icons.history),
-            label: 'History',
+            label: "History",
           ),
         ],
       ),

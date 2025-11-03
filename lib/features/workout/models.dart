@@ -1,4 +1,4 @@
-import 'package:uuid/uuid.dart';
+import "package:uuid/uuid.dart";
 
 enum WorkoutType {
   maxSets("Max Sets"),

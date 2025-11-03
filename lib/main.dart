@@ -1,10 +1,10 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:pull_up_club/common/shell_screen.dart';
+import "package:flutter/material.dart";
+import "package:provider/provider.dart";
+import "package:pull_up_club/common/shell_screen.dart";
 
-import 'common/providers/app_provider.dart';
-import 'common/constants/app_constants.dart';
-import 'common/themes/app_theme.dart';
+import "common/providers/app_provider.dart";
+import "common/constants/app_constants.dart";
+import "common/themes/app_theme.dart";
 
 void main() async {
   runApp(App());

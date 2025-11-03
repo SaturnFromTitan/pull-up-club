@@ -1,8 +1,8 @@
-import 'package:flutter/material.dart';
-import 'package:pull_up_club/features/workout/providers/workout_provider.dart';
-import 'package:pull_up_club/common/providers/app_provider.dart';
-import 'package:pull_up_club/features/workout/widgets/reps_form.dart';
-import '_base_workout_screen.dart';
+import "package:flutter/material.dart";
+import "package:pull_up_club/features/workout/providers/workout_provider.dart";
+import "package:pull_up_club/common/providers/app_provider.dart";
+import "package:pull_up_club/features/workout/widgets/reps_form.dart";
+import "_base_workout_screen.dart";
 
 class MaxSetsScreen extends BaseWorkoutScreen {
   const MaxSetsScreen({super.key});

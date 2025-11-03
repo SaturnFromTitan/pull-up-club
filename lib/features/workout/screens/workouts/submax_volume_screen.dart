@@ -1,13 +1,13 @@
-import 'package:flutter/material.dart';
-import 'package:pull_up_club/common/themes/app_colors.dart';
-import 'package:pull_up_club/common/themes/app_spacing.dart';
-import 'package:pull_up_club/common/widgets/gradient_button.dart';
+import "package:flutter/material.dart";
+import "package:pull_up_club/common/themes/app_colors.dart";
+import "package:pull_up_club/common/themes/app_spacing.dart";
+import "package:pull_up_club/common/widgets/gradient_button.dart";
 
-import 'package:pull_up_club/features/workout/providers/workout_provider.dart';
-import 'package:pull_up_club/common/providers/app_provider.dart';
-import 'package:pull_up_club/features/workout/widgets/reps_form.dart';
+import "package:pull_up_club/features/workout/providers/workout_provider.dart";
+import "package:pull_up_club/common/providers/app_provider.dart";
+import "package:pull_up_club/features/workout/widgets/reps_form.dart";
 
-import '_base_workout_screen.dart';
+import "_base_workout_screen.dart";
 
 class SubmaxVolumeScreen extends BaseWorkoutScreen {
   final int targetReps;
@@ -73,7 +73,7 @@ class _SubmaxVolumeScreenState extends BaseWorkoutState<SubmaxVolumeScreen> {
             appProvider: appProvider,
           );
         },
-        text: 'Done',
+        text: "Done",
         icon: Icons.check,
         gradient: AppGradients.secondary,
       ),
@@ -86,7 +86,7 @@ class _SubmaxVolumeScreenState extends BaseWorkoutState<SubmaxVolumeScreen> {
             appProvider: appProvider,
           );
         },
-        text: 'I did ${targetReps - 1}',
+        text: "I did ${targetReps - 1}",
         icon: Icons.thumb_up_alt_outlined,
         gradient: AppGradients.accentGreen,
       ),
@@ -102,7 +102,7 @@ class _SubmaxVolumeScreenState extends BaseWorkoutState<SubmaxVolumeScreen> {
               appProvider: appProvider,
             );
           },
-          text: 'I did ${targetReps - 2}',
+          text: "I did ${targetReps - 2}",
           icon: Icons.ssid_chart_outlined,
           gradient: AppGradients.accentPurple,
         ),
@@ -116,7 +116,7 @@ class _SubmaxVolumeScreenState extends BaseWorkoutState<SubmaxVolumeScreen> {
               _showCustomRepsForm = !_showCustomRepsForm;
             });
           },
-          text: 'I did fewer',
+          text: "I did fewer",
           icon: Icons.trending_down,
           gradient: AppGradients.light,
         ),

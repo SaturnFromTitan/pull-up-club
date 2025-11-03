@@ -9,3 +9,4 @@ linter:
     prefer_final_fields: false
     unnecessary_breaks: true
     use_key_in_widget_constructors: false
+    prefer_double_quotes: true

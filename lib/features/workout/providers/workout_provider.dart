@@ -1,8 +1,8 @@
-import 'dart:async';
+import "dart:async";
 
-import 'package:flutter/material.dart';
-import 'package:pull_up_club/features/workout/models.dart';
-import 'package:pull_up_club/common/providers/app_provider.dart';
+import "package:flutter/material.dart";
+import "package:pull_up_club/features/workout/models.dart";
+import "package:pull_up_club/common/providers/app_provider.dart";
 
 class WorkoutProvider extends ChangeNotifier {
   // private state

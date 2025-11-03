@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:pull_up_club/common/themes/app_colors.dart';
+import "package:flutter/material.dart";
+import "package:pull_up_club/common/themes/app_colors.dart";
 
 /// Drop-in wrapper for your colorful cards/headers
 class GradientSurface extends StatelessWidget {

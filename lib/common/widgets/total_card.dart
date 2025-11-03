@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:pull_up_club/common/themes/app_spacing.dart';
-import 'package:pull_up_club/common/themes/app_typography.dart';
+import "package:flutter/material.dart";
+import "package:pull_up_club/common/themes/app_spacing.dart";
+import "package:pull_up_club/common/themes/app_typography.dart";
 
 class TotalCard extends StatelessWidget {
   final String text;
