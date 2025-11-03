@@ -1,14 +1,15 @@
+import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
 import "package:pull_up_club/common/themes/app_typography.dart";
+import "package:pull_up_club/common/utils/utils.dart";
 import "package:pull_up_club/common/widgets/gradient_button.dart";
 import "package:pull_up_club/common/widgets/home_button.dart";
 import "package:pull_up_club/common/widgets/screen_scaffold.dart";
-import "package:pull_up_club/features/workout/widgets/set_cards.dart";
 import "package:pull_up_club/features/workout/providers/workout_provider.dart";
-import "package:pull_up_club/common/utils/utils.dart";
+import "package:pull_up_club/features/workout/widgets/set_cards.dart";
 
 class RestScreen extends StatefulWidget {
   const RestScreen({super.key});
@@ -52,25 +53,20 @@ class _RestScreenState extends State<RestScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    var workoutProvider = context.watch<WorkoutProvider>();
+  Widget build(final BuildContext context) {
+    final workoutProvider = context.watch<WorkoutProvider>();
 
     return ScreenScaffold(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          SizedBox(height: AppSpacing.sm),
+          const SizedBox(height: AppSpacing.sm),
           Text("😴", style: AppTypography.displayMedium.copyWith(fontSize: 64)),
-          _RestTimerSpinner(size: 200.0),
+          const _RestTimerSpinner(size: 200),
           SizedBox(
             width: MediaQuery.of(context).size.width * 0.5,
             child: GradientButton(
-              onPressed: () {
-                workoutProvider.resume();
-                // no need to route to a different screen here as the state
-                // change causes this function to rerun and call the same
-                // code that would run if the timer reached 0.
-              },
+              onPressed: workoutProvider.resume,
               text: "Skip Rest",
               icon: Icons.skip_next,
               gradient: AppGradients.secondary,
@@ -80,7 +76,7 @@ class _RestScreenState extends State<RestScreen> {
             values: getSetCardValues(workoutProvider.workout),
             numExpectedCards: workoutProvider.workout.maxGroups,
           ),
-          HomeButton(text: "Exit", icon: Icons.exit_to_app),
+          const HomeButton(text: "Exit", icon: Icons.exit_to_app),
         ],
       ),
     );
@@ -88,10 +84,16 @@ class _RestScreenState extends State<RestScreen> {
 }
 
 class _RestTimerSpinner extends StatefulWidget {
-  final double size;
   const _RestTimerSpinner({required this.size});
+  final double size;
   @override
   State<_RestTimerSpinner> createState() => _RestTimerSpinnerState();
+
+  @override
+  void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DoubleProperty("size", size));
+  }
 }
 
 class _RestTimerSpinnerState extends State<_RestTimerSpinner>
@@ -114,13 +116,13 @@ class _RestTimerSpinnerState extends State<_RestTimerSpinner>
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(final BuildContext context) {
     final workoutProvider = context.read<WorkoutProvider>();
 
     final remaining = workoutProvider.restTimeRemaining;
 
     const double ringThickness = 6;
-    const double arcPortion = 0.25;
+    const arcPortion = 0.25;
 
     return Column(
       children: [
@@ -135,7 +137,7 @@ class _RestTimerSpinnerState extends State<_RestTimerSpinner>
                 child: SizedBox(
                   height: widget.size,
                   width: widget.size,
-                  child: CircularProgressIndicator(
+                  child: const CircularProgressIndicator(
                     value: arcPortion,
                     strokeWidth: ringThickness,
                     backgroundColor: AppColors.glassBorderInactive,

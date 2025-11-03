@@ -1,11 +1,11 @@
 import "package:flutter/material.dart";
+import "package:pull_up_club/common/providers/app_provider.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
 import "package:pull_up_club/common/widgets/gradient_button.dart";
 import "package:pull_up_club/features/workout/providers/workout_provider.dart";
-import "package:pull_up_club/common/providers/app_provider.dart";
-import "package:pull_up_club/features/workout/widgets/reps_form.dart";
 import "package:pull_up_club/features/workout/screens/workouts/_base_workout_screen.dart";
+import "package:pull_up_club/features/workout/widgets/reps_form.dart";
 
 class LaddersScreen extends BaseWorkoutScreen {
   const LaddersScreen({super.key});
@@ -23,14 +23,18 @@ class _LaddersState extends BaseWorkoutState<LaddersScreen> {
   int get restDurationSeconds => 30;
 
   @override
-  int getCompletedGroups(WorkoutProvider workoutProvider) => _completedGroups;
+  int getCompletedGroups(final WorkoutProvider workoutProvider) =>
+      _completedGroups;
 
   @override
   int getTargetReps() => _targetReps;
 
   @override
-  Widget getInputs(WorkoutProvider workoutProvider, AppProvider appProvider) {
-    var buttons = [
+  Widget getInputs(
+    final WorkoutProvider workoutProvider,
+    final AppProvider appProvider,
+  ) {
+    final buttons = [
       GradientButton(
         onPressed: () {
           finishSet(
@@ -75,8 +79,8 @@ class _LaddersState extends BaseWorkoutState<LaddersScreen> {
         gradient: AppGradients.light,
       ),
     ];
-    var customRepsForm = RepsForm(
-      onValidSubmit: (int reps) {
+    final customRepsForm = RepsForm(
+      onValidSubmit: (final reps) {
         // have to increment _completedGroups before calling finishSet
         // so that isFinished() is evaluated correctly
         _completedGroups++;
@@ -101,8 +105,9 @@ class _LaddersState extends BaseWorkoutState<LaddersScreen> {
         : Column(
             children: List<Widget>.generate(
               buttons.length * 2 - 1,
-              (i) =>
-                  i.isEven ? buttons[i ~/ 2] : SizedBox(height: AppSpacing.sm),
+              (final i) => i.isEven
+                  ? buttons[i ~/ 2]
+                  : const SizedBox(height: AppSpacing.sm),
             ),
           );
   }

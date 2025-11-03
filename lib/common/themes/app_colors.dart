@@ -70,13 +70,9 @@ class AppGradients {
   );
   static const LinearGradient primary = LinearGradient(
     colors: AppColors.gradientPrimary,
-    begin: Alignment.centerLeft,
-    end: Alignment.centerRight,
   );
   static const LinearGradient secondary = LinearGradient(
     colors: AppColors.gradientSecondary,
-    begin: Alignment.centerLeft,
-    end: Alignment.centerRight,
   );
   static const LinearGradient accentPurple = LinearGradient(
     colors: AppColors.gradientAccentPurple,
@@ -90,17 +86,16 @@ class AppGradients {
   );
   static const LinearGradient repCount = LinearGradient(
     colors: AppColors.gradientRepCount,
-    begin: Alignment.centerLeft,
-    end: Alignment.centerRight,
   );
   static const LinearGradient light = LinearGradient(
     colors: [AppColors.surfaceLight, AppColors.glassBorderActive],
-    begin: Alignment.centerLeft,
-    end: Alignment.centerRight,
   );
 }
 
-Color getTextColorOnGradient(LinearGradient gradient, BuildContext context) {
+Color getTextColorOnGradient(
+  final LinearGradient gradient,
+  final BuildContext context,
+) {
   final scheme = Theme.of(context).colorScheme;
   final onLight = scheme.onSurface; // for light/white surfaces
   final onColor = scheme.onPrimary; // for colored surfaces

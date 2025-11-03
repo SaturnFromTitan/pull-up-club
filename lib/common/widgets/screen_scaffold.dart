@@ -1,30 +1,29 @@
 import "package:flutter/material.dart";
-import "package:pull_up_club/common/themes/app_spacing.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
+import "package:pull_up_club/common/themes/app_spacing.dart";
 
 class ScreenScaffold extends StatelessWidget {
+  const ScreenScaffold({
+    required this.child,
+    super.key,
+    this.bottomNavigationBar,
+  });
   final Widget child;
   final Widget? bottomNavigationBar;
 
-  const ScreenScaffold({
-    super.key,
-    required this.child,
-    this.bottomNavigationBar,
-  });
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(final BuildContext context) {
     const gradient = AppGradients.surface;
 
     // not using GradientSurface as the DefaultTextStyle would be overridden
     // by Scaffolds text styles
-    return Container(
-      decoration: BoxDecoration(gradient: gradient),
+    return DecoratedBox(
+      decoration: const BoxDecoration(gradient: gradient),
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         body: SafeArea(
           child: Builder(
-            builder: (context) {
+            builder: (final context) {
               final textColor = getTextColorOnGradient(gradient, context);
 
               return Padding(

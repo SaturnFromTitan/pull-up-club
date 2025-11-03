@@ -1,14 +1,21 @@
 import "dart:math" as math;
 
+import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
 
 class AnimatedTrophy extends StatefulWidget {
-  final double size;
   const AnimatedTrophy({super.key, this.size = 112});
+  final double size;
 
   @override
   State<AnimatedTrophy> createState() => _AnimatedTrophyState();
+
+  @override
+  void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DoubleProperty("size", size));
+  }
 }
 
 class _AnimatedTrophyState extends State<AnimatedTrophy>
@@ -29,17 +36,17 @@ class _AnimatedTrophyState extends State<AnimatedTrophy>
 
     _scale = CurvedAnimation(
       parent: _introController,
-      curve: const Interval(0.0, 0.9, curve: Curves.elasticOut),
-    ).drive(Tween(begin: 0.6, end: 1.0));
+      curve: const Interval(0, 0.9, curve: Curves.elasticOut),
+    ).drive(Tween(begin: 0.6, end: 1));
 
     _rotation = CurvedAnimation(
       parent: _introController,
-      curve: const Interval(0.0, 0.6, curve: Curves.easeOutBack),
-    ).drive(Tween(begin: -0.12, end: 0.0));
+      curve: const Interval(0, 0.6, curve: Curves.easeOutBack),
+    ).drive(Tween(begin: -0.12, end: 0));
 
     _glowOpacity = CurvedAnimation(
       parent: _introController,
-      curve: const Interval(0.2, 1.0, curve: Curves.easeOut),
+      curve: const Interval(0.2, 1, curve: Curves.easeOut),
     );
 
     _sparkleController = AnimationController(
@@ -61,15 +68,15 @@ class _AnimatedTrophyState extends State<AnimatedTrophy>
   }
 
   // Continuous wave helper for sparkle twinkle
-  double _wave(double phase) {
+  double _wave(final double phase) {
     final t = _sparkleController.value; // 0..1
     return 0.5 + 0.5 * math.sin(2 * math.pi * (t + phase)); // 0..1
   }
 
   @override
-  Widget build(BuildContext context) {
-    final double s = widget.size;
-    const Color trophyColor = AppColors.yellow;
+  Widget build(final BuildContext context) {
+    final s = widget.size;
+    const trophyColor = AppColors.yellow;
 
     return SizedBox(
       width: s,
@@ -88,7 +95,7 @@ class _AnimatedTrophyState extends State<AnimatedTrophy>
                 gradient: RadialGradient(
                   colors: [
                     trophyColor.withValues(alpha: 0.55),
-                    trophyColor.withValues(alpha: 0.0),
+                    trophyColor.withValues(alpha: 0),
                   ],
                 ),
                 boxShadow: [
@@ -106,9 +113,8 @@ class _AnimatedTrophyState extends State<AnimatedTrophy>
             scale: _scale,
             child: AnimatedBuilder(
               animation: _rotation,
-              builder: (context, child) {
-                return Transform.rotate(angle: _rotation.value, child: child);
-              },
+              builder: (final context, final child) =>
+                  Transform.rotate(angle: _rotation.value, child: child),
               child: Container(
                 width: s * 0.86,
                 height: s * 0.86,
@@ -134,9 +140,9 @@ class _AnimatedTrophyState extends State<AnimatedTrophy>
           // Playful sparkle dots that twinkle continuously using phase-shifted waves
           AnimatedBuilder(
             animation: _sparkleController,
-            builder: (context, _) {
-              final opA = 0.7 + 0.3 * _wave(0.00);
-              final scA = 1.0 + 0.3 * _wave(0.00);
+            builder: (final context, _) {
+              final opA = 0.7 + 0.3 * _wave(0);
+              final scA = 1.0 + 0.3 * _wave(0);
               final opB = 0.7 + 0.3 * _wave(0.33);
               final scB = 1.0 + 0.3 * _wave(0.33);
               final opC = 0.7 + 0.3 * _wave(0.66);
@@ -184,33 +190,39 @@ class _AnimatedTrophyState extends State<AnimatedTrophy>
 }
 
 class _Sparkle extends StatelessWidget {
-  final double opacity;
-  final double scale;
-  final double size;
-  final double angle;
-
   const _Sparkle({
     required this.opacity,
     required this.scale,
     required this.size,
     required this.angle,
   });
+  final double opacity;
+  final double scale;
+  final double size;
+  final double angle;
 
   @override
-  Widget build(BuildContext context) {
-    return Opacity(
-      opacity: opacity.clamp(0.0, 1.0),
-      child: Transform.rotate(
-        angle: angle,
-        child: Transform.scale(
-          scale: scale,
-          child: Icon(
-            Icons.star_rounded,
-            color: AppColors.gold.withValues(alpha: 0.9),
-            size: size,
-          ),
+  Widget build(final BuildContext context) => Opacity(
+    opacity: opacity.clamp(0.0, 1.0),
+    child: Transform.rotate(
+      angle: angle,
+      child: Transform.scale(
+        scale: scale,
+        child: Icon(
+          Icons.star_rounded,
+          color: AppColors.gold.withValues(alpha: 0.9),
+          size: size,
         ),
       ),
-    );
+    ),
+  );
+
+  @override
+  void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DoubleProperty("opacity", opacity));
+    properties.add(DoubleProperty("scale", scale));
+    properties.add(DoubleProperty("size", size));
+    properties.add(DoubleProperty("angle", angle));
   }
 }

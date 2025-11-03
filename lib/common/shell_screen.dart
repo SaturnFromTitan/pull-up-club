@@ -1,18 +1,17 @@
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
+import "package:pull_up_club/common/providers/app_provider.dart";
+import "package:pull_up_club/common/widgets/gradient_navigation_bar.dart";
 import "package:pull_up_club/common/widgets/screen_scaffold.dart";
 import "package:pull_up_club/features/history/screens/history_screen.dart";
 import "package:pull_up_club/features/workout/screens/selection_screen.dart";
-import "package:pull_up_club/common/providers/app_provider.dart";
-import "package:pull_up_club/common/widgets/gradient_navigation_bar.dart";
 
 class Shell extends StatelessWidget {
-  static final String route = "/shell";
-
   const Shell({super.key});
+  static const String route = "/shell";
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(final BuildContext context) {
     final appProvider = context.watch<AppProvider>();
 
     return ScreenScaffold(
@@ -34,7 +33,7 @@ class Shell extends StatelessWidget {
       ),
       child: IndexedStack(
         index: appProvider.tabIndex,
-        children: [WorkoutSelectionScreen(), HistoryScreen()],
+        children: const [WorkoutSelectionScreen(), HistoryScreen()],
       ),
     );
   }

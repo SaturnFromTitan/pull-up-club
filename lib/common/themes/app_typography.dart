@@ -32,7 +32,7 @@ class AppTypography {
   // Headline styles
   static const TextStyle headlineLarge = TextStyle(
     fontFamily: fontFamily,
-    fontSize: 20.0,
+    fontSize: 20,
     fontWeight: FontWeight.w500,
     height: 1.56,
     letterSpacing: -0.43,

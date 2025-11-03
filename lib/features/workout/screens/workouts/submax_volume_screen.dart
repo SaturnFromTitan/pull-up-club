@@ -1,20 +1,25 @@
+import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
+import "package:pull_up_club/common/providers/app_provider.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
 import "package:pull_up_club/common/widgets/gradient_button.dart";
-
 import "package:pull_up_club/features/workout/providers/workout_provider.dart";
-import "package:pull_up_club/common/providers/app_provider.dart";
+import "package:pull_up_club/features/workout/screens/workouts/_base_workout_screen.dart";
 import "package:pull_up_club/features/workout/widgets/reps_form.dart";
 
-import "package:pull_up_club/features/workout/screens/workouts/_base_workout_screen.dart";
-
 class SubmaxVolumeScreen extends BaseWorkoutScreen {
+  const SubmaxVolumeScreen({required this.targetReps, super.key});
   final int targetReps;
-  const SubmaxVolumeScreen({super.key, required this.targetReps});
 
   @override
   State<SubmaxVolumeScreen> createState() => _SubmaxVolumeScreenState();
+
+  @override
+  void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(IntProperty("targetReps", targetReps));
+  }
 }
 
 class _SubmaxVolumeScreenState extends BaseWorkoutState<SubmaxVolumeScreen> {
@@ -27,11 +32,14 @@ class _SubmaxVolumeScreenState extends BaseWorkoutState<SubmaxVolumeScreen> {
   int getTargetReps() => widget.targetReps;
 
   @override
-  Widget getInputs(WorkoutProvider workoutProvider, AppProvider appProvider) {
-    var buttons = _getButtons(workoutProvider, appProvider);
+  Widget getInputs(
+    final WorkoutProvider workoutProvider,
+    final AppProvider appProvider,
+  ) {
+    final buttons = _getButtons(workoutProvider, appProvider);
 
-    var customRepsForm = RepsForm(
-      onValidSubmit: (int reps) {
+    final customRepsForm = RepsForm(
+      onValidSubmit: (final reps) {
         _showCustomRepsForm = false;
         finishSet(
           group: workoutProvider.workout.sets.length + 1,
@@ -52,18 +60,19 @@ class _SubmaxVolumeScreenState extends BaseWorkoutState<SubmaxVolumeScreen> {
         : Column(
             children: List<Widget>.generate(
               buttons.length * 2 - 1,
-              (i) =>
-                  i.isEven ? buttons[i ~/ 2] : SizedBox(height: AppSpacing.sm),
+              (final i) => i.isEven
+                  ? buttons[i ~/ 2]
+                  : const SizedBox(height: AppSpacing.sm),
             ),
           );
   }
 
   List<Widget> _getButtons(
-    WorkoutProvider workoutProvider,
-    AppProvider appProvider,
+    final WorkoutProvider workoutProvider,
+    final AppProvider appProvider,
   ) {
-    int targetReps = getTargetReps();
-    var buttons = [
+    final targetReps = getTargetReps();
+    final buttons = [
       GradientButton(
         onPressed: () {
           finishSet(
