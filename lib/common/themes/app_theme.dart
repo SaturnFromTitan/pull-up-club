@@ -1,8 +1,8 @@
-import 'package:flutter/material.dart';
-import 'package:pull_up_club/common/themes/app_colors.dart';
+import "package:flutter/material.dart";
+import "package:pull_up_club/common/themes/app_colors.dart";
+import "package:pull_up_club/common/themes/app_spacing.dart";
 // import 'app_colors.dart';
-import 'app_typography.dart';
-import 'app_spacing.dart';
+import "package:pull_up_club/common/themes/app_typography.dart";
 
 final appTheme = ThemeData(
   useMaterial3: true,
@@ -10,7 +10,7 @@ final appTheme = ThemeData(
 
   // surface and text colors
   scaffoldBackgroundColor: Colors.transparent,
-  colorScheme: ColorScheme.dark(
+  colorScheme: const ColorScheme.dark(
     surface: AppColors.surfaceLight,
     onSurface: AppColors.onLight,
     onSurfaceVariant: AppColors.onLightSecondary,
@@ -52,7 +52,7 @@ final appTheme = ThemeData(
   ),
 );
 
-final List<BoxShadow> defaultBoxShadows = const [
+const List<BoxShadow> defaultBoxShadows = [
   BoxShadow(
     color: AppColors.shadow,
     blurRadius: AppSpacing.radiusSmall,

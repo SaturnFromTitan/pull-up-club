@@ -1,8 +1,8 @@
-import 'package:flutter/material.dart';
-import 'package:pull_up_club/features/workout/providers/workout_provider.dart';
-import 'package:pull_up_club/common/providers/app_provider.dart';
-import 'package:pull_up_club/features/workout/widgets/reps_form.dart';
-import '_base_workout_screen.dart';
+import "package:flutter/material.dart";
+import "package:pull_up_club/common/providers/app_provider.dart";
+import "package:pull_up_club/features/workout/providers/workout_provider.dart";
+import "package:pull_up_club/features/workout/screens/workouts/_base_workout_screen.dart";
+import "package:pull_up_club/features/workout/widgets/reps_form.dart";
 
 class MaxSetsScreen extends BaseWorkoutScreen {
   const MaxSetsScreen({super.key});
@@ -19,16 +19,17 @@ class _MaxSetsScreenState extends BaseWorkoutState<MaxSetsScreen> {
   Null getTargetReps() => null;
 
   @override
-  Widget getInputs(WorkoutProvider workoutProvider, AppProvider appProvider) {
-    return RepsForm(
-      onValidSubmit: (int reps) {
-        finishSet(
-          group: workoutProvider.workout.sets.length + 1,
-          completedReps: reps,
-          workoutProvider: workoutProvider,
-          appProvider: appProvider,
-        );
-      },
-    );
-  }
+  Widget getInputs(
+    final WorkoutProvider workoutProvider,
+    final AppProvider appProvider,
+  ) => RepsForm(
+    onValidSubmit: (final reps) async {
+      await finishSet(
+        group: workoutProvider.workout.sets.length + 1,
+        completedReps: reps,
+        workoutProvider: workoutProvider,
+        appProvider: appProvider,
+      );
+    },
+  );
 }

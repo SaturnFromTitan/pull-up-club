@@ -1,8 +1,19 @@
-import 'package:flutter/material.dart';
-import 'package:pull_up_club/common/themes/app_colors.dart';
+import "package:flutter/foundation.dart";
+import "package:flutter/material.dart";
+import "package:pull_up_club/common/themes/app_colors.dart";
 
 /// Drop-in wrapper for your colorful cards/headers
 class GradientSurface extends StatelessWidget {
+  const GradientSurface({
+    required this.gradient,
+    super.key,
+    this.child,
+    this.border,
+    this.borderRadius,
+    this.boxShadow,
+    this.height,
+    this.width,
+  });
   final LinearGradient gradient;
   final Widget? child;
   final Border? border;
@@ -11,19 +22,8 @@ class GradientSurface extends StatelessWidget {
   final double? height;
   final double? width;
 
-  const GradientSurface({
-    super.key,
-    required this.gradient,
-    this.child,
-    this.border,
-    this.borderRadius,
-    this.boxShadow,
-    this.height,
-    this.width,
-  });
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(final BuildContext context) {
     final textColor = getTextColorOnGradient(gradient, context);
 
     return Container(
@@ -45,5 +45,17 @@ class GradientSurface extends StatelessWidget {
             )
           : null,
     );
+  }
+
+  @override
+  void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty<LinearGradient>("gradient", gradient))
+      ..add(DiagnosticsProperty<Border?>("border", border))
+      ..add(DiagnosticsProperty<BorderRadius?>("borderRadius", borderRadius))
+      ..add(IterableProperty<BoxShadow>("boxShadow", boxShadow))
+      ..add(DoubleProperty("height", height))
+      ..add(DoubleProperty("width", width));
   }
 }

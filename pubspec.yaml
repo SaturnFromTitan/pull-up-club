@@ -4,20 +4,21 @@ publish_to: "none"
 version: 0.1.0
 
 environment:
-  sdk: ^3.9.0
+  sdk: 3.9.2
+  flutter: 3.35.7
 
 dependencies:
-  cupertino_icons: ^1.0.8
+  cupertino_icons: ">=1.0.8"
   flutter:
     sdk: flutter
-  provider: ^6.1.5
-  uuid: ^4.4.2
+  provider: ">=6.1.5"
+  uuid: ">=4.4.2"
 
 dev_dependencies:
+  flutter_launcher_icons: ">=0.14.4"
+  flutter_lints: ">=6.0.0"
   flutter_test:
     sdk: flutter
-  flutter_lints: ^6.0.0
-  flutter_launcher_icons: ^0.14.4
 
 flutter:
   uses-material-design: true

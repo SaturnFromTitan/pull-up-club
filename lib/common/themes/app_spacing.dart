@@ -1,6 +1,6 @@
 class AppSpacing {
   // Base spacing unit (4px)
-  static const double base = 4.0;
+  static const double base = 4;
 
   // Spacing scale
   static const double xs = base; // 4px
@@ -12,16 +12,16 @@ class AppSpacing {
   static const double xxxl = base * 16; // 64px
 
   // Border radius
-  static const double radiusSmall = 8.0;
-  static const double radiusMedium = 16.0;
-  static const double radiusLarge = 22.0;
-  static const double radiusXLarge = 32.0;
-  static const double radiusFull = 999.0;
+  static const double radiusSmall = 8;
+  static const double radiusMedium = 16;
+  static const double radiusLarge = 22;
+  static const double radiusXLarge = 32;
+  static const double radiusFull = 999;
 
   // Padding
-  static const double paddingSmall = 20.0;
-  static const double paddingBig = 40.0;
+  static const double paddingSmall = 20;
+  static const double paddingBig = 40;
 
   // Specific spacing values from design
-  static const double buttonHeight = 60.0;
+  static const double buttonHeight = 60;
 }

@@ -1,8 +1,8 @@
-import 'package:flutter/material.dart';
+import "package:flutter/material.dart";
 
 class AppTypography {
   // Font family
-  static const String fontFamily = 'Inter';
+  static const String fontFamily = "Inter";
 
   // Display styles
   static const TextStyle displayLarge = TextStyle(
@@ -32,7 +32,7 @@ class AppTypography {
   // Headline styles
   static const TextStyle headlineLarge = TextStyle(
     fontFamily: fontFamily,
-    fontSize: 20.0,
+    fontSize: 20,
     fontWeight: FontWeight.w500,
     height: 1.56,
     letterSpacing: -0.43,

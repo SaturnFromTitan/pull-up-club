@@ -1,18 +1,12 @@
-import 'dart:async';
+import "dart:async";
 
-import 'package:flutter/material.dart';
-import 'package:pull_up_club/features/workout/models.dart';
-import 'package:pull_up_club/common/providers/app_provider.dart';
+import "package:flutter/material.dart";
+import "package:pull_up_club/common/providers/app_provider.dart";
+import "package:pull_up_club/features/workout/models.dart";
 
 class WorkoutProvider extends ChangeNotifier {
-  // private state
-  Workout _workout;
-  int _restRemainingSeconds = 0;
-  int _restTotalSeconds = 0;
-  Timer? _restTimer;
-
   // initialisation
-  WorkoutProvider({required WorkoutType workoutType})
+  WorkoutProvider({required final WorkoutType workoutType})
     : _workout = Workout(
         workoutType: workoutType,
         maxGroups: () {
@@ -26,6 +20,11 @@ class WorkoutProvider extends ChangeNotifier {
           }
         }(),
       );
+  // private state
+  final Workout _workout;
+  int _restRemainingSeconds = 0;
+  int _restTotalSeconds = 0;
+  Timer? _restTimer;
 
   // getters
   Workout get workout => _workout;
@@ -33,7 +32,7 @@ class WorkoutProvider extends ChangeNotifier {
   int get restTotalSeconds => _restTotalSeconds;
 
   // lifecyle management
-  void addSet(WorkoutSet set_) {
+  void addSet(final WorkoutSet set_) {
     _workout.sets.add(set_);
   }
 
@@ -41,7 +40,7 @@ class WorkoutProvider extends ChangeNotifier {
     _restRemainingSeconds = durationSeconds;
     _restTotalSeconds = durationSeconds;
 
-    _restTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+    _restTimer = Timer.periodic(const Duration(seconds: 1), (final timer) {
       _restRemainingSeconds--;
       notifyListeners();
 
@@ -58,11 +57,9 @@ class WorkoutProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool isResting() {
-    return _restTimer?.isActive == true;
-  }
+  bool isResting() => _restTimer?.isActive ?? false;
 
-  void finish(AppProvider appProvider) {
+  void finish(final AppProvider appProvider) {
     _workout.finish();
     appProvider.completedWorkouts.add(_workout);
   }

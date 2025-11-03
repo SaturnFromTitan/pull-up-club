@@ -12,19 +12,18 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: Setup Flutter
       uses: subosito/flutter-action@v2
       with:
-        channel: stable
-        flutter-version: 3.35.6
+        flutter-version-file: pubspec.yaml
 
     - name: Install dependencies
       run: flutter pub get
 
-    - name: Run linter
-      run: flutter analyze
+    - name: Install pre-commit
+      run: python3 -m pip install pre-commit
 
-    - name: Check formatting
-      run: dart format --output=none --set-exit-if-changed .
+    - name: Run linters via pre-commit
+      run: pre-commit run --all-files --show-diff-on-failure --color always

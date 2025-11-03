@@ -1,0 +1,33 @@
+repos:
+  - repo: local
+    hooks:
+      - id: dart-fix
+        name: dart-fix
+        entry: dart fix
+        args: ["--apply"]
+        language: system
+        pass_filenames: false
+      - id: dart-format
+        name: dart-format
+        entry: dart format
+        args: ["--set-exit-if-changed", "--line-length", "88"]
+        language: system
+        files: "\\.dart$"
+      - id: dart-analyze
+        name: dart-analyze
+        entry: dart analyze
+        args: ["--fatal-infos"]
+        language: system
+        pass_filenames: false
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+        exclude_types: [diff, pdf]
+      - id: end-of-file-fixer
+        exclude_types: [diff, pdf]
+      - id: check-added-large-files
+      - id: check-toml
+      - id: check-json
+      - id: check-xml
+      - id: check-yaml

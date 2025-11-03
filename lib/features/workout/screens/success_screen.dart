@@ -1,23 +1,28 @@
-import 'package:flutter/material.dart';
-import 'package:pull_up_club/common/themes/app_colors.dart';
-import 'package:pull_up_club/common/themes/app_spacing.dart';
-import 'package:pull_up_club/common/themes/app_typography.dart';
-import 'package:pull_up_club/common/widgets/screen_scaffold.dart';
-import 'package:pull_up_club/common/widgets/home_button.dart';
-import 'package:pull_up_club/common/widgets/total_card.dart';
-import 'package:pull_up_club/features/workout/widgets/animated_trophy.dart';
-import 'package:pull_up_club/features/workout/widgets/set_cards.dart';
-
-import 'package:pull_up_club/features/workout/models.dart';
-import 'package:pull_up_club/common/utils/utils.dart';
+import "package:flutter/foundation.dart";
+import "package:flutter/material.dart";
+import "package:pull_up_club/common/themes/app_colors.dart";
+import "package:pull_up_club/common/themes/app_spacing.dart";
+import "package:pull_up_club/common/themes/app_typography.dart";
+import "package:pull_up_club/common/utils/utils.dart";
+import "package:pull_up_club/common/widgets/home_button.dart";
+import "package:pull_up_club/common/widgets/screen_scaffold.dart";
+import "package:pull_up_club/common/widgets/total_card.dart";
+import "package:pull_up_club/features/workout/models.dart";
+import "package:pull_up_club/features/workout/widgets/animated_trophy.dart";
+import "package:pull_up_club/features/workout/widgets/set_cards.dart";
 
 class SuccessScreen extends StatefulWidget {
+  const SuccessScreen({required this.workout, super.key});
   final Workout workout;
-
-  const SuccessScreen({super.key, required this.workout});
 
   @override
   State<SuccessScreen> createState() => _SuccessScreenState();
+
+  @override
+  void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<Workout>("workout", workout));
+  }
 }
 
 class _SuccessScreenState extends State<SuccessScreen>
@@ -35,18 +40,20 @@ class _SuccessScreenState extends State<SuccessScreen>
     );
     _headlineOpacity = CurvedAnimation(
       parent: _controller,
-      curve: const Interval(0.25, 1.0, curve: Curves.easeOut),
+      curve: const Interval(0.25, 1, curve: Curves.easeOut),
     );
-    _headlineOffset =
-        Tween<Offset>(begin: const Offset(0, 0.2), end: Offset.zero).animate(
+    _headlineOffset = Tween<Offset>(begin: const Offset(0, 0.2), end: Offset.zero)
+        .animate(
           CurvedAnimation(
             parent: _controller,
-            curve: const Interval(0.25, 1.0, curve: Curves.easeOut),
+            curve: const Interval(0.25, 1, curve: Curves.easeOut),
           ),
         );
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) _controller.forward();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (mounted) {
+        await _controller.forward();
+      }
     });
   }
 
@@ -57,10 +64,8 @@ class _SuccessScreenState extends State<SuccessScreen>
   }
 
   @override
-  Widget build(BuildContext context) {
-    final durationText = formatMinutesSeconds(
-      widget.workout.durationSeconds() ?? 0,
-    );
+  Widget build(final BuildContext context) {
+    final durationText = formatMinutesSeconds(widget.workout.durationSeconds() ?? 0);
     final totalReps = widget.workout.totalReps();
 
     return ScreenScaffold(
@@ -70,14 +75,14 @@ class _SuccessScreenState extends State<SuccessScreen>
           children: [
             Column(
               children: [
-                const AnimatedTrophy(size: 112),
+                const AnimatedTrophy(),
                 const SizedBox(height: 12),
                 FadeTransition(
                   opacity: _headlineOpacity,
                   child: SlideTransition(
                     position: _headlineOffset,
-                    child: Text(
-                      'Workout Completed!',
+                    child: const Text(
+                      "Workout Completed!",
                       style: AppTypography.displayLarge,
                       textAlign: TextAlign.center,
                     ),
@@ -100,7 +105,7 @@ class _SuccessScreenState extends State<SuccessScreen>
                         widget.workout.workoutType.name,
                         style: AppTypography.headlineLarge,
                       ),
-                      SizedBox(height: AppSpacing.md),
+                      const SizedBox(height: AppSpacing.md),
                       Row(
                         children: [
                           Expanded(
@@ -111,7 +116,7 @@ class _SuccessScreenState extends State<SuccessScreen>
                               gradient: AppGradients.surfaceOnLight,
                             ),
                           ),
-                          SizedBox(width: AppSpacing.md),
+                          const SizedBox(width: AppSpacing.md),
                           Expanded(
                             child: TotalCard(
                               text: "Duration",
@@ -128,7 +133,7 @@ class _SuccessScreenState extends State<SuccessScreen>
               ),
             ),
             SetCards(values: getSetCardValues(widget.workout)),
-            HomeButton(text: "Home", gradient: AppGradients.primary),
+            const HomeButton(text: "Home", gradient: AppGradients.primary),
           ],
         ),
       ),
