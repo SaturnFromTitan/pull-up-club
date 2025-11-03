@@ -8,6 +8,7 @@ import "package:pull_up_club/common/widgets/gradient_navigation_bar.dart";
 
 class Shell extends StatelessWidget {
   static final String route = "/shell";
+
   const Shell({super.key});
 
   @override

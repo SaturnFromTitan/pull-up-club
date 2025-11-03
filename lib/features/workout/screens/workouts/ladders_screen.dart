@@ -5,7 +5,7 @@ import "package:pull_up_club/common/widgets/gradient_button.dart";
 import "package:pull_up_club/features/workout/providers/workout_provider.dart";
 import "package:pull_up_club/common/providers/app_provider.dart";
 import "package:pull_up_club/features/workout/widgets/reps_form.dart";
-import "_base_workout_screen.dart";
+import "package:pull_up_club/features/workout/screens/workouts/_base_workout_screen.dart";
 
 class LaddersScreen extends BaseWorkoutScreen {
   const LaddersScreen({super.key});

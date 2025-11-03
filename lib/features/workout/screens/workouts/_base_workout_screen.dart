@@ -13,8 +13,8 @@ import "package:flutter/cupertino.dart";
 
 import "package:pull_up_club/common/providers/app_provider.dart";
 import "package:pull_up_club/features/workout/models.dart";
-import "../rest_screen.dart";
-import "../success_screen.dart";
+import "package:pull_up_club/features/workout/screens/rest_screen.dart";
+import "package:pull_up_club/features/workout/screens/success_screen.dart";
 
 abstract class BaseWorkoutScreen extends StatefulWidget {
   const BaseWorkoutScreen({super.key});

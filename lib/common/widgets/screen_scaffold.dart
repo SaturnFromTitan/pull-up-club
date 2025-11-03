@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
-import "../themes/app_colors.dart";
+import "package:pull_up_club/common/themes/app_colors.dart";
 
 class ScreenScaffold extends StatelessWidget {
   final Widget child;

@@ -6,7 +6,7 @@ import "package:pull_up_club/common/providers/app_provider.dart";
 
 class WorkoutProvider extends ChangeNotifier {
   // private state
-  Workout _workout;
+  final Workout _workout;
   int _restRemainingSeconds = 0;
   int _restTotalSeconds = 0;
   Timer? _restTimer;

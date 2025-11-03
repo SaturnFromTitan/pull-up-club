@@ -12,7 +12,7 @@ class RepsForm extends StatefulWidget {
   final String cancelText;
   final IconData cancelIcon;
   final void Function()? onCancel;
-  RepsForm({
+  const RepsForm({
     super.key,
     this.submitText = "Submit",
     this.submitIcon = Icons.check,

@@ -1,9 +1,9 @@
 import "package:flutter/material.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_theme.dart";
-import "../themes/app_spacing.dart";
-import "../themes/app_typography.dart";
-import "gradient_surface.dart";
+import "package:pull_up_club/common/themes/app_spacing.dart";
+import "package:pull_up_club/common/themes/app_typography.dart";
+import "package:pull_up_club/common/widgets/gradient_surface.dart";
 
 class GradientButton extends StatelessWidget {
   final String text;
