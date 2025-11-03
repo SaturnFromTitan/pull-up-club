@@ -1,4 +1,3 @@
-# CI runs `match` in read-only mode to fetch signing assets. See the README for more details.
 name: Release to TestFlight
 
 permissions:
@@ -13,9 +12,6 @@ jobs:
   testflight:
     runs-on: macos-latest
     timeout-minutes: 60
-    env:
-      APP_BUNDLE_ID: com.saturnfromtitan.pullupclub
-      MATCH_GIT_URL: https://x-access-token:${{ secrets.CERTS_TOKEN }}@github.com/SaturnFromTitan/pull-up-club-certificates.git
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -46,15 +42,18 @@ jobs:
         working-directory: ios
         run: bundle install --path vendor/bundle
 
+      # `match` is run in read-only mode to fetch signing assets. See the README for more details.
       - name: Fastlane beta → TestFlight
         working-directory: ios
         env:
-          APPLE_TEAM_ID: ${{ vars.APPLE_TEAM_ID }}
+          APP_BUNDLE_ID: com.saturnfromtitan.pullupclub
           APP_STORE_CONNECT_KEY_ID: ${{ vars.APP_STORE_CONNECT_KEY_ID }}
           APP_STORE_CONNECT_ISSUER_ID: ${{ vars.APP_STORE_CONNECT_ISSUER_ID }}
           APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
-          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          APPLE_TEAM_ID: ${{ vars.APPLE_TEAM_ID }}
           KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+          MATCH_GIT_URL: https://x-access-token:${{ secrets.CERTS_TOKEN }}@github.com/SaturnFromTitan/pull-up-club-certificates.git
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
         run: bundle exec fastlane beta
 
       - name: Publish build info to summary
