@@ -23,8 +23,7 @@ class _LaddersState extends BaseWorkoutState<LaddersScreen> {
   int get restDurationSeconds => 30;
 
   @override
-  int getCompletedGroups(final WorkoutProvider workoutProvider) =>
-      _completedGroups;
+  int getCompletedGroups(final WorkoutProvider workoutProvider) => _completedGroups;
 
   @override
   int getTargetReps() => _targetReps;
@@ -36,8 +35,8 @@ class _LaddersState extends BaseWorkoutState<LaddersScreen> {
   ) {
     final buttons = [
       GradientButton(
-        onPressed: () {
-          finishSet(
+        onPressed: () async {
+          await finishSet(
             group: _completedGroups + 1,
             completedReps: getTargetReps(),
             workoutProvider: workoutProvider,
@@ -50,11 +49,11 @@ class _LaddersState extends BaseWorkoutState<LaddersScreen> {
         gradient: AppGradients.accentGreen,
       ),
       GradientButton(
-        onPressed: () {
+        onPressed: () async {
           // have to increment _completedGroups before calling finishSet
           // so that isFinished() is evaluated correctly
           _completedGroups++;
-          finishSet(
+          await finishSet(
             group: _completedGroups,
             completedReps: getTargetReps(),
             workoutProvider: workoutProvider,
@@ -80,11 +79,11 @@ class _LaddersState extends BaseWorkoutState<LaddersScreen> {
       ),
     ];
     final customRepsForm = RepsForm(
-      onValidSubmit: (final reps) {
+      onValidSubmit: (final reps) async {
         // have to increment _completedGroups before calling finishSet
         // so that isFinished() is evaluated correctly
         _completedGroups++;
-        finishSet(
+        await finishSet(
           group: _completedGroups,
           completedReps: reps,
           workoutProvider: workoutProvider,
@@ -94,9 +93,7 @@ class _LaddersState extends BaseWorkoutState<LaddersScreen> {
         _showCustomRepsForm = false;
       },
       onCancel: () {
-        setState(() {
-          _showCustomRepsForm = !_showCustomRepsForm;
-        });
+        setState(() => _showCustomRepsForm = !_showCustomRepsForm);
       },
     );
 
@@ -105,9 +102,8 @@ class _LaddersState extends BaseWorkoutState<LaddersScreen> {
         : Column(
             children: List<Widget>.generate(
               buttons.length * 2 - 1,
-              (final i) => i.isEven
-                  ? buttons[i ~/ 2]
-                  : const SizedBox(height: AppSpacing.sm),
+              (final i) =>
+                  i.isEven ? buttons[i ~/ 2] : const SizedBox(height: AppSpacing.sm),
             ),
           );
   }

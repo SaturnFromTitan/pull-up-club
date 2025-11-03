@@ -42,16 +42,18 @@ class _SuccessScreenState extends State<SuccessScreen>
       parent: _controller,
       curve: const Interval(0.25, 1, curve: Curves.easeOut),
     );
-    _headlineOffset =
-        Tween<Offset>(begin: const Offset(0, 0.2), end: Offset.zero).animate(
+    _headlineOffset = Tween<Offset>(begin: const Offset(0, 0.2), end: Offset.zero)
+        .animate(
           CurvedAnimation(
             parent: _controller,
             curve: const Interval(0.25, 1, curve: Curves.easeOut),
           ),
         );
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) _controller.forward();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (mounted) {
+        await _controller.forward();
+      }
     });
   }
 
@@ -63,9 +65,7 @@ class _SuccessScreenState extends State<SuccessScreen>
 
   @override
   Widget build(final BuildContext context) {
-    final durationText = formatMinutesSeconds(
-      widget.workout.durationSeconds() ?? 0,
-    );
+    final durationText = formatMinutesSeconds(widget.workout.durationSeconds() ?? 0);
     final totalReps = widget.workout.totalReps();
 
     return ScreenScaffold(

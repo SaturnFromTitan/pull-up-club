@@ -50,13 +50,12 @@ class GradientSurface extends StatelessWidget {
   @override
   void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<LinearGradient>("gradient", gradient));
-    properties.add(DiagnosticsProperty<Border?>("border", border));
-    properties.add(
-      DiagnosticsProperty<BorderRadius?>("borderRadius", borderRadius),
-    );
-    properties.add(IterableProperty<BoxShadow>("boxShadow", boxShadow));
-    properties.add(DoubleProperty("height", height));
-    properties.add(DoubleProperty("width", width));
+    properties
+      ..add(DiagnosticsProperty<LinearGradient>("gradient", gradient))
+      ..add(DiagnosticsProperty<Border?>("border", border))
+      ..add(DiagnosticsProperty<BorderRadius?>("borderRadius", borderRadius))
+      ..add(IterableProperty<BoxShadow>("boxShadow", boxShadow))
+      ..add(DoubleProperty("height", height))
+      ..add(DoubleProperty("width", width));
   }
 }

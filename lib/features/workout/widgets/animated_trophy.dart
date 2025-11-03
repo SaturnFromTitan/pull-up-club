@@ -18,8 +18,7 @@ class AnimatedTrophy extends StatefulWidget {
   }
 }
 
-class _AnimatedTrophyState extends State<AnimatedTrophy>
-    with TickerProviderStateMixin {
+class _AnimatedTrophyState extends State<AnimatedTrophy> with TickerProviderStateMixin {
   late final AnimationController _introController;
   late final AnimationController _sparkleController;
   late final Animation<double> _scale;
@@ -27,7 +26,7 @@ class _AnimatedTrophyState extends State<AnimatedTrophy>
   late final Animation<double> _glowOpacity;
 
   @override
-  void initState() {
+  Future<void> initState() async {
     super.initState();
     _introController = AnimationController(
       vsync: this,
@@ -49,14 +48,17 @@ class _AnimatedTrophyState extends State<AnimatedTrophy>
       curve: const Interval(0.2, 1, curve: Curves.easeOut),
     );
 
-    _sparkleController = AnimationController(
+    final sparkleController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1600),
-    )..repeat(reverse: true);
+    );
+    await sparkleController.repeat(reverse: true);
 
     // Kick off intro animation on first frame.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) _introController.forward();
+    WidgetsBinding.instance.addPostFrameCallback((final _) async {
+      if (mounted) {
+        await _introController.forward();
+      }
     });
   }
 
@@ -152,12 +154,7 @@ class _AnimatedTrophyState extends State<AnimatedTrophy>
                   Positioned(
                     right: s * 0.08,
                     top: s * 0.18,
-                    child: _Sparkle(
-                      opacity: opA,
-                      scale: scA,
-                      size: s * 0.17,
-                      angle: 0,
-                    ),
+                    child: _Sparkle(opacity: opA, scale: scA, size: s * 0.17, angle: 0),
                   ),
                   Positioned(
                     left: s * 0.12,
@@ -220,9 +217,10 @@ class _Sparkle extends StatelessWidget {
   @override
   void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(DoubleProperty("opacity", opacity));
-    properties.add(DoubleProperty("scale", scale));
-    properties.add(DoubleProperty("size", size));
-    properties.add(DoubleProperty("angle", angle));
+    properties
+      ..add(DoubleProperty("opacity", opacity))
+      ..add(DoubleProperty("scale", scale))
+      ..add(DoubleProperty("size", size))
+      ..add(DoubleProperty("angle", angle));
   }
 }

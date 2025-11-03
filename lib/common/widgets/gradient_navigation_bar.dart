@@ -30,8 +30,8 @@ class GradientNavigationBar extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: List.generate(destinations.length, (final index) {
             final destination = destinations[index];
-            isSelected = index == selectedIndex;
-            iconWidget = (isSelected && destination.selectedIcon != null)
+            final isSelected = index == selectedIndex;
+            final iconWidget = (isSelected && destination.selectedIcon != null)
                 ? destination.selectedIcon!
                 : destination.icon;
             return _NavItem(
@@ -49,13 +49,14 @@ class GradientNavigationBar extends StatelessWidget {
   @override
   void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(IntProperty("selectedIndex", selectedIndex));
-    properties.add(
-      ObjectFlagProperty<ValueChanged<int>>.has(
-        "onDestinationSelected",
-        onDestinationSelected,
-      ),
-    );
+    properties
+      ..add(IntProperty("selectedIndex", selectedIndex))
+      ..add(
+        ObjectFlagProperty<ValueChanged<int>>.has(
+          "onDestinationSelected",
+          onDestinationSelected,
+        ),
+      );
   }
 }
 
@@ -75,7 +76,7 @@ class _NavItem extends StatelessWidget {
 
   @override
   Widget build(final BuildContext context) {
-    labelStyle = AppTypography.bodyMedium.copyWith(
+    final labelStyle = AppTypography.bodyMedium.copyWith(
       color: isSelected ? Colors.white : _inactiveColor,
     );
 
@@ -116,8 +117,9 @@ class _NavItem extends StatelessWidget {
   @override
   void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<bool>("isSelected", isSelected));
-    properties.add(StringProperty("label", label));
-    properties.add(ObjectFlagProperty<VoidCallback>.has("onTap", onTap));
+    properties
+      ..add(DiagnosticsProperty<bool>("isSelected", isSelected))
+      ..add(StringProperty("label", label))
+      ..add(ObjectFlagProperty<VoidCallback>.has("onTap", onTap));
   }
 }

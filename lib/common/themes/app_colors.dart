@@ -17,23 +17,15 @@ class AppColors {
   // Glassmorphism colors - White overlays for dark background
   static const Color glassBackground = Color(0x1AFFFFFF); // 10% white opacity
   static const Color glassBorderActive = Color(0xB3FFFFFF); // 70% white opacity
-  static const Color glassBorderInactive = Color(
-    0x33FFFFFF,
-  ); // 20% white opacity}
+  static const Color glassBorderInactive = Color(0x33FFFFFF); // 20% white opacity}
 
   // accents, icons, etc.
   static const Color yellow = Color(0xFFFDC700);
   static const Color gold = Color(0xFFFFE680);
 
   // Gradient color lists
-  static const List<Color> gradientPrimary = [
-    Color(0xFFF6339A),
-    Color(0xFFFF6900),
-  ];
-  static const List<Color> gradientSecondary = [
-    Color(0xFF00C950),
-    Color(0xFF2B7FFF),
-  ];
+  static const List<Color> gradientPrimary = [Color(0xFFF6339A), Color(0xFFFF6900)];
+  static const List<Color> gradientSecondary = [Color(0xFF00C950), Color(0xFF2B7FFF)];
   static const List<Color> gradientSurface = [
     Color(0xFF9810FA),
     Color(0xFF155DFC),
@@ -47,14 +39,8 @@ class AppColors {
     Color(0xFF8B5CF6),
     Color(0xFF6D28D9),
   ];
-  static const List<Color> gradientAccentGreen = [
-    Color(0xFF22C55E),
-    Color(0xFF16A34A),
-  ];
-  static const List<Color> gradientRepCount = [
-    Color(0xFF155DFC),
-    Color(0xFF0092B8),
-  ];
+  static const List<Color> gradientAccentGreen = [Color(0xFF22C55E), Color(0xFF16A34A)];
+  static const List<Color> gradientRepCount = [Color(0xFF155DFC), Color(0xFF0092B8)];
 }
 
 class AppGradients {

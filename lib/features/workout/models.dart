@@ -5,8 +5,9 @@ enum WorkoutType {
   submaxVolume("Submax Volume"),
   ladders("Ladders");
 
-  final String name;
   const WorkoutType(this.name);
+
+  final String name;
 }
 
 class WorkoutSet {

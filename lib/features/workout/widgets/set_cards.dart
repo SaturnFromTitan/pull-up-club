@@ -68,9 +68,10 @@ class SetCards extends StatelessWidget {
   @override
   void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(IterableProperty<String>("values", values));
-    properties.add(IntProperty("numExpectedCards", numExpectedCards));
-    properties.add(DiagnosticsProperty<bool>("withContainer", withContainer));
+    properties
+      ..add(IterableProperty<String>("values", values))
+      ..add(IntProperty("numExpectedCards", numExpectedCards))
+      ..add(DiagnosticsProperty<bool>("withContainer", withContainer));
   }
 }
 
@@ -92,10 +93,7 @@ class _SetCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
       boxShadow: defaultBoxShadows,
       child: Center(
-        child: Text(
-          value ?? _placeholderValue,
-          style: AppTypography.headlineSmall,
-        ),
+        child: Text(value ?? _placeholderValue, style: AppTypography.headlineSmall),
       ),
     ),
   );
@@ -103,8 +101,9 @@ class _SetCard extends StatelessWidget {
   @override
   void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(StringProperty("value", value));
-    properties.add(DoubleProperty("width", width));
-    properties.add(DoubleProperty("height", height));
+    properties
+      ..add(StringProperty("value", value))
+      ..add(DoubleProperty("width", width))
+      ..add(DoubleProperty("height", height));
   }
 }

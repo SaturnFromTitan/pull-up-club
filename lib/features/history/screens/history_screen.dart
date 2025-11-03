@@ -88,10 +88,7 @@ class WorkoutHistory extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    workout.workoutType.name,
-                    style: AppTypography.headlineMedium,
-                  ),
+                  Text(workout.workoutType.name, style: AppTypography.headlineMedium),
                   Text(
                     "📅 ${datetimeToString(workout.start)}",
                     style: AppTypography.bodySmall,
@@ -102,9 +99,7 @@ class WorkoutHistory extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text("💪 ${workout.totalReps()} reps"),
-                  Text(
-                    "⏱️ ${formatMinutesSeconds(workout.durationSeconds() ?? 0)}",
-                  ),
+                  Text("⏱️ ${formatMinutesSeconds(workout.durationSeconds() ?? 0)}"),
                 ],
               ),
             ],
@@ -113,10 +108,7 @@ class WorkoutHistory extends StatelessWidget {
           const SizedBox(height: AppSpacing.sm),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
-            child: SetCards(
-              values: getSetCardValues(workout),
-              withContainer: false,
-            ),
+            child: SetCards(values: getSetCardValues(workout), withContainer: false),
           ),
         ],
       ),

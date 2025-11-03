@@ -41,7 +41,9 @@ class _RestScreenState extends State<RestScreen> {
   }
 
   void _safePop() {
-    if (_didPop) return;
+    if (_didPop) {
+      return;
+    }
     _didPop = true;
     Navigator.of(context).pop();
   }
@@ -101,12 +103,13 @@ class _RestTimerSpinnerState extends State<_RestTimerSpinner>
   late final AnimationController _controller;
 
   @override
-  void initState() {
+  Future<void> initState() async {
     super.initState();
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 2_000),
-    )..repeat();
+    );
+    await _controller.repeat();
   }
 
   @override

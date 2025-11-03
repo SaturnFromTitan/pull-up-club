@@ -39,9 +39,9 @@ class _SubmaxVolumeScreenState extends BaseWorkoutState<SubmaxVolumeScreen> {
     final buttons = _getButtons(workoutProvider, appProvider);
 
     final customRepsForm = RepsForm(
-      onValidSubmit: (final reps) {
+      onValidSubmit: (final reps) async {
         _showCustomRepsForm = false;
-        finishSet(
+        await finishSet(
           group: workoutProvider.workout.sets.length + 1,
           completedReps: reps,
           workoutProvider: workoutProvider,
@@ -60,9 +60,8 @@ class _SubmaxVolumeScreenState extends BaseWorkoutState<SubmaxVolumeScreen> {
         : Column(
             children: List<Widget>.generate(
               buttons.length * 2 - 1,
-              (final i) => i.isEven
-                  ? buttons[i ~/ 2]
-                  : const SizedBox(height: AppSpacing.sm),
+              (final i) =>
+                  i.isEven ? buttons[i ~/ 2] : const SizedBox(height: AppSpacing.sm),
             ),
           );
   }
@@ -74,8 +73,8 @@ class _SubmaxVolumeScreenState extends BaseWorkoutState<SubmaxVolumeScreen> {
     final targetReps = getTargetReps();
     final buttons = [
       GradientButton(
-        onPressed: () {
-          finishSet(
+        onPressed: () async {
+          await finishSet(
             group: workoutProvider.workout.sets.length + 1,
             completedReps: targetReps,
             workoutProvider: workoutProvider,
@@ -87,8 +86,8 @@ class _SubmaxVolumeScreenState extends BaseWorkoutState<SubmaxVolumeScreen> {
         gradient: AppGradients.secondary,
       ),
       GradientButton(
-        onPressed: () {
-          finishSet(
+        onPressed: () async {
+          await finishSet(
             group: workoutProvider.workout.sets.length + 1,
             completedReps: targetReps - 1,
             workoutProvider: workoutProvider,
@@ -103,8 +102,8 @@ class _SubmaxVolumeScreenState extends BaseWorkoutState<SubmaxVolumeScreen> {
     if (targetReps >= 2) {
       buttons.add(
         GradientButton(
-          onPressed: () {
-            finishSet(
+          onPressed: () async {
+            await finishSet(
               group: workoutProvider.workout.sets.length + 1,
               completedReps: targetReps - 2,
               workoutProvider: workoutProvider,

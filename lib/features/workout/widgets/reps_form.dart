@@ -30,20 +30,16 @@ class RepsForm extends StatefulWidget {
   @override
   void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(StringProperty("submitText", submitText));
-    properties.add(DiagnosticsProperty<IconData>("submitIcon", submitIcon));
-    properties.add(
-      ObjectFlagProperty<void Function(int reps)>.has(
-        "onValidSubmit",
-        onValidSubmit,
-      ),
-    );
-    properties.add(IntProperty("minValue", minValue));
-    properties.add(StringProperty("cancelText", cancelText));
-    properties.add(DiagnosticsProperty<IconData>("cancelIcon", cancelIcon));
-    properties.add(
-      ObjectFlagProperty<void Function()?>.has("onCancel", onCancel),
-    );
+    properties
+      ..add(StringProperty("submitText", submitText))
+      ..add(DiagnosticsProperty<IconData>("submitIcon", submitIcon))
+      ..add(
+        ObjectFlagProperty<void Function(int reps)>.has("onValidSubmit", onValidSubmit),
+      )
+      ..add(IntProperty("minValue", minValue))
+      ..add(StringProperty("cancelText", cancelText))
+      ..add(DiagnosticsProperty<IconData>("cancelIcon", cancelIcon))
+      ..add(ObjectFlagProperty<void Function()?>.has("onCancel", onCancel));
   }
 }
 
@@ -84,9 +80,7 @@ class _RepsFormState extends State<RepsForm> {
             ),
           ),
           textAlign: TextAlign.center,
-          inputFormatters: [
-            FilteringTextInputFormatter(RegExp("[0-9]"), allow: true),
-          ],
+          inputFormatters: [FilteringTextInputFormatter(RegExp("[0-9]"), allow: true)],
           keyboardType: TextInputType.number,
           onChanged: (_) {
             final currentIsValid = _formKey.currentState?.validate() ?? false;

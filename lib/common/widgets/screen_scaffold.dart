@@ -3,11 +3,7 @@ import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
 
 class ScreenScaffold extends StatelessWidget {
-  const ScreenScaffold({
-    required this.child,
-    super.key,
-    this.bottomNavigationBar,
-  });
+  const ScreenScaffold({required this.child, super.key, this.bottomNavigationBar});
   final Widget child;
   final Widget? bottomNavigationBar;
 

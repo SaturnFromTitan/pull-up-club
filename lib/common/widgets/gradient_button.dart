@@ -37,9 +37,7 @@ class GradientButton extends StatelessWidget {
             const SizedBox(width: AppSpacing.md),
             Text(
               text,
-              style: AppTypography.headlineMedium.copyWith(
-                fontWeight: FontWeight.w500,
-              ),
+              style: AppTypography.headlineMedium.copyWith(fontWeight: FontWeight.w500),
             ),
           ],
         ),
@@ -50,11 +48,10 @@ class GradientButton extends StatelessWidget {
   @override
   void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(StringProperty("text", text));
-    properties.add(
-      ObjectFlagProperty<VoidCallback?>.has("onPressed", onPressed),
-    );
-    properties.add(DiagnosticsProperty<IconData>("icon", icon));
-    properties.add(DiagnosticsProperty<LinearGradient>("gradient", gradient));
+    properties
+      ..add(StringProperty("text", text))
+      ..add(ObjectFlagProperty<VoidCallback?>.has("onPressed", onPressed))
+      ..add(DiagnosticsProperty<IconData>("icon", icon))
+      ..add(DiagnosticsProperty<LinearGradient>("gradient", gradient));
   }
 }

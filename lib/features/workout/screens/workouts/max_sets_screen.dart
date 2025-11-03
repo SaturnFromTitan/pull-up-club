@@ -23,8 +23,8 @@ class _MaxSetsScreenState extends BaseWorkoutState<MaxSetsScreen> {
     final WorkoutProvider workoutProvider,
     final AppProvider appProvider,
   ) => RepsForm(
-    onValidSubmit: (final reps) {
-      finishSet(
+    onValidSubmit: (final reps) async {
+      await finishSet(
         group: workoutProvider.workout.sets.length + 1,
         completedReps: reps,
         workoutProvider: workoutProvider,

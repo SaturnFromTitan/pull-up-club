@@ -8,7 +8,9 @@ class AppProvider extends ChangeNotifier {
   int get tabIndex => _tabIndex;
 
   void setTabIndex(final int value) {
-    if (value == _tabIndex) return;
+    if (value == _tabIndex) {
+      return;
+    }
     _tabIndex = value;
     notifyListeners();
   }

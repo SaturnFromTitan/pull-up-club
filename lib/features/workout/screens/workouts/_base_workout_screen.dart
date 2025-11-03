@@ -36,22 +36,21 @@ abstract class BaseWorkoutState<T extends BaseWorkoutScreen> extends State<T> {
       workoutProvider.workout.sets.length;
 
   bool isLastGroup(final WorkoutProvider workoutProvider) =>
-      getCompletedGroups(workoutProvider) ==
-      workoutProvider.workout.maxGroups - 1;
+      getCompletedGroups(workoutProvider) == workoutProvider.workout.maxGroups - 1;
 
   bool isFinished(final WorkoutProvider workoutProvider) =>
       getCompletedGroups(workoutProvider) == workoutProvider.workout.maxGroups;
 
-  void navigateToSuccess(final WorkoutProvider workoutProvider) {
-    Navigator.of(context).push(
+  Future<void> navigateToSuccess(final WorkoutProvider workoutProvider) async {
+    await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => SuccessScreen(workout: workoutProvider.workout),
       ),
     );
   }
 
-  void navigateToRest(final WorkoutProvider workoutProvider) {
-    Navigator.of(context).push(
+  Future<void> navigateToRest(final WorkoutProvider workoutProvider) async {
+    await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => ChangeNotifierProvider.value(
           value: workoutProvider,
@@ -61,18 +60,16 @@ abstract class BaseWorkoutState<T extends BaseWorkoutScreen> extends State<T> {
     );
   }
 
-  void navigateToHome() {
-    Navigator.of(
-      context,
-    ).push(MaterialPageRoute(builder: (_) => const Shell()));
+  Future<void> navigateToHome() async {
+    await Navigator.of(context).push(MaterialPageRoute(builder: (_) => const Shell()));
   }
 
-  void finishSet({
+  Future<void> finishSet({
     required final int group,
     required final int completedReps,
     required final WorkoutProvider workoutProvider,
     required final AppProvider appProvider,
-  }) {
+  }) async {
     // add set
     final set_ = WorkoutSet(
       group: group,
@@ -84,10 +81,10 @@ abstract class BaseWorkoutState<T extends BaseWorkoutScreen> extends State<T> {
     // navigate
     if (isFinished(workoutProvider)) {
       workoutProvider.finish(appProvider);
-      navigateToSuccess(workoutProvider);
+      await navigateToSuccess(workoutProvider);
     } else {
       workoutProvider.rest(restDurationSeconds);
-      navigateToRest(workoutProvider);
+      await navigateToRest(workoutProvider);
     }
   }
 
@@ -116,8 +113,7 @@ abstract class BaseWorkoutState<T extends BaseWorkoutScreen> extends State<T> {
                 padding: const EdgeInsets.all(AppSpacing.paddingSmall),
                 child: Column(
                   children: [
-                    if (targetReps == null)
-                      const SizedBox(height: AppSpacing.xxxl),
+                    if (targetReps == null) const SizedBox(height: AppSpacing.xxxl),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -135,8 +131,7 @@ abstract class BaseWorkoutState<T extends BaseWorkoutScreen> extends State<T> {
                         ),
                       ],
                     ),
-                    if (targetReps == null)
-                      const SizedBox(height: AppSpacing.xl),
+                    if (targetReps == null) const SizedBox(height: AppSpacing.xl),
                     inputs,
                   ],
                 ),

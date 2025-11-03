@@ -11,7 +11,10 @@ class TotalCard extends StatelessWidget {
     super.key,
     this.color,
     this.gradient,
-  }) : assert((color == null) != (gradient == null));
+  }) : assert(
+         (color == null) != (gradient == null),
+         "You must provide either a color or a gradient.",
+       );
   final String text;
   final String value;
   final String emoji;
@@ -44,10 +47,11 @@ class TotalCard extends StatelessWidget {
   @override
   void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(StringProperty("text", text));
-    properties.add(StringProperty("value", value));
-    properties.add(StringProperty("emoji", emoji));
-    properties.add(ColorProperty("color", color));
-    properties.add(DiagnosticsProperty<LinearGradient?>("gradient", gradient));
+    properties
+      ..add(StringProperty("text", text))
+      ..add(StringProperty("value", value))
+      ..add(StringProperty("emoji", emoji))
+      ..add(ColorProperty("color", color))
+      ..add(DiagnosticsProperty<LinearGradient?>("gradient", gradient));
   }
 }

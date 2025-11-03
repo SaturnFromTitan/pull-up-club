@@ -66,12 +66,14 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
         workoutScreen = const MaxSetsScreen();
       case WorkoutType.submaxVolume:
         final targetReps = await askForTargetReps();
-        if (!mounted || targetReps == null) return;
+        if (!mounted || targetReps == null) {
+          return;
+        }
         workoutScreen = SubmaxVolumeScreen(targetReps: targetReps);
       case WorkoutType.ladders:
         workoutScreen = const LaddersScreen();
     }
-    Navigator.of(context).push(
+    await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => ChangeNotifierProvider(
           create: (_) => WorkoutProvider(workoutType: _selected),
@@ -141,8 +143,7 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
 
             _WorkoutCard(
               title: "Ladders",
-              description:
-                  "5 ladders (1, 2, 3, ... reps) with\n30 seconds rest",
+              description: "5 ladders (1, 2, 3, ... reps) with\n30 seconds rest",
               icon: const Icon(Icons.trending_up, size: _iconSize),
               gradient: AppGradients.accentGreen,
               isSelected: _selected == WorkoutType.ladders,
@@ -245,10 +246,11 @@ class _WorkoutCard extends StatelessWidget {
   @override
   void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(StringProperty("title", title));
-    properties.add(StringProperty("description", description));
-    properties.add(DiagnosticsProperty<bool>("isSelected", isSelected));
-    properties.add(DiagnosticsProperty<LinearGradient>("gradient", gradient));
-    properties.add(ObjectFlagProperty<VoidCallback>.has("onTap", onTap));
+    properties
+      ..add(StringProperty("title", title))
+      ..add(StringProperty("description", description))
+      ..add(DiagnosticsProperty<bool>("isSelected", isSelected))
+      ..add(DiagnosticsProperty<LinearGradient>("gradient", gradient))
+      ..add(ObjectFlagProperty<VoidCallback>.has("onTap", onTap));
   }
 }

@@ -15,7 +15,7 @@ install:
 # run linter and formatter
 lint:
   dart fix --apply
-  dart format --set-exit-if-changed .
+  dart format --set-exit-if-changed --line-length 88 .
   dart analyze
 
 # generate iOS app icons from assets/app_icon.png via flutter_launcher_icons

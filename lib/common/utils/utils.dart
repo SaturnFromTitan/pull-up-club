@@ -20,15 +20,7 @@ List<String> getSetCardValues(final Workout workout) {
 }
 
 String datetimeToString(final DateTime dt) {
-  const weekdayNames = <String>[
-    "Mon",
-    "Tue",
-    "Wed",
-    "Thu",
-    "Fri",
-    "Sat",
-    "Sun",
-  ];
+  const weekdayNames = <String>["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   const monthNames = <String>[
     "Jan",
     "Feb",
@@ -44,8 +36,7 @@ String datetimeToString(final DateTime dt) {
     "Dec",
   ];
 
-  final weekday =
-      weekdayNames[dt.weekday % 7]; // DateTime.weekday 1=Mon ... 7=Sun
+  final weekday = weekdayNames[dt.weekday % 7]; // DateTime.weekday 1=Mon ... 7=Sun
   final month = monthNames[dt.month - 1];
   final day = dt.day.toString().padLeft(2, "0");
   final year = dt.year.toString();
