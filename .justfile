@@ -12,11 +12,9 @@ set shell := ["bash", "-c"]
 install:
   dart pub get
 
-# run linter and formatter
+# run pre-commit linters on all files
 lint:
-  dart fix --apply
-  dart format --set-exit-if-changed --line-length 88 .
-  dart analyze
+  pre-commit run --all-files
 
 # generate iOS app icons from assets/app_icon.png via flutter_launcher_icons
 icons:
