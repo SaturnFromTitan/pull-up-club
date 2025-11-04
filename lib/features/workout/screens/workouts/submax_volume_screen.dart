@@ -39,9 +39,9 @@ class _SubmaxVolumeScreenState extends BaseWorkoutState<SubmaxVolumeScreen> {
     final buttons = _getButtons(workoutProvider, appProvider);
 
     final customRepsForm = RepsForm(
-      onValidSubmit: (final reps) async {
+      onValidSubmit: (final reps) {
         _showCustomRepsForm = false;
-        await finishSet(
+        finishSet(
           group: workoutProvider.workout.sets.length + 1,
           completedReps: reps,
           workoutProvider: workoutProvider,
@@ -73,8 +73,8 @@ class _SubmaxVolumeScreenState extends BaseWorkoutState<SubmaxVolumeScreen> {
     final targetReps = getTargetReps();
     final buttons = [
       GradientButton(
-        onPressed: () async {
-          await finishSet(
+        onPressed: () {
+          finishSet(
             group: workoutProvider.workout.sets.length + 1,
             completedReps: targetReps,
             workoutProvider: workoutProvider,
@@ -86,8 +86,8 @@ class _SubmaxVolumeScreenState extends BaseWorkoutState<SubmaxVolumeScreen> {
         gradient: AppGradients.secondary,
       ),
       GradientButton(
-        onPressed: () async {
-          await finishSet(
+        onPressed: () {
+          finishSet(
             group: workoutProvider.workout.sets.length + 1,
             completedReps: targetReps - 1,
             workoutProvider: workoutProvider,
@@ -102,8 +102,8 @@ class _SubmaxVolumeScreenState extends BaseWorkoutState<SubmaxVolumeScreen> {
     if (targetReps >= 2) {
       buttons.add(
         GradientButton(
-          onPressed: () async {
-            await finishSet(
+          onPressed: () {
+            finishSet(
               group: workoutProvider.workout.sets.length + 1,
               completedReps: targetReps - 2,
               workoutProvider: workoutProvider,

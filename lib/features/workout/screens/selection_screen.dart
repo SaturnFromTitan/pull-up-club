@@ -1,3 +1,5 @@
+import "dart:async";
+
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
@@ -73,11 +75,13 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
       case WorkoutType.ladders:
         workoutScreen = const LaddersScreen();
     }
-    await Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => ChangeNotifierProvider(
-          create: (_) => WorkoutProvider(workoutType: _selected),
-          child: workoutScreen,
+    unawaited(
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => ChangeNotifierProvider(
+            create: (_) => WorkoutProvider(workoutType: _selected),
+            child: workoutScreen,
+          ),
         ),
       ),
     );

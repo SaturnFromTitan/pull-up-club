@@ -1,9 +1,10 @@
+import "dart:async";
+
 import "package:flutter/cupertino.dart";
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:pull_up_club/common/providers/app_provider.dart";
-import "package:pull_up_club/common/shell_screen.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
 import "package:pull_up_club/common/themes/app_typography.dart";
@@ -41,35 +42,35 @@ abstract class BaseWorkoutState<T extends BaseWorkoutScreen> extends State<T> {
   bool isFinished(final WorkoutProvider workoutProvider) =>
       getCompletedGroups(workoutProvider) == workoutProvider.workout.maxGroups;
 
-  Future<void> navigateToSuccess(final WorkoutProvider workoutProvider) async {
-    await Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => SuccessScreen(workout: workoutProvider.workout),
-      ),
-    );
-  }
-
-  Future<void> navigateToRest(final WorkoutProvider workoutProvider) async {
-    await Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => ChangeNotifierProvider.value(
-          value: workoutProvider,
-          child: const RestScreen(),
+  void navigateToSuccess(final WorkoutProvider workoutProvider) {
+    unawaited(
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => SuccessScreen(workout: workoutProvider.workout),
         ),
       ),
     );
   }
 
-  Future<void> navigateToHome() async {
-    await Navigator.of(context).push(MaterialPageRoute(builder: (_) => const Shell()));
+  void navigateToRest(final WorkoutProvider workoutProvider) {
+    unawaited(
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => ChangeNotifierProvider.value(
+            value: workoutProvider,
+            child: const RestScreen(),
+          ),
+        ),
+      ),
+    );
   }
 
-  Future<void> finishSet({
+  void finishSet({
     required final int group,
     required final int completedReps,
     required final WorkoutProvider workoutProvider,
     required final AppProvider appProvider,
-  }) async {
+  }) {
     // add set
     final set_ = WorkoutSet(
       group: group,
@@ -81,10 +82,10 @@ abstract class BaseWorkoutState<T extends BaseWorkoutScreen> extends State<T> {
     // navigate
     if (isFinished(workoutProvider)) {
       workoutProvider.finish(appProvider);
-      await navigateToSuccess(workoutProvider);
+      navigateToSuccess(workoutProvider);
     } else {
       workoutProvider.rest(restDurationSeconds);
-      await navigateToRest(workoutProvider);
+      navigateToRest(workoutProvider);
     }
   }
 

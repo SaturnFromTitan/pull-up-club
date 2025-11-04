@@ -35,8 +35,8 @@ class _LaddersState extends BaseWorkoutState<LaddersScreen> {
   ) {
     final buttons = [
       GradientButton(
-        onPressed: () async {
-          await finishSet(
+        onPressed: () {
+          finishSet(
             group: _completedGroups + 1,
             completedReps: getTargetReps(),
             workoutProvider: workoutProvider,
@@ -49,11 +49,11 @@ class _LaddersState extends BaseWorkoutState<LaddersScreen> {
         gradient: AppGradients.accentGreen,
       ),
       GradientButton(
-        onPressed: () async {
+        onPressed: () {
           // have to increment _completedGroups before calling finishSet
           // so that isFinished() is evaluated correctly
           _completedGroups++;
-          await finishSet(
+          finishSet(
             group: _completedGroups,
             completedReps: getTargetReps(),
             workoutProvider: workoutProvider,
@@ -79,11 +79,11 @@ class _LaddersState extends BaseWorkoutState<LaddersScreen> {
       ),
     ];
     final customRepsForm = RepsForm(
-      onValidSubmit: (final reps) async {
+      onValidSubmit: (final reps) {
         // have to increment _completedGroups before calling finishSet
         // so that isFinished() is evaluated correctly
         _completedGroups++;
-        await finishSet(
+        finishSet(
           group: _completedGroups,
           completedReps: reps,
           workoutProvider: workoutProvider,

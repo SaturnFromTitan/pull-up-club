@@ -22,7 +22,7 @@ class RepsForm extends StatefulWidget {
   final int minValue;
   final String cancelText;
   final IconData cancelIcon;
-  final void Function()? onCancel;
+  final VoidCallback? onCancel;
 
   @override
   State<RepsForm> createState() => _RepsFormState();
@@ -39,7 +39,7 @@ class RepsForm extends StatefulWidget {
       ..add(IntProperty("minValue", minValue))
       ..add(StringProperty("cancelText", cancelText))
       ..add(DiagnosticsProperty<IconData>("cancelIcon", cancelIcon))
-      ..add(ObjectFlagProperty<void Function()?>.has("onCancel", onCancel));
+      ..add(ObjectFlagProperty<VoidCallback?>.has("onCancel", onCancel));
   }
 }
 
