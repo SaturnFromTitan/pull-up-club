@@ -1,3 +1,4 @@
+import "dart:async";
 import "dart:math" as math;
 
 import "package:flutter/foundation.dart";
@@ -26,7 +27,7 @@ class _AnimatedTrophyState extends State<AnimatedTrophy> with TickerProviderStat
   late final Animation<double> _glowOpacity;
 
   @override
-  Future<void> initState() async {
+  void initState() {
     super.initState();
     _introController = AnimationController(
       vsync: this,
@@ -48,11 +49,11 @@ class _AnimatedTrophyState extends State<AnimatedTrophy> with TickerProviderStat
       curve: const Interval(0.2, 1, curve: Curves.easeOut),
     );
 
-    final sparkleController = AnimationController(
+    _sparkleController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1600),
     );
-    await sparkleController.repeat(reverse: true);
+    unawaited(_sparkleController.repeat(reverse: true));
 
     // Kick off intro animation on first frame.
     WidgetsBinding.instance.addPostFrameCallback((final _) async {

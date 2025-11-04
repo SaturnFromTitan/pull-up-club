@@ -1,3 +1,5 @@
+import "dart:async";
+
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
@@ -103,13 +105,13 @@ class _RestTimerSpinnerState extends State<_RestTimerSpinner>
   late final AnimationController _controller;
 
   @override
-  Future<void> initState() async {
+  void initState() {
     super.initState();
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 2_000),
     );
-    await _controller.repeat();
+    unawaited(_controller.repeat());
   }
 
   @override
