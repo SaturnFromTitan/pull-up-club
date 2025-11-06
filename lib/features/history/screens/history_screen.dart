@@ -15,7 +15,12 @@ class HistoryScreen extends StatelessWidget {
 
   @override
   Widget build(final BuildContext context) {
-    final appProvider = context.read<AppProvider>();
+    final appProvider = context.watch<AppProvider>();
+
+    if (appProvider.isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
     final workouts = appProvider.completedWorkouts.reversed.toList();
     final numWorkouts = workouts.length;
     final totalReps = workouts.fold(0, (final t, final w) => t + w.totalReps());
@@ -71,6 +76,44 @@ class WorkoutHistory extends StatelessWidget {
   const WorkoutHistory({required this.workout, super.key});
   final Workout workout;
 
+  Future<void> _deleteWorkout(final BuildContext context) async {
+    final appProvider = context.read<AppProvider>();
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (final context) => AlertDialog(
+        title: const Text("Delete Workout"),
+        content: const Text("Are you sure you want to delete this workout?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text("Delete", style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed ?? false) {
+      try {
+        await appProvider.deleteWorkout(workout);
+        if (context.mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text("Workout deleted")));
+        }
+      } on Exception catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text("Error deleting workout: $e")));
+        }
+      }
+    }
+  }
+
   @override
   Widget build(final BuildContext context) => SizedBox(
     width: double.infinity,
@@ -95,11 +138,23 @@ class WorkoutHistory extends StatelessWidget {
                   ),
                 ],
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
+              Row(
                 children: [
-                  Text("💪 ${workout.totalReps()} reps"),
-                  Text("⏱️ ${formatMinutesSeconds(workout.durationSeconds() ?? 0)}"),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text("💪 ${workout.totalReps()} reps"),
+                      Text(
+                        "⏱️ ${formatMinutesSeconds(workout.durationSeconds() ?? 0)}",
+                      ),
+                    ],
+                  ),
+                  const SizedBox(width: AppSpacing.sm),
+                  IconButton(
+                    onPressed: () => _deleteWorkout(context),
+                    icon: const Icon(Icons.delete_outline, color: Colors.red),
+                    tooltip: "Delete workout",
+                  ),
                 ],
               ),
             ],

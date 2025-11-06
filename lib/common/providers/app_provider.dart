@@ -1,11 +1,56 @@
+import "dart:async";
+
 import "package:flutter/material.dart";
+import "package:pull_up_club/common/services/workout_database.dart";
 import "package:pull_up_club/features/workout/models.dart";
 
 class AppProvider extends ChangeNotifier {
+  AppProvider() {
+    unawaited(_loadWorkouts());
+  }
   List<Workout> completedWorkouts = <Workout>[];
   int _tabIndex = 0;
+  bool _isLoading = true;
 
   int get tabIndex => _tabIndex;
+  bool get isLoading => _isLoading;
+
+  Future<void> _loadWorkouts() async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      completedWorkouts = await WorkoutDatabase.instance.getAllWorkouts();
+    } on Exception catch (e) {
+      // Handle error - for now, just log it
+      debugPrint("Error loading workouts: $e");
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> addWorkout(final Workout workout) async {
+    try {
+      await WorkoutDatabase.instance.insertWorkout(workout);
+      completedWorkouts.add(workout);
+      notifyListeners();
+    } on Exception catch (e) {
+      debugPrint("Error saving workout: $e");
+      rethrow;
+    }
+  }
+
+  Future<void> deleteWorkout(final Workout workout) async {
+    try {
+      await WorkoutDatabase.instance.deleteWorkout(workout.uuid);
+      completedWorkouts.remove(workout);
+      notifyListeners();
+    } on Exception catch (e) {
+      debugPrint("Error deleting workout: $e");
+      rethrow;
+    }
+  }
 
   void setTabIndex(final int value) {
     if (value == _tabIndex) {

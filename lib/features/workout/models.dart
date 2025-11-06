@@ -25,11 +25,11 @@ class Workout {
   Workout({
     required this.workoutType,
     required this.maxGroups,
-    final Uuid? id,
+    final String? id,
     final DateTime? start,
-  }) : uuid = id ?? const Uuid(),
+  }) : uuid = id ?? const Uuid().v4(),
        start = start ?? DateTime.now().toUtc();
-  final Uuid uuid;
+  final String uuid;
   final WorkoutType workoutType;
   final int maxGroups;
   final DateTime start;
