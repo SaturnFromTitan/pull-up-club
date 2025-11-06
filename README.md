@@ -40,3 +40,25 @@ bundle exec fastlane match appstore \
       --git_url "${MATCH_GIT_URL:-git@github.com:SaturnFromTitan/pull-up-club-certificates.git}" \
       --app_identifier "${APP_BUNDLE_ID:-com.saturnfromtitan.pullupclub}"
 ```
+
+## Local Setup
+
+### Prerequisites
+
+The following prerequisites have to be installed:
+
+- [just](https://github.com/casey/just#installation) (Command Runner)
+- [pre-commit](https://pre-commit.com/#installation) (git hooks for linters)
+- [Flutter SDK including Dart](https://docs.flutter.dev/get-started/quick)
+
+With that, you cna now install the dependencies using
+
+```sh
+just install
+```
+
+and **optionally** you can also install the pre-commit hooks via
+
+```sh
+pre-commit install
+```
