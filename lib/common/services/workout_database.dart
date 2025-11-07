@@ -1,6 +1,7 @@
 import "dart:async";
 
 import "package:logging/logging.dart";
+import "package:path/path.dart" as path;
 import "package:pull_up_club/features/workout/models.dart";
 import "package:sqflite/sqflite.dart";
 
@@ -11,20 +12,14 @@ class WorkoutDatabase {
   static Database? _database;
 
   Future<Database> get database async {
-    if (_database != null) {
-      return _database!;
-    }
-    _database = await _initDB("workouts.db");
+    _database ??= await _initDB("workouts.db");
     return _database!;
   }
 
   Future<Database> _initDB(final String filePath) async {
-    final dbPath = await getDatabasesPath();
-    final path = "$dbPath/$filePath";
-
-    _logger.fine("Database location: $path");
-
-    return openDatabase(path, version: 1, onCreate: _createDB);
+    final dbPath = path.join(await getDatabasesPath(), filePath);
+    _logger.fine("Database location: $dbPath");
+    return openDatabase(dbPath, version: 1, onCreate: _createDB);
   }
 
   Future<void> _createDB(final Database db, final int version) async {
