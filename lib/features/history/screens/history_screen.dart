@@ -80,7 +80,7 @@ class _DismissablePastWorkout extends StatelessWidget {
 
   final Workout workout;
   Future<void> _onDelete(final BuildContext context) async {
-    final appProvider = context.watch<AppProvider>();
+    final appProvider = context.read<AppProvider>();
 
     try {
       await appProvider.deleteWorkout(workout);
