@@ -51,7 +51,6 @@ linter:
     - do_not_use_environment
     - document_ignores
     - eol_at_end_of_file
-    - flutter_style_todos
     - implicit_reopen
     - invalid_case_patterns
     - join_return_with_assignment

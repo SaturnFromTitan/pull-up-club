@@ -1,5 +1,6 @@
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
+import "package:logging/logging.dart";
 import "package:provider/provider.dart";
 import "package:pull_up_club/common/providers/app_provider.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
@@ -76,39 +77,39 @@ class WorkoutHistory extends StatelessWidget {
   const WorkoutHistory({required this.workout, super.key});
   final Workout workout;
 
+  static final Logger _logger = Logger("WorkoutHistory");
+
   Future<void> _deleteWorkout(final BuildContext context) async {
     final appProvider = context.read<AppProvider>();
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (final context) => AlertDialog(
-        title: const Text("Delete Workout"),
-        content: const Text("Are you sure you want to delete this workout?"),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text("Cancel"),
+    final confirmed =
+        await showDialog<bool>(
+          context: context,
+          builder: (final context) => AlertDialog(
+            title: const Text("Delete Workout"),
+            content: const Text("Are you sure you want to delete this workout?"),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text("Cancel"),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text("Delete", style: TextStyle(color: Colors.red)),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text("Delete", style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
-    );
+        ) ??
+        false;
 
-    if (confirmed ?? false) {
+    if (confirmed) {
       try {
         await appProvider.deleteWorkout(workout);
-        if (context.mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text("Workout deleted")));
-        }
       } on Exception catch (e) {
+        final message = "Error deleting workout: $e";
         if (context.mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text("Error deleting workout: $e")));
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+        } else {
+          _logger.severe(message);
         }
       }
     }
