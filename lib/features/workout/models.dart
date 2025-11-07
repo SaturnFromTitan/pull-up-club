@@ -1,5 +1,3 @@
-import "package:uuid/uuid.dart";
-
 enum WorkoutType {
   maxSets("Max Sets"),
   submaxVolume("Submax Volume"),
@@ -25,11 +23,10 @@ class Workout {
   Workout({
     required this.workoutType,
     required this.maxGroups,
-    final Uuid? id,
+    this.id,
     final DateTime? start,
-  }) : uuid = id ?? const Uuid(),
-       start = start ?? DateTime.now().toUtc();
-  final Uuid uuid;
+  }) : start = start ?? DateTime.now().toUtc();
+  final int? id;
   final WorkoutType workoutType;
   final int maxGroups;
   final DateTime start;

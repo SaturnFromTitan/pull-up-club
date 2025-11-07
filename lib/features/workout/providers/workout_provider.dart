@@ -59,9 +59,9 @@ class WorkoutProvider extends ChangeNotifier {
 
   bool isResting() => _restTimer?.isActive ?? false;
 
-  void finish(final AppProvider appProvider) {
+  Future<void> finish(final AppProvider appProvider) async {
     _workout.finish();
-    appProvider.completedWorkouts.add(_workout);
+    await appProvider.addWorkout(_workout);
   }
 
   @override

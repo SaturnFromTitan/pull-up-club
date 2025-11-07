@@ -40,6 +40,8 @@ String datetimeToString(final DateTime dt) {
   final month = monthNames[dt.month - 1];
   final day = dt.day.toString().padLeft(2, "0");
   final year = dt.year.toString();
+  final hour = dt.hour.toString().padLeft(2, "0");
+  final minute = dt.minute.toString().padLeft(2, "0");
 
-  return "$weekday, $month $day $year";
+  return "$weekday, $month $day $year $hour:$minute";
 }

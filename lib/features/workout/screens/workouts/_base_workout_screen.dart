@@ -81,7 +81,9 @@ abstract class BaseWorkoutState<T extends BaseWorkoutScreen> extends State<T> {
 
     // navigate
     if (isFinished(workoutProvider)) {
-      workoutProvider.finish(appProvider);
+      // can't await here as `finishSet` is meant to be called synchronously
+      // on button press
+      unawaited(workoutProvider.finish(appProvider));
       navigateToSuccess(workoutProvider);
     } else {
       workoutProvider.rest(restDurationSeconds);
