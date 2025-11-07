@@ -91,39 +91,32 @@ class WorkoutDatabase {
   Future<List<Workout>> getAllWorkouts() async {
     final db = await database;
 
-    // Get all workouts
-    final workoutMaps = await db.query(TableNames.workouts.name, orderBy: "start ASC");
+    // Get db data
+    final workoutMaps = await db.query(TableNames.workouts.name, orderBy: "id ASC");
+    final setMaps = await db.query(TableNames.workoutSets.name, orderBy: "id ASC");
 
+    // Group sets by workout_id for quick lookup
+    final setsByWorkoutId = <int, List<WorkoutSet>>{};
+    for (final setMap in setMaps) {
+      final workoutId = setMap["workout_id"]! as int;
+      final workoutSet = WorkoutSet(
+        group: setMap["group_number"]! as int,
+        targetReps: setMap["target_reps"] as int?,
+        completedReps: setMap["completed_reps"]! as int,
+      );
+      setsByWorkoutId.putIfAbsent(workoutId, () => <WorkoutSet>[]).add(workoutSet);
+    }
+
+    // Build workout objects with their associated sets
     final workouts = <Workout>[];
-
     for (final workoutMap in workoutMaps) {
       final workoutId = workoutMap["id"]! as int;
 
-      // Get sets for this workout
-      final setMaps = await db.query(
-        TableNames.workoutSets.name,
-        where: "workout_id = ?",
-        whereArgs: [workoutId],
-        orderBy: "group_number ASC",
-      );
-
-      final sets = setMaps
-          .map(
-            (final setMap) => WorkoutSet(
-              group: setMap["group_number"]! as int,
-              targetReps: setMap["target_reps"] as int?,
-              completedReps: setMap["completed_reps"]! as int,
-            ),
-          )
-          .toList();
-
-      // Parse workout type
       final workoutTypeName = workoutMap["workout_type"]! as String;
       final workoutType = WorkoutType.values.firstWhere(
         (final type) => type.name == workoutTypeName,
       );
 
-      // Create workout
       final workout = Workout(
         id: workoutId,
         workoutType: workoutType,
@@ -131,14 +124,12 @@ class WorkoutDatabase {
         start: DateTime.parse(workoutMap["start"]! as String),
       );
 
-      // Set end time if available
       final endStr = workoutMap["end"] as String?;
       if (endStr != null) {
         workout.end = DateTime.parse(endStr);
       }
 
-      // Set sets
-      workout.sets = sets;
+      workout.sets = setsByWorkoutId[workoutId] ?? <WorkoutSet>[];
 
       workouts.add(workout);
     }
