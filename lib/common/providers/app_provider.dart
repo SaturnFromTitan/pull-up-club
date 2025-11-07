@@ -8,19 +8,20 @@ class AppProvider extends ChangeNotifier {
   AppProvider() {
     unawaited(_loadWorkouts());
   }
-  List<Workout> completedWorkouts = <Workout>[];
   int _tabIndex = 0;
   bool _isLoading = true;
+  List<Workout> _completedWorkouts = <Workout>[];
 
   int get tabIndex => _tabIndex;
   bool get isLoading => _isLoading;
+  List<Workout> get completedWorkouts => _completedWorkouts;
 
   Future<void> _loadWorkouts() async {
     _isLoading = true;
     notifyListeners();
 
     try {
-      completedWorkouts = await WorkoutDatabase.instance.getAllWorkouts();
+      _completedWorkouts = await WorkoutDatabase.instance.getAllWorkouts();
     } on Exception catch (e) {
       // Handle error - for now, just log it
       debugPrint("Error loading workouts: $e");
@@ -33,7 +34,7 @@ class AppProvider extends ChangeNotifier {
   Future<void> addWorkout(final Workout workout) async {
     try {
       final savedWorkout = await WorkoutDatabase.instance.insertWorkout(workout);
-      completedWorkouts.add(savedWorkout);
+      _completedWorkouts.add(savedWorkout);
       notifyListeners();
     } on Exception catch (e) {
       debugPrint("Error saving workout: $e");
@@ -47,7 +48,7 @@ class AppProvider extends ChangeNotifier {
         throw Exception("Cannot delete workout without ID");
       }
       await WorkoutDatabase.instance.deleteWorkout(workout.id!);
-      completedWorkouts.remove(workout);
+      _completedWorkouts.remove(workout);
       notifyListeners();
     } on Exception catch (e) {
       debugPrint("Error deleting workout: $e");
