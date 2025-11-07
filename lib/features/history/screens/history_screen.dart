@@ -14,6 +14,8 @@ import "package:pull_up_club/features/workout/widgets/set_cards.dart";
 class HistoryScreen extends StatelessWidget {
   const HistoryScreen({super.key});
 
+  static final Logger _logger = Logger("HistoryScreen");
+
   @override
   Widget build(final BuildContext context) {
     final appProvider = context.watch<AppProvider>();
@@ -61,7 +63,7 @@ class HistoryScreen extends StatelessWidget {
             children: [
               ...[
                 for (final workout in workouts) ...[
-                  WorkoutHistory(workout: workout),
+                  PastWorkout(workout: workout),
                   const SizedBox(height: AppSpacing.sm),
                 ],
               ],
@@ -73,11 +75,9 @@ class HistoryScreen extends StatelessWidget {
   }
 }
 
-class WorkoutHistory extends StatelessWidget {
-  const WorkoutHistory({required this.workout, super.key});
+class PastWorkout extends StatelessWidget {
+  const PastWorkout({required this.workout, super.key});
   final Workout workout;
-
-  static final Logger _logger = Logger("WorkoutHistory");
 
   Future<void> _deleteWorkout(final BuildContext context) async {
     final appProvider = context.read<AppProvider>();
@@ -109,65 +109,51 @@ class WorkoutHistory extends StatelessWidget {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
         } else {
-          _logger.severe(message);
+          HistoryScreen._logger.severe(message);
         }
       }
     }
   }
 
   @override
-  Widget build(final BuildContext context) => SizedBox(
+  Widget build(final BuildContext context) => Container(
+    decoration: BoxDecoration(
+      color: AppColors.glassBackground,
+      borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
+    ),
     width: double.infinity,
-    child: Container(
-      decoration: BoxDecoration(
-        color: AppColors.glassBackground,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
-      ),
-      padding: const EdgeInsets.all(AppSpacing.paddingSmall),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(workout.workoutType.name, style: AppTypography.headlineMedium),
-                  Text(
-                    "📅 ${datetimeToString(workout.start)}",
-                    style: AppTypography.bodySmall,
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text("💪 ${workout.totalReps()} reps"),
-                      Text(
-                        "⏱️ ${formatMinutesSeconds(workout.durationSeconds() ?? 0)}",
-                      ),
-                    ],
-                  ),
-                  const SizedBox(width: AppSpacing.sm),
-                  IconButton(
-                    onPressed: () => _deleteWorkout(context),
-                    icon: const Icon(Icons.delete_outline, color: Colors.red),
-                    tooltip: "Delete workout",
-                  ),
-                ],
-              ),
-            ],
-          ),
+    padding: const EdgeInsets.all(AppSpacing.paddingSmall),
+    child: Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(workout.workoutType.name, style: AppTypography.headlineMedium),
+                Text(
+                  "📅 ${datetimeToString(workout.start)}",
+                  style: AppTypography.bodySmall,
+                ),
+              ],
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text("💪 ${workout.totalReps()} reps"),
+                Text("⏱️ ${formatMinutesSeconds(workout.durationSeconds() ?? 0)}"),
+              ],
+            ),
+          ],
+        ),
 
-          const SizedBox(height: AppSpacing.sm),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
-            child: SetCards(values: getSetCardValues(workout), withContainer: false),
-          ),
-        ],
-      ),
+        const SizedBox(height: AppSpacing.md),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+          child: SetCards(values: getSetCardValues(workout), withContainer: false),
+        ),
+      ],
     ),
   );
 
