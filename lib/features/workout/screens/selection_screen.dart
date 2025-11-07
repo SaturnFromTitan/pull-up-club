@@ -173,7 +173,6 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
 
 class _WorkoutCard extends StatelessWidget {
   const _WorkoutCard({
-    // super.key,
     required this.title,
     required this.description,
     required this.icon,
@@ -205,44 +204,42 @@ class _WorkoutCard extends StatelessWidget {
               : AppColors.glassBorderInactive,
         ),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.paddingSmall),
-        child: Row(
-          children: [
-            GradientSurface(
-              width: _iconSize,
-              height: _iconSize,
-              gradient: gradient,
-              borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
-              boxShadow: defaultBoxShadows,
-              child: Center(child: icon),
-            ),
+      padding: const EdgeInsets.all(AppSpacing.paddingSmall),
+      child: Row(
+        children: [
+          GradientSurface(
+            width: _iconSize,
+            height: _iconSize,
+            gradient: gradient,
+            borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
+            boxShadow: defaultBoxShadows,
+            child: Center(child: icon),
+          ),
 
-            const SizedBox(width: AppSpacing.md),
+          const SizedBox(width: AppSpacing.md),
 
-            // Text content
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(title, style: AppTypography.headlineMedium),
-                  const SizedBox(height: AppSpacing.xs),
-                  Flexible(
-                    child: Text(
-                      description,
-                      style: AppTypography.headlineSmall.copyWith(
-                        color: AppColors.onColorSecondary,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
+          // Text content
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(title, style: AppTypography.headlineMedium),
+                const SizedBox(height: AppSpacing.xs),
+                Flexible(
+                  child: Text(
+                    description,
+                    style: AppTypography.headlineSmall.copyWith(
+                      color: AppColors.onColorSecondary,
                     ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     ),
   );
