@@ -1,80 +1,73 @@
-import "dart:async";
-
+import "package:drift/drift.dart";
+import "package:drift_flutter/drift_flutter.dart";
 import "package:logging/logging.dart";
-import "package:path/path.dart" as path;
+import "package:path_provider/path_provider.dart";
 import "package:pull_up_club/features/workout/models.dart";
-import "package:sqflite/sqflite.dart";
 
-enum TableNames {
-  workouts("workouts"),
-  workoutSets("workout_sets");
+part "workout_database.g.dart";
 
-  const TableNames(this.name);
-
-  final String name;
+@DataClassName("DBWorkout")
+class Workouts extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get workoutType => text()();
+  IntColumn get maxGroups => integer()();
+  DateTimeColumn get start => dateTime()();
+  DateTimeColumn get end => dateTime().nullable()();
 }
 
-class WorkoutDatabase {
-  WorkoutDatabase._init();
+@DataClassName("DBWorkoutSet")
+class WorkoutSets extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get workoutId =>
+      integer().references(Workouts, #id, onDelete: KeyAction.cascade)();
+  IntColumn get groupNumber => integer()();
+  IntColumn get targetReps => integer().nullable()();
+  IntColumn get completedReps => integer()();
+}
+
+@DriftDatabase(tables: [Workouts, WorkoutSets])
+class WorkoutDatabase extends _$WorkoutDatabase {
+  WorkoutDatabase._init() : super(_openConnection());
   static final WorkoutDatabase instance = WorkoutDatabase._init();
   static final Logger _logger = Logger("WorkoutDatabase");
-  static Database? _database;
 
-  Future<Database> get database async {
-    _database ??= await _initDB("workouts.db");
-    return _database!;
-  }
+  @override
+  int get schemaVersion => 1;
 
-  Future<Database> _initDB(final String filePath) async {
-    final dbPath = path.join(await getDatabasesPath(), filePath);
-    _logger.fine("Database location: $dbPath");
-    return openDatabase(dbPath, version: 1, onCreate: _createDB);
-  }
-
-  Future<void> _createDB(final Database db, final int version) async {
-    // Create workouts table
-    await db.execute("""
-      CREATE TABLE ${TableNames.workouts.name} (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        workout_type TEXT NOT NULL,
-        max_groups INTEGER NOT NULL,
-        start TEXT NOT NULL,
-        end TEXT
-      )
-    """);
-
-    // Create workout_sets table
-    await db.execute("""
-      CREATE TABLE ${TableNames.workoutSets.name} (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        workout_id INTEGER NOT NULL,
-        group_number INTEGER NOT NULL,
-        target_reps INTEGER,
-        completed_reps INTEGER NOT NULL,
-        FOREIGN KEY (workout_id) REFERENCES ${TableNames.workouts.name} (id) ON DELETE CASCADE
-      )
-    """);
-  }
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    beforeOpen: (final details) async {
+      // Enable foreign key constraints in SQLite
+      await customStatement("PRAGMA foreign_keys = ON");
+    },
+    onCreate: (final m) async {
+      await m.createAll();
+      _logger.fine("Database created");
+    },
+  );
 
   Future<Workout> insertWorkout(final Workout workout) async {
-    final db = await database;
-
-    // Insert workout
-    final workoutId = await db.insert(TableNames.workouts.name, {
-      "workout_type": workout.workoutType.name,
-      "max_groups": workout.maxGroups,
-      "start": workout.start.toIso8601String(),
-      "end": workout.end?.toIso8601String(),
-    });
+    final workoutId = await into(workouts).insert(
+      WorkoutsCompanion.insert(
+        workoutType: workout.workoutType.name,
+        maxGroups: workout.maxGroups,
+        start: workout.start,
+        end: workout.end == null ? const Value.absent() : Value(workout.end),
+      ),
+    );
 
     // Insert sets
     for (final set_ in workout.sets) {
-      await db.insert(TableNames.workoutSets.name, {
-        "workout_id": workoutId,
-        "group_number": set_.group,
-        "target_reps": set_.targetReps,
-        "completed_reps": set_.completedReps,
-      });
+      await into(workoutSets).insert(
+        WorkoutSetsCompanion.insert(
+          workoutId: workoutId,
+          groupNumber: set_.group,
+          targetReps: set_.targetReps == null
+              ? const Value.absent()
+              : Value(set_.targetReps),
+          completedReps: set_.completedReps,
+        ),
+      );
     }
 
     // Return workout with the generated ID
@@ -89,62 +82,61 @@ class WorkoutDatabase {
   }
 
   Future<List<Workout>> getAllWorkouts() async {
-    final db = await database;
-
-    // Get db data
-    final workoutMaps = await db.query(TableNames.workouts.name, orderBy: "id ASC");
-    final setMaps = await db.query(TableNames.workoutSets.name, orderBy: "id ASC");
+    final workoutRows = await (select(
+      workouts,
+    )..orderBy([(final t) => OrderingTerm.asc(t.id)])).get();
+    final setRows = await (select(
+      workoutSets,
+    )..orderBy([(final t) => OrderingTerm.asc(t.id)])).get();
 
     // Group sets by workout_id for quick lookup
     final setsByWorkoutId = <int, List<WorkoutSet>>{};
-    for (final setMap in setMaps) {
-      final workoutId = setMap["workout_id"]! as int;
+    for (final setRow in setRows) {
       final workoutSet = WorkoutSet(
-        group: setMap["group_number"]! as int,
-        targetReps: setMap["target_reps"] as int?,
-        completedReps: setMap["completed_reps"]! as int,
+        group: setRow.groupNumber,
+        targetReps: setRow.targetReps,
+        completedReps: setRow.completedReps,
       );
-      setsByWorkoutId.putIfAbsent(workoutId, () => <WorkoutSet>[]).add(workoutSet);
+      setsByWorkoutId
+          .putIfAbsent(setRow.workoutId, () => <WorkoutSet>[])
+          .add(workoutSet);
     }
 
     // Build workout objects with their associated sets
-    final workouts = <Workout>[];
-    for (final workoutMap in workoutMaps) {
-      final workoutId = workoutMap["id"]! as int;
-
-      final workoutTypeName = workoutMap["workout_type"]! as String;
+    final workoutList = <Workout>[];
+    for (final workoutRow in workoutRows) {
       final workoutType = WorkoutType.values.firstWhere(
-        (final type) => type.name == workoutTypeName,
+        (final type) => type.name == workoutRow.workoutType,
       );
 
       final workout = Workout(
-        id: workoutId,
+        id: workoutRow.id,
         workoutType: workoutType,
-        maxGroups: workoutMap["max_groups"]! as int,
-        start: DateTime.parse(workoutMap["start"]! as String),
+        maxGroups: workoutRow.maxGroups,
+        start: workoutRow.start,
       );
 
-      final endStr = workoutMap["end"] as String?;
-      if (endStr != null) {
-        workout.end = DateTime.parse(endStr);
+      if (workoutRow.end != null) {
+        workout.end = workoutRow.end;
       }
 
-      workout.sets = setsByWorkoutId[workoutId] ?? <WorkoutSet>[];
+      workout.sets = setsByWorkoutId[workoutRow.id] ?? <WorkoutSet>[];
 
-      workouts.add(workout);
+      workoutList.add(workout);
     }
 
-    return workouts;
+    return workoutList;
   }
 
   Future<void> deleteWorkout(final int workoutId) async {
-    final db = await database;
-    await db.delete(TableNames.workouts.name, where: "id = ?", whereArgs: [workoutId]);
+    await (delete(workouts)..where((final t) => t.id.equals(workoutId))).go();
     // Sets will be deleted automatically due to CASCADE
   }
-
-  Future<void> close() async {
-    final db = await database;
-    await db.close();
-  }
 }
+
+LazyDatabase _openConnection() => LazyDatabase(() async {
+  final dbFolder = await getApplicationDocumentsDirectory();
+  const dbFileName = "workouts.db";
+  WorkoutDatabase._logger.fine("Database location: ${dbFolder.path}/$dbFileName");
+  return driftDatabase(name: dbFileName);
+});

@@ -12,6 +12,10 @@ set shell := ["bash", "-c"]
 install:
   dart pub get
 
+# watches for code changes and generates code with incremental rebuilds
+generate:
+  dart run build_runner watch
+
 # run pre-commit linters on all files
 lint:
   pre-commit run --all-files
