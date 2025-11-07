@@ -32,8 +32,8 @@ class AppProvider extends ChangeNotifier {
 
   Future<void> addWorkout(final Workout workout) async {
     try {
-      await WorkoutDatabase.instance.insertWorkout(workout);
-      completedWorkouts.add(workout);
+      final savedWorkout = await WorkoutDatabase.instance.insertWorkout(workout);
+      completedWorkouts.add(savedWorkout);
       notifyListeners();
     } on Exception catch (e) {
       debugPrint("Error saving workout: $e");
@@ -43,7 +43,10 @@ class AppProvider extends ChangeNotifier {
 
   Future<void> deleteWorkout(final Workout workout) async {
     try {
-      await WorkoutDatabase.instance.deleteWorkout(workout.uuid);
+      if (workout.id == null) {
+        throw Exception("Cannot delete workout without ID");
+      }
+      await WorkoutDatabase.instance.deleteWorkout(workout.id!);
       completedWorkouts.remove(workout);
       notifyListeners();
     } on Exception catch (e) {

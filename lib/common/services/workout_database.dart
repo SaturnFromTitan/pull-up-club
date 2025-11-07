@@ -26,7 +26,7 @@ class WorkoutDatabase {
     // Create workouts table
     await db.execute("""
       CREATE TABLE workouts (
-        id TEXT PRIMARY KEY,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
         workout_type TEXT NOT NULL,
         max_groups INTEGER NOT NULL,
         start TEXT NOT NULL,
@@ -38,7 +38,7 @@ class WorkoutDatabase {
     await db.execute("""
       CREATE TABLE workout_sets (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        workout_id TEXT NOT NULL,
+        workout_id INTEGER NOT NULL,
         group_number INTEGER NOT NULL,
         target_reps INTEGER,
         completed_reps INTEGER NOT NULL,
@@ -49,11 +49,9 @@ class WorkoutDatabase {
 
   Future<Workout> insertWorkout(final Workout workout) async {
     final db = await database;
-    final workoutId = workout.uuid;
 
     // Insert workout
-    await db.insert("workouts", {
-      "id": workoutId,
+    final workoutId = await db.insert("workouts", {
       "workout_type": workout.workoutType.name,
       "max_groups": workout.maxGroups,
       "start": workout.start.toIso8601String(),
@@ -70,7 +68,15 @@ class WorkoutDatabase {
       });
     }
 
-    return workout;
+    // Return workout with the generated ID
+    return Workout(
+        id: workoutId,
+        workoutType: workout.workoutType,
+        maxGroups: workout.maxGroups,
+        start: workout.start,
+      )
+      ..end = workout.end
+      ..sets = workout.sets;
   }
 
   Future<List<Workout>> getAllWorkouts() async {
@@ -82,7 +88,7 @@ class WorkoutDatabase {
     final workouts = <Workout>[];
 
     for (final workoutMap in workoutMaps) {
-      final workoutId = workoutMap["id"]! as String;
+      final workoutId = workoutMap["id"]! as int;
 
       // Get sets for this workout
       final setMaps = await db.query(
@@ -131,7 +137,7 @@ class WorkoutDatabase {
     return workouts;
   }
 
-  Future<void> deleteWorkout(final String workoutId) async {
+  Future<void> deleteWorkout(final int workoutId) async {
     final db = await database;
     await db.delete("workouts", where: "id = ?", whereArgs: [workoutId]);
     // Sets will be deleted automatically due to CASCADE
