@@ -11,7 +11,9 @@ void main() {
   // Configure logging
   Logger.root.level = kDebugMode ? Level.ALL : Level.WARNING;
   Logger.root.onRecord.listen((final record) {
-    debugPrint("${record.level.name}: ${record.loggerName}: ${record.message}");
+    debugPrint(
+      "${DateTime.now().toUtc().toIso8601String()} ${record.level.name} ${record.loggerName}: ${record.message}",
+    );
   });
 
   runApp(const App());

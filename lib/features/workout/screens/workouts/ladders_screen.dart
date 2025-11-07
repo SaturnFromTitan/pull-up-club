@@ -53,7 +53,6 @@ class _LaddersState extends BaseWorkoutState<LaddersScreen> {
           // have to increment _completedGroups before calling finishSet
           // so that isFinished() is evaluated correctly
           _completedGroups++;
-
           finishSet(
             group: _completedGroups,
             completedReps: getTargetReps(),
@@ -84,7 +83,6 @@ class _LaddersState extends BaseWorkoutState<LaddersScreen> {
         // have to increment _completedGroups before calling finishSet
         // so that isFinished() is evaluated correctly
         _completedGroups++;
-
         finishSet(
           group: _completedGroups,
           completedReps: reps,
