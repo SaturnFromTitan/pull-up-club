@@ -1,5 +1,3 @@
-import "dart:async";
-
 import "package:flutter/material.dart";
 import "package:pull_up_club/common/providers/app_provider.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
@@ -38,13 +36,11 @@ class _LaddersState extends BaseWorkoutState<LaddersScreen> {
     final buttons = [
       GradientButton(
         onPressed: () {
-          unawaited(
-            finishSet(
-              group: _completedGroups + 1,
-              completedReps: getTargetReps(),
-              workoutProvider: workoutProvider,
-              appProvider: appProvider,
-            ),
+          finishSet(
+            group: _completedGroups + 1,
+            completedReps: getTargetReps(),
+            workoutProvider: workoutProvider,
+            appProvider: appProvider,
           );
           _targetReps++;
         },
@@ -57,13 +53,12 @@ class _LaddersState extends BaseWorkoutState<LaddersScreen> {
           // have to increment _completedGroups before calling finishSet
           // so that isFinished() is evaluated correctly
           _completedGroups++;
-          unawaited(
-            finishSet(
-              group: _completedGroups,
-              completedReps: getTargetReps(),
-              workoutProvider: workoutProvider,
-              appProvider: appProvider,
-            ),
+
+          finishSet(
+            group: _completedGroups,
+            completedReps: getTargetReps(),
+            workoutProvider: workoutProvider,
+            appProvider: appProvider,
           );
           _targetReps = 1;
         },
@@ -89,13 +84,12 @@ class _LaddersState extends BaseWorkoutState<LaddersScreen> {
         // have to increment _completedGroups before calling finishSet
         // so that isFinished() is evaluated correctly
         _completedGroups++;
-        unawaited(
-          finishSet(
-            group: _completedGroups,
-            completedReps: reps,
-            workoutProvider: workoutProvider,
-            appProvider: appProvider,
-          ),
+
+        finishSet(
+          group: _completedGroups,
+          completedReps: reps,
+          workoutProvider: workoutProvider,
+          appProvider: appProvider,
         );
         _targetReps = 1;
         _showCustomRepsForm = false;

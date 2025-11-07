@@ -65,12 +65,12 @@ abstract class BaseWorkoutState<T extends BaseWorkoutScreen> extends State<T> {
     );
   }
 
-  Future<void> finishSet({
+  void finishSet({
     required final int group,
     required final int completedReps,
     required final WorkoutProvider workoutProvider,
     required final AppProvider appProvider,
-  }) async {
+  }) {
     // add set
     final set_ = WorkoutSet(
       group: group,
@@ -81,7 +81,9 @@ abstract class BaseWorkoutState<T extends BaseWorkoutScreen> extends State<T> {
 
     // navigate
     if (isFinished(workoutProvider)) {
-      await workoutProvider.finish(appProvider);
+      // can't await here as `finishSet` is meant to be called synchronously
+      // on button press
+      unawaited(workoutProvider.finish(appProvider));
       navigateToSuccess(workoutProvider);
     } else {
       workoutProvider.rest(restDurationSeconds);

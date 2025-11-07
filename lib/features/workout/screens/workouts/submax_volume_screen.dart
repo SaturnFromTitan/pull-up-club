@@ -1,5 +1,3 @@
-import "dart:async";
-
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:pull_up_club/common/providers/app_provider.dart";
@@ -43,13 +41,11 @@ class _SubmaxVolumeScreenState extends BaseWorkoutState<SubmaxVolumeScreen> {
     final customRepsForm = RepsForm(
       onValidSubmit: (final reps) {
         _showCustomRepsForm = false;
-        unawaited(
-          finishSet(
-            group: workoutProvider.workout.sets.length + 1,
-            completedReps: reps,
-            workoutProvider: workoutProvider,
-            appProvider: appProvider,
-          ),
+        finishSet(
+          group: workoutProvider.workout.sets.length + 1,
+          completedReps: reps,
+          workoutProvider: workoutProvider,
+          appProvider: appProvider,
         );
       },
       onCancel: () {
@@ -78,13 +74,11 @@ class _SubmaxVolumeScreenState extends BaseWorkoutState<SubmaxVolumeScreen> {
     final buttons = [
       GradientButton(
         onPressed: () {
-          unawaited(
-            finishSet(
-              group: workoutProvider.workout.sets.length + 1,
-              completedReps: targetReps,
-              workoutProvider: workoutProvider,
-              appProvider: appProvider,
-            ),
+          finishSet(
+            group: workoutProvider.workout.sets.length + 1,
+            completedReps: targetReps,
+            workoutProvider: workoutProvider,
+            appProvider: appProvider,
           );
         },
         text: "Done",
@@ -93,13 +87,11 @@ class _SubmaxVolumeScreenState extends BaseWorkoutState<SubmaxVolumeScreen> {
       ),
       GradientButton(
         onPressed: () {
-          unawaited(
-            finishSet(
-              group: workoutProvider.workout.sets.length + 1,
-              completedReps: targetReps - 1,
-              workoutProvider: workoutProvider,
-              appProvider: appProvider,
-            ),
+          finishSet(
+            group: workoutProvider.workout.sets.length + 1,
+            completedReps: targetReps - 1,
+            workoutProvider: workoutProvider,
+            appProvider: appProvider,
           );
         },
         text: "I did ${targetReps - 1}",
@@ -111,13 +103,11 @@ class _SubmaxVolumeScreenState extends BaseWorkoutState<SubmaxVolumeScreen> {
       buttons.add(
         GradientButton(
           onPressed: () {
-            unawaited(
-              finishSet(
-                group: workoutProvider.workout.sets.length + 1,
-                completedReps: targetReps - 2,
-                workoutProvider: workoutProvider,
-                appProvider: appProvider,
-              ),
+            finishSet(
+              group: workoutProvider.workout.sets.length + 1,
+              completedReps: targetReps - 2,
+              workoutProvider: workoutProvider,
+              appProvider: appProvider,
             );
           },
           text: "I did ${targetReps - 2}",

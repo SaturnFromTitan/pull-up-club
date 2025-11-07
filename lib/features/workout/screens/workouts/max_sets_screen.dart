@@ -1,5 +1,3 @@
-import "dart:async";
-
 import "package:flutter/material.dart";
 import "package:pull_up_club/common/providers/app_provider.dart";
 import "package:pull_up_club/features/workout/providers/workout_provider.dart";
@@ -26,13 +24,11 @@ class _MaxSetsScreenState extends BaseWorkoutState<MaxSetsScreen> {
     final AppProvider appProvider,
   ) => RepsForm(
     onValidSubmit: (final reps) {
-      unawaited(
-        finishSet(
-          group: workoutProvider.workout.sets.length + 1,
-          completedReps: reps,
-          workoutProvider: workoutProvider,
-          appProvider: appProvider,
-        ),
+      finishSet(
+        group: workoutProvider.workout.sets.length + 1,
+        completedReps: reps,
+        workoutProvider: workoutProvider,
+        appProvider: appProvider,
       );
     },
   );
