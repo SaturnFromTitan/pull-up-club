@@ -5,6 +5,15 @@ import "package:path/path.dart" as path;
 import "package:pull_up_club/features/workout/models.dart";
 import "package:sqflite/sqflite.dart";
 
+enum TableNames {
+  workouts("workouts"),
+  workoutSets("workout_sets");
+
+  const TableNames(this.name);
+
+  final String name;
+}
+
 class WorkoutDatabase {
   WorkoutDatabase._init();
   static final WorkoutDatabase instance = WorkoutDatabase._init();
@@ -25,7 +34,7 @@ class WorkoutDatabase {
   Future<void> _createDB(final Database db, final int version) async {
     // Create workouts table
     await db.execute("""
-      CREATE TABLE workouts (
+      CREATE TABLE ${TableNames.workouts.name} (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         workout_type TEXT NOT NULL,
         max_groups INTEGER NOT NULL,
@@ -36,13 +45,13 @@ class WorkoutDatabase {
 
     // Create workout_sets table
     await db.execute("""
-      CREATE TABLE workout_sets (
+      CREATE TABLE ${TableNames.workoutSets.name} (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         workout_id INTEGER NOT NULL,
         group_number INTEGER NOT NULL,
         target_reps INTEGER,
         completed_reps INTEGER NOT NULL,
-        FOREIGN KEY (workout_id) REFERENCES workouts (id) ON DELETE CASCADE
+        FOREIGN KEY (workout_id) REFERENCES ${TableNames.workouts.name} (id) ON DELETE CASCADE
       )
     """);
   }
@@ -51,7 +60,7 @@ class WorkoutDatabase {
     final db = await database;
 
     // Insert workout
-    final workoutId = await db.insert("workouts", {
+    final workoutId = await db.insert(TableNames.workouts.name, {
       "workout_type": workout.workoutType.name,
       "max_groups": workout.maxGroups,
       "start": workout.start.toIso8601String(),
@@ -60,7 +69,7 @@ class WorkoutDatabase {
 
     // Insert sets
     for (final set_ in workout.sets) {
-      await db.insert("workout_sets", {
+      await db.insert(TableNames.workoutSets.name, {
         "workout_id": workoutId,
         "group_number": set_.group,
         "target_reps": set_.targetReps,
@@ -83,7 +92,7 @@ class WorkoutDatabase {
     final db = await database;
 
     // Get all workouts
-    final workoutMaps = await db.query("workouts", orderBy: "start ASC");
+    final workoutMaps = await db.query(TableNames.workouts.name, orderBy: "start ASC");
 
     final workouts = <Workout>[];
 
@@ -92,7 +101,7 @@ class WorkoutDatabase {
 
       // Get sets for this workout
       final setMaps = await db.query(
-        "workout_sets",
+        TableNames.workoutSets.name,
         where: "workout_id = ?",
         whereArgs: [workoutId],
         orderBy: "group_number ASC",
@@ -139,7 +148,7 @@ class WorkoutDatabase {
 
   Future<void> deleteWorkout(final int workoutId) async {
     final db = await database;
-    await db.delete("workouts", where: "id = ?", whereArgs: [workoutId]);
+    await db.delete(TableNames.workouts.name, where: "id = ?", whereArgs: [workoutId]);
     // Sets will be deleted automatically due to CASCADE
   }
 
