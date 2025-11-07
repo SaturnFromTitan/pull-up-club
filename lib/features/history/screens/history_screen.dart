@@ -63,22 +63,7 @@ class HistoryScreen extends StatelessWidget {
             children: [
               ...[
                 for (final workout in workouts) ...[
-                  _PastWorkout(
-                    workout: workout,
-                    onDelete: () async {
-                      try {
-                        await appProvider.deleteWorkout(workout);
-                      } on Exception catch (e) {
-                        final message = "Error deleting workout: $e";
-                        HistoryScreen._logger.severe(message);
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(
-                            context,
-                          ).showSnackBar(SnackBar(content: Text(message)));
-                        }
-                      }
-                    },
-                  ),
+                  _DismissablePastWorkout(workout: workout),
                   const SizedBox(height: AppSpacing.sm),
                 ],
               ],
@@ -90,11 +75,23 @@ class HistoryScreen extends StatelessWidget {
   }
 }
 
-class _PastWorkout extends StatelessWidget {
-  const _PastWorkout({required this.workout, required this.onDelete});
+class _DismissablePastWorkout extends StatelessWidget {
+  const _DismissablePastWorkout({required this.workout});
 
   final Workout workout;
-  final Future<void> Function() onDelete;
+  Future<void> _onDelete(final BuildContext context) async {
+    final appProvider = context.watch<AppProvider>();
+
+    try {
+      await appProvider.deleteWorkout(workout);
+    } on Exception catch (e) {
+      final message = "Error deleting workout: $e";
+      HistoryScreen._logger.severe(message);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+      }
+    }
+  }
 
   Future<bool?> _confirmDismiss(final BuildContext context) => showDialog<bool>(
     context: context,
@@ -135,22 +132,20 @@ class _PastWorkout extends StatelessWidget {
         child: const Icon(Icons.delete_outline, color: Colors.white, size: 32),
       ),
       confirmDismiss: (final direction) => _confirmDismiss(context),
-      onDismissed: (final direction) => onDelete(),
-      child: PastWorkout(workout: workout),
+      onDismissed: (final direction) => _onDelete(context),
+      child: _PastWorkout(workout: workout),
     );
   }
 
   @override
   void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties
-      ..add(DiagnosticsProperty<Workout>("workout", workout))
-      ..add(ObjectFlagProperty<Future<void> Function()>.has("onDelete", onDelete));
+    properties.add(DiagnosticsProperty<Workout>("workout", workout));
   }
 }
 
-class PastWorkout extends StatelessWidget {
-  const PastWorkout({required this.workout, super.key});
+class _PastWorkout extends StatelessWidget {
+  const _PastWorkout({required this.workout});
   final Workout workout;
 
   @override
