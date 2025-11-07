@@ -63,7 +63,22 @@ class HistoryScreen extends StatelessWidget {
             children: [
               ...[
                 for (final workout in workouts) ...[
-                  PastWorkout(workout: workout),
+                  _PastWorkout(
+                    workout: workout,
+                    onDelete: () async {
+                      try {
+                        await appProvider.deleteWorkout(workout);
+                      } on Exception catch (e) {
+                        final message = "Error deleting workout: $e";
+                        HistoryScreen._logger.severe(message);
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(
+                            context,
+                          ).showSnackBar(SnackBar(content: Text(message)));
+                        }
+                      }
+                    },
+                  ),
                   const SizedBox(height: AppSpacing.sm),
                 ],
               ],
@@ -75,45 +90,68 @@ class HistoryScreen extends StatelessWidget {
   }
 }
 
+class _PastWorkout extends StatelessWidget {
+  const _PastWorkout({required this.workout, required this.onDelete});
+
+  final Workout workout;
+  final Future<void> Function() onDelete;
+
+  Future<bool?> _confirmDismiss(final BuildContext context) => showDialog<bool>(
+    context: context,
+    builder: (final context) => AlertDialog(
+      title: const Text("Delete Workout"),
+      content: const Text("Are you sure you want to delete this workout?"),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(false),
+          child: const Text("Cancel"),
+        ),
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(true),
+          child: const Text("Delete", style: TextStyle(color: Colors.red)),
+        ),
+      ],
+    ),
+  );
+
+  @override
+  Widget build(final BuildContext context) {
+    final key = workout.id != null
+        ? ValueKey<int>(workout.id!)
+        : ValueKey<String>(
+            "${workout.start.millisecondsSinceEpoch}_${workout.workoutType.name}",
+          );
+
+    return Dismissible(
+      key: key,
+      direction: DismissDirection.endToStart,
+      background: Container(
+        decoration: BoxDecoration(
+          color: Colors.red,
+          borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
+        ),
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(right: AppSpacing.md),
+        child: const Icon(Icons.delete_outline, color: Colors.white, size: 32),
+      ),
+      confirmDismiss: (final direction) => _confirmDismiss(context),
+      onDismissed: (final direction) => onDelete(),
+      child: PastWorkout(workout: workout),
+    );
+  }
+
+  @override
+  void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty<Workout>("workout", workout))
+      ..add(ObjectFlagProperty<Future<void> Function()>.has("onDelete", onDelete));
+  }
+}
+
 class PastWorkout extends StatelessWidget {
   const PastWorkout({required this.workout, super.key});
   final Workout workout;
-
-  Future<void> _deleteWorkout(final BuildContext context) async {
-    final appProvider = context.read<AppProvider>();
-    final confirmed =
-        await showDialog<bool>(
-          context: context,
-          builder: (final context) => AlertDialog(
-            title: const Text("Delete Workout"),
-            content: const Text("Are you sure you want to delete this workout?"),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: const Text("Cancel"),
-              ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: const Text("Delete", style: TextStyle(color: Colors.red)),
-              ),
-            ],
-          ),
-        ) ??
-        false;
-
-    if (confirmed) {
-      try {
-        await appProvider.deleteWorkout(workout);
-      } on Exception catch (e) {
-        final message = "Error deleting workout: $e";
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
-        } else {
-          HistoryScreen._logger.severe(message);
-        }
-      }
-    }
-  }
 
   @override
   Widget build(final BuildContext context) => Container(
