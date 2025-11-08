@@ -83,7 +83,7 @@ platform :ios do
     sh("flutter", "pub", "get")
 
     UI.message("Installing CocoaPods dependencies")
-    sh("bundle", "exec", "pod", "install", "--repo-update")
+    sh("bundle", "exec", "pod", "install")
 
     UI.message("Building IPA via gym (build_ios_app)")
     output_dir = File.expand_path("../../build/ios/ipa", __dir__)

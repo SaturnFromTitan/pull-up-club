@@ -39,5 +39,14 @@ end
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
+
+    # Suppress warnings from sqlite3 source code (third-party C code with known warnings)
+    if target.name == 'sqlite3'
+      target.build_configurations.each do |config|
+        existing_flags = config.build_settings['WARNING_CFLAGS'] || '$(inherited)'
+        # Ensure it's a string and append our warning suppressions
+        config.build_settings['WARNING_CFLAGS'] = "#{existing_flags} -Wno-shorten-64-to-32 -Wno-ambiguous-macro -Wno-comma -Wno-unreachable-code"
+      end
+    end
   end
 end
