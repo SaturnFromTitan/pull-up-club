@@ -82,6 +82,9 @@ platform :ios do
     sh("flutter", "--version")
     sh("flutter", "pub", "get")
 
+    UI.message("Installing CocoaPods dependencies")
+    sh("bundle", "exec", "pod", "install", "--repo-update")
+
     UI.message("Building IPA via gym (build_ios_app)")
     output_dir = File.expand_path("../../build/ios/ipa", __dir__)
     FileUtils.mkdir_p(output_dir) unless Dir.exist?(output_dir)
