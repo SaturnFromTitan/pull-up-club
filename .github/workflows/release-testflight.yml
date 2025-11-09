@@ -18,7 +18,7 @@ jobs:
     # this workflow times our frequently. additional time doesn't seem to solve the issue though
     # if it succeeds, it uually does in <10 minutes. if it doesn't succeed by then, then it also
     # times out after 2 hours. :shrug:
-    timeout-minutes: 30
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v5
