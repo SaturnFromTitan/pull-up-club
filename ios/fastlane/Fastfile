@@ -6,21 +6,14 @@ platform :ios do
     require 'yaml'
     require 'fileutils'
 
+    UI.message("Setting up CI environment")
+    setup_ci()
+
     UI.message("Setting up App Store Connect API key")
     api_key = app_store_connect_api_key(
       key_id: ENV['APP_STORE_CONNECT_KEY_ID'],
       issuer_id: ENV['APP_STORE_CONNECT_ISSUER_ID'],
       key_content: ENV['APP_STORE_CONNECT_API_KEY']
-    )
-
-    UI.message("Creating CI keychain to avoid UI prompts")
-    create_keychain(
-      name: "fastlane_tmp_keychain",
-      password: ENV['KEYCHAIN_PASSWORD'],
-      default_keychain: true,
-      unlock: true,
-      timeout: 30,
-      add_to_search_list: true
     )
 
     UI.message("Syncing code signing via match (readonly in CI)")
@@ -29,9 +22,7 @@ platform :ios do
       app_identifier: [ENV['APP_BUNDLE_ID']],
       git_url: ENV['MATCH_GIT_URL'],
       readonly: true,
-      api_key: api_key,
-      keychain_name: "fastlane_tmp_keychain",
-      keychain_password: ENV['KEYCHAIN_PASSWORD']
+      api_key: api_key
     )
 
     UI.message("Configuring manual code signing for Release build")
@@ -78,10 +69,7 @@ platform :ios do
     File.write(build_info_path, "MARKETING_VERSION=#{marketing_version}\nBUILD_NUMBER=#{build_number}\n")
 
     # Build and upload
-    # Ensure deps are up to date and build IPA via gym with explicit signing/export options
-    sh("flutter", "--version")
-    sh("flutter", "pub", "get")
-
+    # Dependencies are installed in CI workflow before fastlane runs
     UI.message("Building IPA via gym (build_ios_app)")
     output_dir = File.expand_path("../../build/ios/ipa", __dir__)
     FileUtils.mkdir_p(output_dir) unless Dir.exist?(output_dir)

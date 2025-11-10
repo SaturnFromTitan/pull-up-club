@@ -14,8 +14,11 @@ concurrency:
 
 jobs:
   testflight:
-    runs-on: macos-latest
-    timeout-minutes: 40
+    runs-on: macos-15
+    # this workflow times our frequently. additional time doesn't seem to solve the issue though
+    # if it succeeds, it uually does in <10 minutes. if it doesn't succeed by then, then it also
+    # times out after 2 hours. :shrug:
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -32,7 +35,7 @@ jobs:
         run: flutter pub get
 
       - name: Generate code
-        run: flutter pub run build_runner build
+        run: dart pub run build_runner build
 
       - name: Generate iOS app icons
         run: |
@@ -42,13 +45,17 @@ jobs:
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.3'
           bundler-cache: true
+          ruby-version: '3.3'
           working-directory: ios
 
       - name: Bundle install
         working-directory: ios
-        run: bundle install --path vendor/bundle
+        run: bundle install
+
+      - name: Install CocoaPods dependencies
+        working-directory: ios
+        run: bundle exec pod install
 
       # `match` is run in read-only mode to fetch signing assets. See the README for more details.
       - name: Fastlane beta → TestFlight
@@ -59,7 +66,6 @@ jobs:
           APP_STORE_CONNECT_ISSUER_ID: ${{ vars.APP_STORE_CONNECT_ISSUER_ID }}
           APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
           APPLE_TEAM_ID: ${{ vars.APPLE_TEAM_ID }}
-          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
           MATCH_GIT_URL: https://x-access-token:${{ secrets.CERTS_TOKEN }}@github.com/SaturnFromTitan/pull-up-club-certificates.git
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
         run: bundle exec fastlane beta
