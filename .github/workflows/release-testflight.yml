@@ -32,10 +32,10 @@ jobs:
           cache: true
 
       - name: Install dependencies
-        run: flutter pub get
+        run: dart pub get
 
       - name: Generate code
-        run: flutter pub run build_runner build
+        run: dart pub run build_runner build
 
       - name: Generate iOS app icons
         run: |
@@ -51,7 +51,7 @@ jobs:
 
       - name: Bundle install
         working-directory: ios
-        run: bundle install --path vendor/bundle
+        run: bundle install
 
       # `match` is run in read-only mode to fetch signing assets. See the README for more details.
       - name: Fastlane beta → TestFlight
