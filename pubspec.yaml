@@ -8,6 +8,7 @@ environment:
   flutter: 3.35.7
 
 dependencies:
+  audioplayers: ">=6.1.0"
   cupertino_icons: ">=1.0.8"
   drift: ">=2.29.0"
   drift_flutter: ">=0.2.7"
@@ -27,6 +28,8 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/sounds/
 
 flutter_launcher_icons:
   ios: true

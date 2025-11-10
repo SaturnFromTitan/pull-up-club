@@ -27,8 +27,8 @@ class WorkoutSets extends Table {
 
 @DriftDatabase(tables: [Workouts, WorkoutSets])
 class WorkoutDatabase extends _$WorkoutDatabase {
-  WorkoutDatabase._init() : super(_openConnection());
-  static final WorkoutDatabase instance = WorkoutDatabase._init();
+  WorkoutDatabase._() : super(_openConnection());
+  static final WorkoutDatabase instance = WorkoutDatabase._();
   static final Logger _logger = Logger("WorkoutDatabase");
 
   @override
