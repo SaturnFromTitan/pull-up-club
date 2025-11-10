@@ -7,7 +7,10 @@ platform :ios do
     require 'fileutils'
 
     UI.message("Setting up CI environment")
-    setup_ci()
+    unless ENV['CI']
+      UI.user_error!("This lane must be run in CI environment (ENV['CI'] is not set)")
+    end
+    setup_ci
 
     UI.message("Setting up App Store Connect API key")
     api_key = app_store_connect_api_key(
@@ -26,12 +29,6 @@ platform :ios do
     )
 
     UI.message("Configuring manual code signing for Release build")
-    automatic_code_signing(
-      path: "Runner.xcodeproj",
-      use_automatic_signing: false,
-      team_id: ENV['APPLE_TEAM_ID']
-    )
-    # Apply manual signing for Runner (Release + Profile) with profile
     update_code_signing_settings(
       use_automatic_signing: false,
       path: "Runner.xcodeproj",
@@ -41,26 +38,18 @@ platform :ios do
       code_sign_identity: "Apple Distribution",
       profile_name: "match AppStore #{ENV['APP_BUNDLE_ID']}"
     )
-    # Ensure tests target is manual too (no profile needed)
-    update_code_signing_settings(
-      use_automatic_signing: false,
-      path: "Runner.xcodeproj",
-      targets: ["RunnerTests"],
-      build_configurations: ["Release", "Profile"],
-      team_id: ENV['APPLE_TEAM_ID']
-    )
 
     UI.message("Reading version from pubspec.yaml")
     pubspec = YAML.load_file(File.expand_path("../../pubspec.yaml", __dir__))
-    version_str = pubspec['version']
-    marketing_version = version_str.split('+').first
+    marketing_version = pubspec['version'].split('+').first
 
-    latest = (latest_testflight_build_number(
+    UI.message("Getting latest build number from TestFlight")
+    latest_build = (latest_testflight_build_number(
       api_key: api_key,
       app_identifier: ENV['APP_BUNDLE_ID'],
       version: marketing_version
-    ) rescue nil) || 0
-    build_number = (latest.to_i + 1).to_s
+    ) rescue 0)
+    build_number = (latest_build + 1).to_s
     UI.message("Resolved marketing version=#{marketing_version} next build_number=#{build_number}")
 
     # Persist build info for CI summary
@@ -69,40 +58,25 @@ platform :ios do
     File.write(build_info_path, "MARKETING_VERSION=#{marketing_version}\nBUILD_NUMBER=#{build_number}\n")
 
     # Build and upload
-    # Dependencies are installed in CI workflow before fastlane runs
-    UI.message("Building IPA via gym (build_ios_app)")
-    output_dir = File.expand_path("../../build/ios/ipa", __dir__)
-    FileUtils.mkdir_p(output_dir) unless Dir.exist?(output_dir)
-
-    build_ios_app(
+    UI.message("Building IPA via gym (build_app)")
+    build_app(
       workspace: "Runner.xcworkspace",
       scheme: "Runner",
-      configuration: "Release",
       export_method: "app-store",
       export_options: {
         signingStyle: "manual",
         teamID: ENV['APPLE_TEAM_ID'],
         provisioningProfiles: {
           ENV['APP_BUNDLE_ID'] => "match AppStore #{ENV['APP_BUNDLE_ID']}"
-        },
-        compileBitcode: false,
-        destination: "export"
+        }
       },
-      output_directory: output_dir,
-      output_name: "Runner",
       xcargs: "FLUTTER_BUILD_NAME=#{marketing_version} FLUTTER_BUILD_NUMBER=#{build_number}"
     )
 
-    ipa_path = Actions.lane_context[SharedValues::IPA_OUTPUT_PATH] || Dir[File.join(output_dir, "*.ipa")].first
-    UI.user_error!("IPA not found in build/ios/ipa") unless ipa_path
-
     UI.message("Uploading IPA to TestFlight (internal)")
-    pilot(
-      ipa: ipa_path,
-      distribute_external: false,
+    upload_to_testflight(
       api_key: api_key,
-      skip_submission: true,
-      skip_waiting_for_build_processing: false
+      skip_submission: true
     )
   end
 end
