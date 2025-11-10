@@ -25,6 +25,13 @@ platform :ios do
       api_key: api_key
     )
 
+    update_code_signing_settings(
+      use_automatic_signing: true,
+      path: "Runner.xcodeproj",
+      targets: ["Runner"],
+      team_id: ENV['APPLE_TEAM_ID']
+    )
+
     UI.message("Deriving target marketing version and build number")
     pubspec = YAML.load_file(File.expand_path("../../pubspec.yaml", __dir__))
     marketing_version = pubspec['version'].split('+').first
@@ -48,7 +55,7 @@ platform :ios do
       workspace: "Runner.xcworkspace",
       scheme: "Runner",
       export_method: "app-store",
-      xcargs: "FLUTTER_BUILD_NAME=#{marketing_version} FLUTTER_BUILD_NUMBER=#{build_number}"
+      xcargs: "FLUTTER_BUILD_NAME=#{marketing_version} FLUTTER_BUILD_NUMBER=#{build_number} -allowProvisioningUpdates"
     )
 
     upload_to_testflight(
