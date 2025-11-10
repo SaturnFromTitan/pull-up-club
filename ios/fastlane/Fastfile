@@ -29,8 +29,6 @@ platform :ios do
       use_automatic_signing: false,
       path: "Runner.xcodeproj",
       targets: ["Runner"],
-      # build_configurations: ["Release", "Profile"],
-      # team_id: ENV['APPLE_TEAM_ID'],
       code_sign_identity: "Apple Distribution",
       profile_name: "match AppStore #{ENV['APP_BUNDLE_ID']}"
     )
@@ -57,16 +55,12 @@ platform :ios do
     build_app(
       workspace: "Runner.xcworkspace",
       scheme: "Runner",
-      # configuration: "Release",
       export_method: "app-store",
       export_options: {
         signingStyle: "manual",
-        # teamID: ENV['APPLE_TEAM_ID'],
         provisioningProfiles: {
           ENV['APP_BUNDLE_ID'] => "match AppStore #{ENV['APP_BUNDLE_ID']}"
         }
-        # compileBitcode: false,
-        # destination: "export"
       },
       xcargs: "FLUTTER_BUILD_NAME=#{marketing_version} FLUTTER_BUILD_NUMBER=#{build_number}"
     )
