@@ -26,10 +26,13 @@ platform :ios do
     )
 
     update_code_signing_settings(
-      use_automatic_signing: true,
+      use_automatic_signing: false,
       path: "Runner.xcodeproj",
       targets: ["Runner"],
-      team_id: ENV['APPLE_TEAM_ID']
+      # build_configurations: ["Release", "Profile"],
+      # team_id: ENV['APPLE_TEAM_ID'],
+      code_sign_identity: "Apple Distribution",
+      profile_name: "match AppStore #{ENV['APP_BUNDLE_ID']}"
     )
 
     UI.message("Deriving target marketing version and build number")
@@ -54,8 +57,18 @@ platform :ios do
     build_app(
       workspace: "Runner.xcworkspace",
       scheme: "Runner",
+      # configuration: "Release",
       export_method: "app-store",
-      xcargs: "FLUTTER_BUILD_NAME=#{marketing_version} FLUTTER_BUILD_NUMBER=#{build_number} -allowProvisioningUpdates"
+      export_options: {
+        signingStyle: "manual",
+        # teamID: ENV['APPLE_TEAM_ID'],
+        provisioningProfiles: {
+          ENV['APP_BUNDLE_ID'] => "match AppStore #{ENV['APP_BUNDLE_ID']}"
+        }
+        # compileBitcode: false,
+        # destination: "export"
+      },
+      xcargs: "FLUTTER_BUILD_NAME=#{marketing_version} FLUTTER_BUILD_NUMBER=#{build_number}"
     )
 
     upload_to_testflight(
