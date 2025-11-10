@@ -57,6 +57,9 @@ jobs:
         working-directory: ios
         run: bundle exec pod install
 
+      - name: Generate Flutter iOS build configuration
+        run: flutter build ios --release --no-codesign --config-only
+
       # `match` is run in read-only mode to fetch signing assets. See the README for more details.
       - name: Fastlane beta → TestFlight
         working-directory: ios
