@@ -19,7 +19,7 @@ platform :ios do
       password: ENV['KEYCHAIN_PASSWORD'],
       default_keychain: true,
       unlock: true,
-      timeout: 30,
+      timeout: 3600,
       add_to_search_list: true
     )
 
