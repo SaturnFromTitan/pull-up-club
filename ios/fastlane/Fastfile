@@ -6,20 +6,17 @@ platform :ios do
     require 'yaml'
     require 'fileutils'
 
-    UI.message("Setting up CI environment")
     unless ENV['CI']
       UI.user_error!("This lane must be run in CI environment (ENV['CI'] is not set)")
     end
     setup_ci
 
-    UI.message("Setting up App Store Connect API key")
     api_key = app_store_connect_api_key(
       key_id: ENV['APP_STORE_CONNECT_KEY_ID'],
       issuer_id: ENV['APP_STORE_CONNECT_ISSUER_ID'],
       key_content: ENV['APP_STORE_CONNECT_API_KEY']
     )
 
-    UI.message("Syncing code signing via match (readonly in CI)")
     match(
       type: "appstore",
       app_identifier: [ENV['APP_BUNDLE_ID']],
@@ -28,52 +25,32 @@ platform :ios do
       api_key: api_key
     )
 
-    UI.message("Configuring manual code signing for Release build")
-    update_code_signing_settings(
-      use_automatic_signing: false,
-      path: "Runner.xcodeproj",
-      targets: ["Runner"],
-      build_configurations: ["Release", "Profile"],
-      team_id: ENV['APPLE_TEAM_ID'],
-      code_sign_identity: "Apple Distribution",
-      profile_name: "match AppStore #{ENV['APP_BUNDLE_ID']}"
-    )
-
-    UI.message("Reading version from pubspec.yaml")
+    UI.message("Deriving target marketing version and build number")
     pubspec = YAML.load_file(File.expand_path("../../pubspec.yaml", __dir__))
     marketing_version = pubspec['version'].split('+').first
 
-    UI.message("Getting latest build number from TestFlight")
-    latest_build = (latest_testflight_build_number(
+    latest_build_number = (latest_testflight_build_number(
       api_key: api_key,
       app_identifier: ENV['APP_BUNDLE_ID'],
+      initial_build_number: 0,
       version: marketing_version
     ) rescue 0)
-    build_number = (latest_build + 1).to_s
-    UI.message("Resolved marketing version=#{marketing_version} next build_number=#{build_number}")
+    build_number = (latest_build_number + 1).to_s
 
     # Persist build info for CI summary
     build_info_path = File.expand_path("../../build/build_info.env", __dir__)
     FileUtils.mkdir_p(File.dirname(build_info_path)) unless Dir.exist?(File.dirname(build_info_path))
     File.write(build_info_path, "MARKETING_VERSION=#{marketing_version}\nBUILD_NUMBER=#{build_number}\n")
+    sh("cat #{build_info_path}")
 
     # Build and upload
-    UI.message("Building IPA via gym (build_app)")
     build_app(
       workspace: "Runner.xcworkspace",
       scheme: "Runner",
       export_method: "app-store",
-      export_options: {
-        signingStyle: "manual",
-        teamID: ENV['APPLE_TEAM_ID'],
-        provisioningProfiles: {
-          ENV['APP_BUNDLE_ID'] => "match AppStore #{ENV['APP_BUNDLE_ID']}"
-        }
-      },
       xcargs: "FLUTTER_BUILD_NAME=#{marketing_version} FLUTTER_BUILD_NUMBER=#{build_number}"
     )
 
-    UI.message("Uploading IPA to TestFlight (internal)")
     upload_to_testflight(
       api_key: api_key,
       skip_submission: true
