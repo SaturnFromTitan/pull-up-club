@@ -2,6 +2,7 @@ import "dart:async";
 
 import "package:flutter/material.dart";
 import "package:pull_up_club/common/providers/app_provider.dart";
+import "package:pull_up_club/common/services/sound_service.dart";
 import "package:pull_up_club/features/workout/models.dart";
 
 class WorkoutProvider extends ChangeNotifier {
@@ -42,16 +43,28 @@ class WorkoutProvider extends ChangeNotifier {
 
     _restTimer = Timer.periodic(const Duration(seconds: 1), (final timer) {
       _restRemainingSeconds--;
-      notifyListeners();
 
-      if (_restRemainingSeconds <= 0) {
-        resume();
+      // Play countdown sound on last 3 seconds (3, 2, 1)
+      if (_restRemainingSeconds >= 1 && _restRemainingSeconds <= 3) {
+        unawaited(SoundService.instance.playCountdown());
       }
+
+      // Play complete sound when timer reaches 0
+      if (_restRemainingSeconds <= 0) {
+        _restTimer?.cancel();
+        unawaited(SoundService.instance.playComplete());
+        _restRemainingSeconds = 0;
+        _restTotalSeconds = 0;
+      }
+
+      notifyListeners();
     });
   }
 
   void resume() {
     _restTimer?.cancel();
+    // Stop all sounds when timer is aborted (manually skipped)
+    unawaited(SoundService.instance.stopAll());
     _restRemainingSeconds = 0;
     _restTotalSeconds = 0;
     notifyListeners();
