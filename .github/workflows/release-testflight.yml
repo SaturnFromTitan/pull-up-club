@@ -32,7 +32,7 @@ jobs:
           cache: true
 
       - name: Install dependencies
-        run: dart pub get
+        run: flutter pub get
 
       - name: Generate code
         run: dart pub run build_runner build
@@ -45,8 +45,8 @@ jobs:
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.3'
           bundler-cache: true
+          ruby-version: '3.3'
           working-directory: ios
 
       - name: Bundle install

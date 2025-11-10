@@ -10,7 +10,7 @@ set shell := ["bash", "-c"]
 
 # install flutter dependencies
 install:
-  dart pub get
+  flutter pub get
 
 # watches for code changes and generates code with incremental rebuilds
 generate:
