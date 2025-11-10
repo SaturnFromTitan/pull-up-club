@@ -122,7 +122,7 @@ class _RestTimerSpinnerState extends State<_RestTimerSpinner>
 
   @override
   Widget build(final BuildContext context) {
-    final workoutProvider = context.read<WorkoutProvider>();
+    final workoutProvider = context.watch<WorkoutProvider>();
 
     final remaining = workoutProvider.restTimeRemaining;
 
