@@ -9,6 +9,7 @@
     <h1>Beep exporter</h1>
     <button id="countdown">Download countdown beep</button>
     <button id="final">Download final beep</button>
+    <button id="triumphant">Download triumphant sound</button>
 
     <script>
       async function generateBeep(frequency, durationSeconds, filename) {
@@ -49,6 +50,75 @@
         const a = document.createElement("a");
         a.href = url;
         a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+
+      async function generateTriumphantSound() {
+        const sampleRate = 44100;
+        const channels = 1;
+        const durationSeconds = 0.9; // Total duration
+        const frameCount = sampleRate * durationSeconds;
+
+        // 1) render offline
+        const offlineCtx = new OfflineAudioContext(
+          channels,
+          frameCount,
+          sampleRate
+        );
+
+        const now = 0; // In offline context, time starts at 0
+
+        // Victory fanfare melody
+        const notes = [
+          { freq: 523.25, start: 0, duration: 0.15 },      // C5
+          { freq: 659.25, start: 0.15, duration: 0.15 },   // E5
+          { freq: 783.99, start: 0.3, duration: 0.15 },    // G5
+          { freq: 1046.5, start: 0.45, duration: 0.4 },    // C6 (held)
+        ];
+
+        notes.forEach(note => {
+          // Main oscillator
+          const osc = offlineCtx.createOscillator();
+          const gainNode = offlineCtx.createGain();
+
+          osc.type = "triangle";
+          osc.frequency.setValueAtTime(note.freq, note.start);
+
+          // Envelope
+          gainNode.gain.setValueAtTime(0, note.start);
+          gainNode.gain.linearRampToValueAtTime(0.3, note.start + 0.05);
+          gainNode.gain.exponentialRampToValueAtTime(0.01, note.start + note.duration);
+
+          osc.connect(gainNode);
+          gainNode.connect(offlineCtx.destination);
+
+          osc.start(note.start);
+          osc.stop(note.start + note.duration);
+        });
+
+        // Add bass note for richness
+        const bass = offlineCtx.createOscillator();
+        const bassGain = offlineCtx.createGain();
+        bass.type = "sine";
+        bass.frequency.setValueAtTime(261.63, 0); // C4
+        bassGain.gain.setValueAtTime(0.2, 0);
+        bassGain.gain.exponentialRampToValueAtTime(0.01, 0.8);
+        bass.connect(bassGain);
+        bassGain.connect(offlineCtx.destination);
+        bass.start(0);
+        bass.stop(0.8);
+
+        const renderedBuffer = await offlineCtx.startRendering();
+
+        // 2) turn AudioBuffer into WAV Blob
+        const wavBlob = bufferToWavBlob(renderedBuffer);
+
+        // 3) download
+        const url = URL.createObjectURL(wavBlob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "triumphant.wav";
         a.click();
         URL.revokeObjectURL(url);
       }
@@ -128,14 +198,18 @@
       document
         .getElementById("countdown")
         .addEventListener("click", () =>
-          generateBeep(800, 0.1, "countdown-beep.wav")
+          generateBeep(800, 0.1, "beep-countdown.wav")
         );
 
       document
         .getElementById("final")
         .addEventListener("click", () =>
-          generateBeep(600, 0.3, "final-beep.wav")
+          generateBeep(600, 0.3, "beep-countdown-completed.wav")
         );
+
+      document
+        .getElementById("triumphant")
+        .addEventListener("click", () => generateTriumphantSound());
     </script>
   </body>
 </html>

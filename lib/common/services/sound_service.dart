@@ -24,6 +24,10 @@ class SoundService {
     await _playSound("beep-countdown-completed.wav");
   }
 
+  Future<void> playTriumphant() async {
+    await _playSound("triumphant.wav");
+  }
+
   Future<void> stop() async {
     try {
       await _player.stop();

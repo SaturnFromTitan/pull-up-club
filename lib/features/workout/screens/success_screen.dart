@@ -1,5 +1,8 @@
+import "dart:async";
+
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
+import "package:pull_up_club/common/services/sound_service.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
 import "package:pull_up_club/common/themes/app_typography.dart";
@@ -49,6 +52,9 @@ class _SuccessScreenState extends State<SuccessScreen>
             curve: const Interval(0.25, 1, curve: Curves.easeOut),
           ),
         );
+
+    // Play triumphant sound when success screen loads
+    unawaited(SoundService.instance.playTriumphant());
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (mounted) {
