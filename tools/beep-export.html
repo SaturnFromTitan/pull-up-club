@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Beep to WAV</title>
+  </head>
+  <body>
+    <h1>Beep exporter</h1>
+    <button id="countdown">Download countdown beep</button>
+    <button id="final">Download final beep</button>
+
+    <script>
+      async function generateBeep(frequency, durationSeconds, filename) {
+        const sampleRate = 44100;
+        const channels = 1;
+        const frameCount = sampleRate * durationSeconds;
+
+        // 1) render offline
+        const offlineCtx = new OfflineAudioContext(
+          channels,
+          frameCount,
+          sampleRate
+        );
+
+        const oscillator = offlineCtx.createOscillator();
+        const gainNode = offlineCtx.createGain();
+
+        oscillator.type = "sine";
+        oscillator.frequency.setValueAtTime(frequency, 0);
+
+        // copy your envelope
+        gainNode.gain.setValueAtTime(0.3, 0);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, durationSeconds);
+
+        oscillator.connect(gainNode);
+        gainNode.connect(offlineCtx.destination);
+
+        oscillator.start(0);
+        oscillator.stop(durationSeconds);
+
+        const renderedBuffer = await offlineCtx.startRendering();
+
+        // 2) turn AudioBuffer into WAV Blob
+        const wavBlob = bufferToWavBlob(renderedBuffer);
+
+        // 3) download
+        const url = URL.createObjectURL(wavBlob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+
+      function bufferToWavBlob(buffer) {
+        const numOfChan = buffer.numberOfChannels;
+        const sampleRate = buffer.sampleRate;
+        const numSamples = buffer.length;
+        const bytesPerSample = 2; // 16-bit
+        const blockAlign = numOfChan * bytesPerSample;
+        const byteRate = sampleRate * blockAlign;
+        const dataSize = numSamples * blockAlign;
+        const bufferSize = 44 + dataSize; // 44-byte header
+
+        const arrayBuffer = new ArrayBuffer(bufferSize);
+        const view = new DataView(arrayBuffer);
+        let offset = 0;
+
+        function writeString(s) {
+          for (let i = 0; i < s.length; i++) {
+            view.setUint8(offset++, s.charCodeAt(i));
+          }
+        }
+        function writeUint32(v) {
+          view.setUint32(offset, v, true);
+          offset += 4;
+        }
+        function writeUint16(v) {
+          view.setUint16(offset, v, true);
+          offset += 2;
+        }
+
+        // RIFF header
+        writeString("RIFF");
+        writeUint32(36 + dataSize);
+        writeString("WAVE");
+
+        // fmt chunk
+        writeString("fmt ");
+        writeUint32(16); // PCM chunk size
+        writeUint16(1); // format = PCM
+        writeUint16(numOfChan);
+        writeUint32(sampleRate);
+        writeUint32(byteRate);
+        writeUint16(blockAlign);
+        writeUint16(16); // bits per sample
+
+        // data chunk
+        writeString("data");
+        writeUint32(dataSize);
+
+        // write interleaved data
+        const channels = [];
+        for (let c = 0; c < numOfChan; c++) {
+          channels.push(buffer.getChannelData(c));
+        }
+
+        for (let i = 0; i < numSamples; i++) {
+          for (let c = 0; c < numOfChan; c++) {
+            let sample = channels[c][i];
+            // clamp
+            sample = Math.max(-1, Math.min(1, sample));
+            // convert to 16-bit
+            view.setInt16(
+              offset,
+              sample < 0 ? sample * 0x8000 : sample * 0x7fff,
+              true
+            );
+            offset += 2;
+          }
+        }
+
+        return new Blob([arrayBuffer], { type: "audio/wav" });
+      }
+
+      // hook up buttons
+      document
+        .getElementById("countdown")
+        .addEventListener("click", () =>
+          generateBeep(800, 0.1, "countdown-beep.wav")
+        );
+
+      document
+        .getElementById("final")
+        .addEventListener("click", () =>
+          generateBeep(600, 0.3, "final-beep.wav")
+        );
+    </script>
+  </body>
+</html>
