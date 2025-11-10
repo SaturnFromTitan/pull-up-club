@@ -53,6 +53,10 @@ jobs:
         working-directory: ios
         run: bundle install
 
+      - name: Install CocoaPods dependencies
+        working-directory: ios
+        run: bundle exec pod install
+
       # `match` is run in read-only mode to fetch signing assets. See the README for more details.
       - name: Fastlane beta → TestFlight
         working-directory: ios
@@ -62,7 +66,6 @@ jobs:
           APP_STORE_CONNECT_ISSUER_ID: ${{ vars.APP_STORE_CONNECT_ISSUER_ID }}
           APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
           APPLE_TEAM_ID: ${{ vars.APPLE_TEAM_ID }}
-          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
           MATCH_GIT_URL: https://x-access-token:${{ secrets.CERTS_TOKEN }}@github.com/SaturnFromTitan/pull-up-club-certificates.git
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
         run: bundle exec fastlane beta

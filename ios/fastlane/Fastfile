@@ -69,13 +69,7 @@ platform :ios do
     File.write(build_info_path, "MARKETING_VERSION=#{marketing_version}\nBUILD_NUMBER=#{build_number}\n")
 
     # Build and upload
-    # Ensure deps are up to date and build IPA via gym with explicit signing/export options
-    sh("flutter", "--version")
-    sh("flutter", "pub", "get")
-
-    UI.message("Installing CocoaPods dependencies")
-    sh("bundle", "exec", "pod", "install")
-
+    # Dependencies are installed in CI workflow before fastlane runs
     UI.message("Building IPA via gym (build_ios_app)")
     output_dir = File.expand_path("../../build/ios/ipa", __dir__)
     FileUtils.mkdir_p(output_dir) unless Dir.exist?(output_dir)
