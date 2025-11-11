@@ -1,6 +1,5 @@
 import "dart:async";
 
-import "package:flutter/cupertino.dart";
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
@@ -98,12 +97,32 @@ abstract class BaseWorkoutState<T extends BaseWorkoutScreen> extends State<T> {
     final targetReps = getTargetReps();
     final inputs = getInputs(workoutProvider, appProvider);
     const instructionTextStyle = AppTypography.headlineLarge;
-    final instructionTarget = targetReps == null
-        ? const Icon(CupertinoIcons.infinite, size: 110, color: Colors.white)
-        : Text(
-            targetReps.toString(),
-            style: const TextStyle(fontSize: 110, color: Colors.white),
-          );
+    const instructionIconStyle = TextStyle(fontSize: 110, color: Colors.white);
+    const instructionsNoTargetReps = Column(
+      children: [
+        SizedBox(height: AppSpacing.xxxl),
+        Text(
+          "Do as many reps as possible!",
+          style: instructionTextStyle,
+          textAlign: TextAlign.center,
+        ),
+        Text("🔥", style: instructionIconStyle, textAlign: TextAlign.center),
+        SizedBox(height: AppSpacing.md),
+      ],
+    );
+    final instructionsTargetReps = Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Text("do", style: instructionTextStyle),
+        const SizedBox(width: AppSpacing.sm),
+        ShaderMask(
+          shaderCallback: (final bounds) => AppGradients.repCount.createShader(bounds),
+          child: Text(targetReps.toString(), style: instructionIconStyle),
+        ),
+        const SizedBox(width: AppSpacing.sm),
+        Text(targetReps == 1 ? "rep" : "reps", style: instructionTextStyle),
+      ],
+    );
 
     return ScreenScaffold(
       child: Column(
@@ -116,25 +135,10 @@ abstract class BaseWorkoutState<T extends BaseWorkoutScreen> extends State<T> {
                 padding: const EdgeInsets.all(AppSpacing.paddingSmall),
                 child: Column(
                   children: [
-                    if (targetReps == null) const SizedBox(height: AppSpacing.xxxl),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text("do", style: instructionTextStyle),
-                        const SizedBox(width: AppSpacing.sm),
-                        ShaderMask(
-                          shaderCallback: (final bounds) =>
-                              AppGradients.repCount.createShader(bounds),
-                          child: instructionTarget,
-                        ),
-                        const SizedBox(width: AppSpacing.sm),
-                        Text(
-                          targetReps == 1 ? "rep" : "reps",
-                          style: instructionTextStyle,
-                        ),
-                      ],
-                    ),
-                    if (targetReps == null) const SizedBox(height: AppSpacing.xl),
+                    if (targetReps == null)
+                      instructionsNoTargetReps
+                    else
+                      instructionsTargetReps,
                     inputs,
                   ],
                 ),
