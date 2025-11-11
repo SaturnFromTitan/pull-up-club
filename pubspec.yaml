@@ -29,7 +29,6 @@ flutter:
   uses-material-design: true
   assets:
     - assets/sounds/
-    - assets/images/
 
 flutter_launcher_icons:
   ios: true
