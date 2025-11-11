@@ -19,11 +19,6 @@ class HistoryScreen extends StatelessWidget {
   @override
   Widget build(final BuildContext context) {
     final appProvider = context.watch<AppProvider>();
-
-    if (appProvider.isLoading) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
     final workouts = appProvider.completedWorkouts.reversed.toList();
     final numWorkouts = workouts.length;
     final totalReps = workouts.fold(0, (final t, final w) => t + w.totalReps());

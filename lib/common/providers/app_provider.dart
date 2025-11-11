@@ -67,4 +67,18 @@ class AppProvider extends ChangeNotifier {
   void resetTab() {
     setTabIndex(0);
   }
+
+  /// Determines the next workout type based on the most recent workout.
+  /// Cycles through WorkoutType enum values: maxSets -> submaxVolume -> ladders -> maxSets
+  WorkoutType? getNextWorkoutType() {
+    if (_completedWorkouts.isEmpty) {
+      return WorkoutType.values.first;
+    }
+
+    final currentIndex = WorkoutType.values.indexOf(
+      _completedWorkouts.last.workoutType,
+    );
+    final nextIndex = (currentIndex + 1) % WorkoutType.values.length;
+    return WorkoutType.values[nextIndex];
+  }
 }
