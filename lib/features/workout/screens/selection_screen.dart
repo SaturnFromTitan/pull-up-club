@@ -1,4 +1,5 @@
 import "dart:async";
+import "dart:math";
 
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
@@ -30,7 +31,66 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
   static const double _cardGap = AppSpacing.base * 3;
   static const double _iconSize = 27;
 
+  ({int? defaultValue, String? infoText}) _calculateDefaultTargetReps(
+    final List<Workout> completedWorkouts,
+  ) {
+    // Find the most recent submax volume workout
+    final submaxWorkouts = completedWorkouts
+        .where((final w) => w.workoutType == WorkoutType.submaxVolume)
+        .toList();
+
+    if (submaxWorkouts.isNotEmpty) {
+      final mostRecentSubmax = submaxWorkouts.last;
+
+      // Check if all sets completed the target reps
+      final targetReps = mostRecentSubmax.sets.first.targetReps!;
+      final allCompleted = mostRecentSubmax.sets.every(
+        (final set) => set.completedReps >= targetReps,
+      );
+
+      if (allCompleted) {
+        return (
+          defaultValue: targetReps + 1,
+          infoText: "Increased your target by 1 rep",
+        );
+      } else {
+        return (defaultValue: targetReps, infoText: "Same target as the last time");
+      }
+    }
+
+    // No submax volume workout, check for max sets workout
+    final maxSetsWorkouts = completedWorkouts
+        .where((final w) => w.workoutType == WorkoutType.maxSets)
+        .toList();
+
+    if (maxSetsWorkouts.isNotEmpty) {
+      // Find the highest rep count
+      final highestReps = maxSetsWorkouts.last.sets
+          .map((final set) => set.completedReps)
+          .reduce(max);
+      final suggestedReps = (highestReps / 2).floor();
+
+      if (suggestedReps > 0) {
+        return (
+          defaultValue: suggestedReps,
+          infoText: "That's 50% of your latest max reps",
+        );
+      } else {
+        return (defaultValue: null, infoText: "Please increase your Max Reps first");
+      }
+    }
+
+    // No workouts found
+    return (
+      defaultValue: null,
+      infoText: "Complete a Max Sets workout first to get a suggestion",
+    );
+  }
+
   Future<int?> askForTargetReps() async {
+    final appProvider = context.read<AppProvider>();
+    final defaultData = _calculateDefaultTargetReps(appProvider.completedWorkouts);
+
     final res = await showDialog<int>(
       context: context,
       builder: (final context) => Dialog(
@@ -39,8 +99,9 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              const Text("🎯", style: TextStyle(fontSize: 40, color: Colors.white)),
               const Text(
-                "🎯\nEnter Your Target Reps",
+                "Enter Your Target Reps",
                 style: AppTypography.headlineLarge,
                 textAlign: TextAlign.center,
               ),
@@ -53,6 +114,8 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
                 cancelText: "Cancel",
                 cancelIcon: Icons.close,
                 onCancel: () => Navigator.pop(context),
+                initialValue: defaultData.defaultValue,
+                infoText: defaultData.infoText,
               ),
             ],
           ),

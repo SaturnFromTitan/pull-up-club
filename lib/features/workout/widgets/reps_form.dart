@@ -3,6 +3,7 @@ import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
+import "package:pull_up_club/common/themes/app_typography.dart";
 import "package:pull_up_club/common/widgets/gradient_button.dart";
 
 class RepsForm extends StatefulWidget {
@@ -15,6 +16,8 @@ class RepsForm extends StatefulWidget {
     this.cancelText = "Back",
     this.cancelIcon = Icons.arrow_back,
     this.onCancel,
+    this.initialValue,
+    this.infoText,
   });
   final String submitText;
   final IconData submitIcon;
@@ -23,6 +26,8 @@ class RepsForm extends StatefulWidget {
   final String cancelText;
   final IconData cancelIcon;
   final VoidCallback? onCancel;
+  final int? initialValue;
+  final String? infoText;
 
   @override
   State<RepsForm> createState() => _RepsFormState();
@@ -39,14 +44,25 @@ class RepsForm extends StatefulWidget {
       ..add(IntProperty("minValue", minValue))
       ..add(StringProperty("cancelText", cancelText))
       ..add(DiagnosticsProperty<IconData>("cancelIcon", cancelIcon))
-      ..add(ObjectFlagProperty<VoidCallback?>.has("onCancel", onCancel));
+      ..add(ObjectFlagProperty<VoidCallback?>.has("onCancel", onCancel))
+      ..add(IntProperty("initialValue", initialValue))
+      ..add(StringProperty("infoText", infoText));
   }
 }
 
 class _RepsFormState extends State<RepsForm> {
   final _formKey = GlobalKey<FormState>();
-  final _controller = TextEditingController();
+  late final TextEditingController _controller;
   bool _isValid = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.initialValue?.toString() ?? "");
+    if (widget.initialValue != null) {
+      _isValid = true;
+    }
+  }
 
   void submit() {
     // run logic
@@ -65,6 +81,7 @@ class _RepsFormState extends State<RepsForm> {
     key: _formKey,
     child: Column(
       children: [
+        const SizedBox(height: AppSpacing.md),
         TextFormField(
           controller: _controller,
           maxLength: 2,
@@ -96,6 +113,15 @@ class _RepsFormState extends State<RepsForm> {
             return null;
           },
         ),
+        if (widget.infoText != null) ...[
+          const SizedBox(height: AppSpacing.sm),
+          Text(
+            "(${widget.infoText})",
+            style: AppTypography.bodyMedium,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: AppSpacing.md),
+        ],
         const SizedBox(height: AppSpacing.md),
         GradientButton(
           onPressed: _isValid ? submit : null,
