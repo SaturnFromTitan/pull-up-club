@@ -4,6 +4,7 @@ import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:pull_up_club/common/constants/app_constants.dart";
+import "package:pull_up_club/common/providers/app_provider.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
 import "package:pull_up_club/common/themes/app_theme.dart";
@@ -88,87 +89,93 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
   }
 
   @override
-  Widget build(final BuildContext context) => Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      // Header section
-      SizedBox(
-        width: double.infinity,
-        child: Column(
-          children: [
-            // App title
-            const Text(
-              AppConstants.appTitle,
-              style: AppTypography.displayLarge,
-              textAlign: TextAlign.center,
-            ),
+  Widget build(final BuildContext context) {
+    final appProvider = context.watch<AppProvider>();
+    final nextWorkoutType = appProvider.getNextWorkoutType();
 
-            const SizedBox(height: AppSpacing.sm),
-
-            // Subtitle - centered
-            Text(
-              "The plan for doubling your max pull ups!",
-              style: AppTypography.headlineSmall.copyWith(
-                color: AppColors.onColorSecondary,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Header section
+        SizedBox(
+          width: double.infinity,
+          child: Column(
+            children: [
+              const Text(
+                AppConstants.appTitle,
+                style: AppTypography.displayLarge,
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
-            ),
-          ],
+
+              const SizedBox(height: AppSpacing.sm),
+
+              Text(
+                "The plan for doubling your max pull ups!",
+                style: AppTypography.headlineSmall.copyWith(
+                  color: AppColors.onColorSecondary,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
         ),
-      ),
 
-      const SizedBox(height: _cardGap),
+        const SizedBox(height: _cardGap),
 
-      // Workout cards section
-      Expanded(
-        child: Column(
-          children: [
-            _WorkoutCard(
-              title: "Max Sets",
-              description: "3x max reps with 5 minutes rest",
-              icon: const Icon(Icons.speed, size: _iconSize),
-              gradient: AppGradients.primary,
-              isSelected: _selected == WorkoutType.maxSets,
-              onTap: () => setState(() => _selected = WorkoutType.maxSets),
-            ),
+        // Workout cards section
+        Expanded(
+          child: Column(
+            children: [
+              _WorkoutCard(
+                title: "Max Sets",
+                description: "3x max reps with 5 minutes rest",
+                icon: const Icon(Icons.speed, size: _iconSize),
+                gradient: AppGradients.primary,
+                isSelected: _selected == WorkoutType.maxSets,
+                isNext: nextWorkoutType == WorkoutType.maxSets,
+                onTap: () => setState(() => _selected = WorkoutType.maxSets),
+              ),
 
-            const SizedBox(height: _cardGap),
+              const SizedBox(height: _cardGap),
 
-            _WorkoutCard(
-              title: "Submax Volume",
-              description: "10 sets at 50% max reps with\n1 minute rest",
-              icon: const Icon(Icons.center_focus_strong, size: _iconSize),
-              gradient: AppGradients.accentPurple,
-              isSelected: _selected == WorkoutType.submaxVolume,
-              onTap: () => setState(() => _selected = WorkoutType.submaxVolume),
-            ),
+              _WorkoutCard(
+                title: "Submax Volume",
+                description: "10 sets at 50% max reps with\n1 minute rest",
+                icon: const Icon(Icons.center_focus_strong, size: _iconSize),
+                gradient: AppGradients.accentPurple,
+                isSelected: _selected == WorkoutType.submaxVolume,
+                isNext: nextWorkoutType == WorkoutType.submaxVolume,
+                onTap: () => setState(() => _selected = WorkoutType.submaxVolume),
+              ),
 
-            const SizedBox(height: _cardGap),
+              const SizedBox(height: _cardGap),
 
-            _WorkoutCard(
-              title: "Ladders",
-              description: "5 ladders (1, 2, 3, ... reps) with\n30 seconds rest",
-              icon: const Icon(Icons.trending_up, size: _iconSize),
-              gradient: AppGradients.accentGreen,
-              isSelected: _selected == WorkoutType.ladders,
-              onTap: () => setState(() => _selected = WorkoutType.ladders),
-            ),
-          ],
+              _WorkoutCard(
+                title: "Ladders",
+                description: "5 ladders (1, 2, 3, ... reps) with\n30 seconds rest",
+                icon: const Icon(Icons.trending_up, size: _iconSize),
+                gradient: AppGradients.accentGreen,
+                isSelected: _selected == WorkoutType.ladders,
+                isNext: nextWorkoutType == WorkoutType.ladders,
+                onTap: () => setState(() => _selected = WorkoutType.ladders),
+              ),
+            ],
+          ),
         ),
-      ),
 
-      const SizedBox(height: _cardGap),
+        const SizedBox(height: _cardGap),
 
-      // Start workout button
-      GradientButton(
-        text: "Start Workout",
-        icon: Icons.play_arrow,
-        onPressed: _handleSubmit,
-        gradient: AppGradients.primary,
-      ),
-      const SizedBox(height: AppSpacing.lg),
-    ],
-  );
+        // Start workout button
+        GradientButton(
+          text: "Start Workout",
+          icon: Icons.play_arrow,
+          onPressed: _handleSubmit,
+          gradient: AppGradients.primary,
+        ),
+        const SizedBox(height: AppSpacing.lg),
+      ],
+    );
+  }
 }
 
 class _WorkoutCard extends StatelessWidget {
@@ -179,11 +186,13 @@ class _WorkoutCard extends StatelessWidget {
     required this.gradient,
     required this.onTap,
     this.isSelected = false,
+    this.isNext = false,
   });
   final String title;
   final String description;
   final Widget icon;
   final bool isSelected;
+  final bool isNext;
   final LinearGradient gradient;
   final VoidCallback onTap;
 
@@ -205,40 +214,46 @@ class _WorkoutCard extends StatelessWidget {
         ),
       ),
       padding: const EdgeInsets.all(AppSpacing.paddingSmall),
-      child: Row(
+      child: Stack(
         children: [
-          GradientSurface(
-            width: _iconSize,
-            height: _iconSize,
-            gradient: gradient,
-            borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
-            boxShadow: defaultBoxShadows,
-            child: Center(child: icon),
-          ),
+          Row(
+            children: [
+              GradientSurface(
+                width: _iconSize,
+                height: _iconSize,
+                gradient: gradient,
+                borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
+                boxShadow: defaultBoxShadows,
+                child: Center(child: icon),
+              ),
 
-          const SizedBox(width: AppSpacing.md),
+              const SizedBox(width: AppSpacing.md),
 
-          // Text content
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(title, style: AppTypography.headlineMedium),
-                const SizedBox(height: AppSpacing.xs),
-                Flexible(
-                  child: Text(
-                    description,
-                    style: AppTypography.headlineSmall.copyWith(
-                      color: AppColors.onColorSecondary,
+              // Text content
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(title, style: AppTypography.headlineMedium),
+                    const SizedBox(height: AppSpacing.xs),
+                    Flexible(
+                      child: Text(
+                        description,
+                        style: AppTypography.headlineSmall.copyWith(
+                          color: AppColors.onColorSecondary,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
+          // Next badge
+          if (isNext) const Positioned(top: 0, right: 0, child: _NextBadge()),
         ],
       ),
     ),
@@ -251,7 +266,28 @@ class _WorkoutCard extends StatelessWidget {
       ..add(StringProperty("title", title))
       ..add(StringProperty("description", description))
       ..add(DiagnosticsProperty<bool>("isSelected", isSelected))
+      ..add(DiagnosticsProperty<bool>("isNext", isNext))
       ..add(DiagnosticsProperty<LinearGradient>("gradient", gradient))
       ..add(ObjectFlagProperty<VoidCallback>.has("onTap", onTap));
   }
+}
+
+class _NextBadge extends StatelessWidget {
+  const _NextBadge();
+
+  @override
+  Widget build(final BuildContext context) => Container(
+    padding: const EdgeInsets.symmetric(
+      horizontal: AppSpacing.md,
+      vertical: AppSpacing.xs,
+    ),
+    decoration: BoxDecoration(
+      color: AppColors.yellow,
+      borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
+    ),
+    child: Text(
+      "Next",
+      style: AppTypography.bodyMedium.copyWith(color: AppColors.onLight),
+    ),
+  );
 }

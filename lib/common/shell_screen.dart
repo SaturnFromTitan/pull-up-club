@@ -15,7 +15,6 @@ class Shell extends StatelessWidget {
   Widget build(final BuildContext context) {
     final appProvider = context.watch<AppProvider>();
 
-    // Show splash screen while workouts are loading
     if (appProvider.isLoading) {
       return const ScreenScaffold(child: SplashScreen());
     }
