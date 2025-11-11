@@ -3,6 +3,7 @@ import "package:provider/provider.dart";
 import "package:pull_up_club/common/providers/app_provider.dart";
 import "package:pull_up_club/common/widgets/gradient_navigation_bar.dart";
 import "package:pull_up_club/common/widgets/screen_scaffold.dart";
+import "package:pull_up_club/common/widgets/splash_screen.dart";
 import "package:pull_up_club/features/history/screens/history_screen.dart";
 import "package:pull_up_club/features/workout/screens/selection_screen.dart";
 
@@ -13,6 +14,11 @@ class Shell extends StatelessWidget {
   @override
   Widget build(final BuildContext context) {
     final appProvider = context.watch<AppProvider>();
+
+    // Show splash screen while workouts are loading
+    if (appProvider.isLoading) {
+      return const ScreenScaffold(child: SplashScreen());
+    }
 
     return ScreenScaffold(
       bottomNavigationBar: GradientNavigationBar(
