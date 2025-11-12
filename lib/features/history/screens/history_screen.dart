@@ -144,46 +144,48 @@ class _PastWorkout extends StatelessWidget {
   final Workout workout;
 
   @override
-  Widget build(final BuildContext context) => Container(
-    decoration: BoxDecoration(
-      color: AppColors.glassBackground,
-      borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
-    ),
-    width: double.infinity,
-    padding: const EdgeInsets.all(AppSpacing.paddingSmall),
-    child: Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(workout.workoutType.name, style: AppTypography.headlineMedium),
-                Text(
-                  "📅 ${datetimeToString(workout.start)}",
-                  style: AppTypography.bodySmall,
-                ),
-              ],
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text("💪 ${workout.totalReps()} reps"),
-                Text("⏱️ ${formatMinutesSeconds(workout.durationSeconds() ?? 0)}"),
-              ],
-            ),
-          ],
-        ),
+  Widget build(final BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.glassBackground,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
+      ),
+      width: double.infinity,
+      padding: const EdgeInsets.all(AppSpacing.paddingSmall),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(workout.workoutType.name, style: AppTypography.headlineMedium),
+                  Text(
+                    "📅 ${datetimeToString(workout.start)}",
+                    style: AppTypography.bodySmall,
+                  ),
+                ],
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text("💪 ${workout.totalReps()} reps"),
+                  Text("⏱️ ${formatMinutesSeconds(workout.durationSeconds() ?? 0)}"),
+                ],
+              ),
+            ],
+          ),
 
-        const SizedBox(height: AppSpacing.md),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
-          child: SetCards(values: getSetCardValues(workout), withContainer: false),
-        ),
-      ],
-    ),
-  );
+          const SizedBox(height: AppSpacing.md),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+            child: SetCards(values: getSetCardValues(workout), withContainer: false),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   void debugFillProperties(final DiagnosticPropertiesBuilder properties) {

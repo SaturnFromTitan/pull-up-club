@@ -18,33 +18,35 @@ class GradientNavigationBar extends StatelessWidget {
   static const double _iconSize = 25;
 
   @override
-  Widget build(final BuildContext context) => DecoratedBox(
-    decoration: const BoxDecoration(gradient: AppGradients.light),
-    child: SafeArea(
-      top: false,
-      left: false,
-      right: false,
-      child: Padding(
-        padding: const EdgeInsets.only(top: 10),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: List.generate(destinations.length, (final index) {
-            final destination = destinations[index];
-            final isSelected = index == selectedIndex;
-            final iconWidget = (isSelected && destination.selectedIcon != null)
-                ? destination.selectedIcon!
-                : destination.icon;
-            return _NavItem(
-              isSelected: isSelected,
-              icon: iconWidget,
-              label: destination.label,
-              onTap: () => onDestinationSelected(index),
-            );
-          }),
+  Widget build(final BuildContext context) {
+    return DecoratedBox(
+      decoration: const BoxDecoration(gradient: AppGradients.light),
+      child: SafeArea(
+        top: false,
+        left: false,
+        right: false,
+        child: Padding(
+          padding: const EdgeInsets.only(top: 10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: List.generate(destinations.length, (final index) {
+              final destination = destinations[index];
+              final isSelected = index == selectedIndex;
+              final iconWidget = (isSelected && destination.selectedIcon != null)
+                  ? destination.selectedIcon!
+                  : destination.icon;
+              return _NavItem(
+                isSelected: isSelected,
+                icon: iconWidget,
+                label: destination.label,
+                onTap: () => onDestinationSelected(index),
+              );
+            }),
+          ),
         ),
       ),
-    ),
-  );
+    );
+  }
 
   @override
   void debugFillProperties(final DiagnosticPropertiesBuilder properties) {

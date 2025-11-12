@@ -200,20 +200,22 @@ class _Sparkle extends StatelessWidget {
   final double angle;
 
   @override
-  Widget build(final BuildContext context) => Opacity(
-    opacity: opacity.clamp(0.0, 1.0),
-    child: Transform.rotate(
-      angle: angle,
-      child: Transform.scale(
-        scale: scale,
-        child: Icon(
-          Icons.star_rounded,
-          color: AppColors.gold.withValues(alpha: 0.9),
-          size: size,
+  Widget build(final BuildContext context) {
+    return Opacity(
+      opacity: opacity.clamp(0.0, 1.0),
+      child: Transform.rotate(
+        angle: angle,
+        child: Transform.scale(
+          scale: scale,
+          child: Icon(
+            Icons.star_rounded,
+            color: AppColors.gold.withValues(alpha: 0.9),
+            size: size,
+          ),
         ),
       ),
-    ),
-  );
+    );
+  }
 
   @override
   void debugFillProperties(final DiagnosticPropertiesBuilder properties) {

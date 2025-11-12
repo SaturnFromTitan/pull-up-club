@@ -25,15 +25,16 @@ void main() {
 class App extends StatelessWidget {
   const App({super.key});
 
+  // Create repository as a static instance to ensure it's only created once
+  static final _workoutRepository = WorkoutRepository(WorkoutDatabase.instance);
+
   @override
   Widget build(final BuildContext context) {
-    final workoutRepository = WorkoutRepository(WorkoutDatabase.instance);
-
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (final context) => NavigationProvider()),
         ChangeNotifierProvider(
-          create: (final context) => WorkoutHistoryProvider(workoutRepository),
+          create: (final context) => WorkoutHistoryProvider(_workoutRepository),
         ),
       ],
       child: MaterialApp(

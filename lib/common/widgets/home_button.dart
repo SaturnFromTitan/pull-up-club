@@ -18,18 +18,20 @@ class HomeButton extends StatelessWidget {
   final LinearGradient gradient;
 
   @override
-  Widget build(final BuildContext context) => GradientButton(
-    onPressed: () async {
-      context.read<NavigationProvider>().resetTab();
+  Widget build(final BuildContext context) {
+    return GradientButton(
+      onPressed: () async {
+        context.read<NavigationProvider>().resetTab();
 
-      await Navigator.of(
-        context,
-      ).pushNamedAndRemoveUntil(Shell.route, (final route) => false);
-    },
-    text: text,
-    icon: icon,
-    gradient: gradient,
-  );
+        await Navigator.of(
+          context,
+        ).pushNamedAndRemoveUntil(Shell.route, (final route) => false);
+      },
+      text: text,
+      icon: icon,
+      gradient: gradient,
+    );
+  }
 
   @override
   void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
