@@ -5,8 +5,8 @@ import "package:provider/provider.dart";
 import "package:pull_up_club/common/constants/app_constants.dart";
 import "package:pull_up_club/common/providers/navigation_provider.dart";
 import "package:pull_up_club/common/providers/workout_history_provider.dart";
+import "package:pull_up_club/common/screens/shell_screen.dart";
 import "package:pull_up_club/common/services/workout_database.dart";
-import "package:pull_up_club/common/shell_screen.dart";
 import "package:pull_up_club/common/themes/app_theme.dart";
 import "package:pull_up_club/data/repositories/workout_repository.dart";
 

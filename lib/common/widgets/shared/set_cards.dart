@@ -4,7 +4,7 @@ import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
 import "package:pull_up_club/common/themes/app_theme.dart";
 import "package:pull_up_club/common/themes/app_typography.dart";
-import "package:pull_up_club/common/widgets/gradient_surface.dart";
+import "package:pull_up_club/common/widgets/core/gradient_surface.dart";
 
 class SetCards extends StatelessWidget {
   const SetCards({

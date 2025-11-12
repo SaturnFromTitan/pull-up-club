@@ -4,7 +4,7 @@ import "package:flutter/services.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
 import "package:pull_up_club/common/themes/app_typography.dart";
-import "package:pull_up_club/common/widgets/gradient_button.dart";
+import "package:pull_up_club/common/widgets/core/gradient_button.dart";
 
 class RepsForm extends StatefulWidget {
   const RepsForm({

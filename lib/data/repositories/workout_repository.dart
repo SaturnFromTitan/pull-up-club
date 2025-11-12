@@ -1,5 +1,5 @@
 import "package:pull_up_club/common/services/workout_database.dart";
-import "package:pull_up_club/features/workout/models.dart";
+import "package:pull_up_club/domain/models.dart";
 
 class WorkoutRepository {
   WorkoutRepository(this._database);

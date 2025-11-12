@@ -2,9 +2,9 @@ import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:pull_up_club/common/providers/navigation_provider.dart";
 import "package:pull_up_club/common/providers/workout_history_provider.dart";
-import "package:pull_up_club/common/widgets/gradient_navigation_bar.dart";
-import "package:pull_up_club/common/widgets/screen_scaffold.dart";
-import "package:pull_up_club/common/widgets/splash_screen.dart";
+import "package:pull_up_club/common/screens/splash_screen.dart";
+import "package:pull_up_club/common/widgets/core/gradient_navigation_bar.dart";
+import "package:pull_up_club/common/widgets/core/screen_scaffold.dart";
 import "package:pull_up_club/features/history/screens/history_screen.dart";
 import "package:pull_up_club/features/workout/screens/selection_screen.dart";
 

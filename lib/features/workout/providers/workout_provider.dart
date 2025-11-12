@@ -3,7 +3,7 @@ import "dart:async";
 import "package:flutter/material.dart";
 import "package:pull_up_club/common/providers/workout_history_provider.dart";
 import "package:pull_up_club/common/services/sound_service.dart";
-import "package:pull_up_club/features/workout/models.dart";
+import "package:pull_up_club/domain/models.dart";
 
 class WorkoutProvider extends ChangeNotifier {
   // initialisation

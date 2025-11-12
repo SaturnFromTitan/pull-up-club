@@ -2,7 +2,7 @@ import "dart:async";
 
 import "package:flutter/material.dart";
 import "package:pull_up_club/data/repositories/workout_repository.dart";
-import "package:pull_up_club/features/workout/models.dart";
+import "package:pull_up_club/domain/models.dart";
 
 class WorkoutHistoryProvider extends ChangeNotifier {
   WorkoutHistoryProvider(this._repository) {

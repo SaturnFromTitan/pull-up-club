@@ -7,9 +7,9 @@ import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
 import "package:pull_up_club/common/themes/app_typography.dart";
 import "package:pull_up_club/common/utils/utils.dart";
-import "package:pull_up_club/common/widgets/total_card.dart";
-import "package:pull_up_club/features/workout/models.dart";
-import "package:pull_up_club/features/workout/widgets/set_cards.dart";
+import "package:pull_up_club/common/widgets/shared/set_cards.dart";
+import "package:pull_up_club/common/widgets/shared/total_card.dart";
+import "package:pull_up_club/domain/models.dart";
 
 class HistoryScreen extends StatelessWidget {
   const HistoryScreen({super.key});

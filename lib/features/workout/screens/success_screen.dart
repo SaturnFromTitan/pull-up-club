@@ -7,12 +7,12 @@ import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
 import "package:pull_up_club/common/themes/app_typography.dart";
 import "package:pull_up_club/common/utils/utils.dart";
-import "package:pull_up_club/common/widgets/home_button.dart";
-import "package:pull_up_club/common/widgets/screen_scaffold.dart";
-import "package:pull_up_club/common/widgets/total_card.dart";
-import "package:pull_up_club/features/workout/models.dart";
+import "package:pull_up_club/common/widgets/core/screen_scaffold.dart";
+import "package:pull_up_club/common/widgets/shared/home_button.dart";
+import "package:pull_up_club/common/widgets/shared/set_cards.dart";
+import "package:pull_up_club/common/widgets/shared/total_card.dart";
+import "package:pull_up_club/domain/models.dart";
 import "package:pull_up_club/features/workout/widgets/animated_trophy.dart";
-import "package:pull_up_club/features/workout/widgets/set_cards.dart";
 
 class SuccessScreen extends StatefulWidget {
   const SuccessScreen({required this.workout, super.key});

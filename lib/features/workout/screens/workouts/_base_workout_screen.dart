@@ -8,13 +8,13 @@ import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
 import "package:pull_up_club/common/themes/app_typography.dart";
 import "package:pull_up_club/common/utils/utils.dart";
-import "package:pull_up_club/common/widgets/home_button.dart";
-import "package:pull_up_club/common/widgets/screen_scaffold.dart";
-import "package:pull_up_club/features/workout/models.dart";
+import "package:pull_up_club/common/widgets/core/screen_scaffold.dart";
+import "package:pull_up_club/common/widgets/shared/home_button.dart";
+import "package:pull_up_club/common/widgets/shared/set_cards.dart";
+import "package:pull_up_club/domain/models.dart";
 import "package:pull_up_club/features/workout/providers/workout_provider.dart";
 import "package:pull_up_club/features/workout/screens/rest_screen.dart";
 import "package:pull_up_club/features/workout/screens/success_screen.dart";
-import "package:pull_up_club/features/workout/widgets/set_cards.dart";
 
 abstract class BaseWorkoutScreen extends StatefulWidget {
   const BaseWorkoutScreen({super.key});
