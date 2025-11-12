@@ -27,21 +27,21 @@ abstract class BaseWorkoutState<T extends BaseWorkoutScreen> extends State<T> {
   int get restDurationSeconds;
 
   int? getTargetReps();
-  Widget getInputs(
-    final WorkoutProvider workoutProvider,
-    final WorkoutHistoryProvider workoutHistoryProvider,
-  );
+  Widget getInputs();
 
-  int getCompletedGroups(final WorkoutProvider workoutProvider) =>
-      workoutProvider.workout.sets.length;
+  int getCompletedGroups() {
+    final workoutProvider = context.read<WorkoutProvider>();
+    return workoutProvider.workout.sets.length;
+  }
 
-  bool isLastGroup(final WorkoutProvider workoutProvider) =>
-      getCompletedGroups(workoutProvider) == workoutProvider.workout.maxGroups - 1;
+  bool isLastGroup() =>
+      getCompletedGroups() == context.read<WorkoutProvider>().workout.maxGroups - 1;
 
-  bool isFinished(final WorkoutProvider workoutProvider) =>
-      getCompletedGroups(workoutProvider) == workoutProvider.workout.maxGroups;
+  bool isFinished() =>
+      getCompletedGroups() == context.read<WorkoutProvider>().workout.maxGroups;
 
-  void navigateToSuccess(final WorkoutProvider workoutProvider) {
+  void navigateToSuccess() {
+    final workoutProvider = context.read<WorkoutProvider>();
     unawaited(
       Navigator.of(context).push(
         MaterialPageRoute(
@@ -51,7 +51,8 @@ abstract class BaseWorkoutState<T extends BaseWorkoutScreen> extends State<T> {
     );
   }
 
-  void navigateToRest(final WorkoutProvider workoutProvider) {
+  void navigateToRest() {
+    final workoutProvider = context.read<WorkoutProvider>();
     unawaited(
       Navigator.of(context).push(
         MaterialPageRoute(
@@ -64,12 +65,9 @@ abstract class BaseWorkoutState<T extends BaseWorkoutScreen> extends State<T> {
     );
   }
 
-  void finishSet({
-    required final int group,
-    required final int completedReps,
-    required final WorkoutProvider workoutProvider,
-    required final WorkoutHistoryProvider workoutHistoryProvider,
-  }) {
+  void finishSet({required final int group, required final int completedReps}) {
+    final workoutProvider = context.read<WorkoutProvider>();
+
     // add set
     final set_ = WorkoutSet(
       group: group,
@@ -79,23 +77,23 @@ abstract class BaseWorkoutState<T extends BaseWorkoutScreen> extends State<T> {
     workoutProvider.addSet(set_);
 
     // navigate
-    if (isFinished(workoutProvider)) {
+    if (isFinished()) {
       // can't await here as `finishSet` is meant to be called synchronously
       // on button press
+      final workoutHistoryProvider = context.read<WorkoutHistoryProvider>();
       unawaited(workoutProvider.finish(workoutHistoryProvider));
-      navigateToSuccess(workoutProvider);
+      navigateToSuccess();
     } else {
       workoutProvider.rest(restDurationSeconds);
-      navigateToRest(workoutProvider);
+      navigateToRest();
     }
   }
 
   @override
   Widget build(final BuildContext context) {
-    final workoutHistoryProvider = context.read<WorkoutHistoryProvider>();
     final workoutProvider = context.watch<WorkoutProvider>();
     final targetReps = getTargetReps();
-    final inputs = getInputs(workoutProvider, workoutHistoryProvider);
+    final inputs = getInputs();
     const instructionTextStyle = AppTypography.headlineLarge;
     const instructionIconStyle = TextStyle(fontSize: 110, color: Colors.white);
     const instructionsNoTargetReps = Column(

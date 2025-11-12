@@ -1,9 +1,7 @@
 import "package:flutter/material.dart";
-import "package:pull_up_club/common/providers/workout_history_provider.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
 import "package:pull_up_club/common/widgets/gradient_button.dart";
-import "package:pull_up_club/features/workout/providers/workout_provider.dart";
 import "package:pull_up_club/features/workout/screens/workouts/_base_workout_screen.dart";
 import "package:pull_up_club/features/workout/widgets/reps_form.dart";
 
@@ -23,25 +21,17 @@ class _LaddersState extends BaseWorkoutState<LaddersScreen> {
   int get restDurationSeconds => 30;
 
   @override
-  int getCompletedGroups(final WorkoutProvider workoutProvider) => _completedGroups;
+  int getCompletedGroups() => _completedGroups;
 
   @override
   int getTargetReps() => _targetReps;
 
   @override
-  Widget getInputs(
-    final WorkoutProvider workoutProvider,
-    final WorkoutHistoryProvider workoutHistoryProvider,
-  ) {
+  Widget getInputs() {
     final buttons = [
       GradientButton(
         onPressed: () {
-          finishSet(
-            group: _completedGroups + 1,
-            completedReps: getTargetReps(),
-            workoutProvider: workoutProvider,
-            workoutHistoryProvider: workoutHistoryProvider,
-          );
+          finishSet(group: _completedGroups + 1, completedReps: getTargetReps());
           _targetReps++;
         },
         text: "Done, continue this ladder",
@@ -53,18 +43,11 @@ class _LaddersState extends BaseWorkoutState<LaddersScreen> {
           // have to increment _completedGroups before calling finishSet
           // so that isFinished() is evaluated correctly
           _completedGroups++;
-          finishSet(
-            group: _completedGroups,
-            completedReps: getTargetReps(),
-            workoutProvider: workoutProvider,
-            workoutHistoryProvider: workoutHistoryProvider,
-          );
+          finishSet(group: _completedGroups, completedReps: getTargetReps());
           _targetReps = 1;
         },
-        text: isLastGroup(workoutProvider)
-            ? "Finish Workout"
-            : "Done, start new ladder",
-        icon: isLastGroup(workoutProvider) ? Icons.check : Icons.refresh,
+        text: isLastGroup() ? "Finish Workout" : "Done, start new ladder",
+        icon: isLastGroup() ? Icons.check : Icons.refresh,
         gradient: AppGradients.accentPurple,
       ),
       GradientButton(
@@ -83,12 +66,7 @@ class _LaddersState extends BaseWorkoutState<LaddersScreen> {
         // have to increment _completedGroups before calling finishSet
         // so that isFinished() is evaluated correctly
         _completedGroups++;
-        finishSet(
-          group: _completedGroups,
-          completedReps: reps,
-          workoutProvider: workoutProvider,
-          workoutHistoryProvider: workoutHistoryProvider,
-        );
+        finishSet(group: _completedGroups, completedReps: reps);
         _targetReps = 1;
         _showCustomRepsForm = false;
       },
