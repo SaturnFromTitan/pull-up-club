@@ -5,8 +5,10 @@ import "package:provider/provider.dart";
 import "package:pull_up_club/common/constants/app_constants.dart";
 import "package:pull_up_club/common/providers/navigation_provider.dart";
 import "package:pull_up_club/common/providers/workout_history_provider.dart";
+import "package:pull_up_club/common/services/workout_database.dart";
 import "package:pull_up_club/common/shell_screen.dart";
 import "package:pull_up_club/common/themes/app_theme.dart";
+import "package:pull_up_club/data/repositories/workout_repository.dart";
 
 void main() {
   // Configure logging
@@ -24,16 +26,22 @@ class App extends StatelessWidget {
   const App({super.key});
 
   @override
-  Widget build(final BuildContext context) => MultiProvider(
-    providers: [
-      ChangeNotifierProvider(create: (final context) => NavigationProvider()),
-      ChangeNotifierProvider(create: (final context) => WorkoutHistoryProvider()),
-    ],
-    child: MaterialApp(
-      title: AppConstants.appTitle,
-      theme: appTheme,
-      initialRoute: Shell.route,
-      routes: {Shell.route: (final context) => const Shell()},
-    ),
-  );
+  Widget build(final BuildContext context) {
+    final workoutRepository = WorkoutRepository(WorkoutDatabase.instance);
+
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (final context) => NavigationProvider()),
+        ChangeNotifierProvider(
+          create: (final context) => WorkoutHistoryProvider(workoutRepository),
+        ),
+      ],
+      child: MaterialApp(
+        title: AppConstants.appTitle,
+        theme: appTheme,
+        initialRoute: Shell.route,
+        routes: {Shell.route: (final context) => const Shell()},
+      ),
+    );
+  }
 }
