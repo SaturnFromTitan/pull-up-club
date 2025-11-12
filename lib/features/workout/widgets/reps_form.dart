@@ -4,7 +4,7 @@ import "package:flutter/services.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
 import "package:pull_up_club/common/themes/app_typography.dart";
-import "package:pull_up_club/common/widgets/gradient_button.dart";
+import "package:pull_up_club/common/widgets/core/gradient_button.dart";
 
 class RepsForm extends StatefulWidget {
   const RepsForm({
@@ -77,70 +77,74 @@ class _RepsFormState extends State<RepsForm> {
   }
 
   @override
-  Widget build(final BuildContext context) => Form(
-    key: _formKey,
-    child: Column(
-      children: [
-        const SizedBox(height: AppSpacing.md),
-        TextFormField(
-          controller: _controller,
-          maxLength: 2,
-          decoration: InputDecoration(
-            hintText: "Tap to enter reps",
-            counterText: "",
-            errorStyle: const TextStyle(fontSize: 0),
-            filled: true,
-            fillColor: Colors.white,
-            border: OutlineInputBorder(
-              borderSide: BorderSide.none,
-              borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
-            ),
-          ),
-          textAlign: TextAlign.center,
-          inputFormatters: [FilteringTextInputFormatter(RegExp("[0-9]"), allow: true)],
-          keyboardType: TextInputType.number,
-          onChanged: (_) {
-            final currentIsValid = _formKey.currentState?.validate() ?? false;
-            setState(() => _isValid = currentIsValid);
-          },
-          validator: (final value) {
-            if (value == null || value.isEmpty) {
-              return "Required";
-            }
-            if (int.parse(value) < widget.minValue) {
-              return "Must be at least ${widget.minValue}";
-            }
-            return null;
-          },
-        ),
-        if (widget.infoText != null) ...[
-          const SizedBox(height: AppSpacing.sm),
-          Text(
-            "(${widget.infoText})",
-            style: AppTypography.bodyMedium,
-            textAlign: TextAlign.center,
-          ),
+  Widget build(final BuildContext context) {
+    return Form(
+      key: _formKey,
+      child: Column(
+        children: [
           const SizedBox(height: AppSpacing.md),
-        ],
-        const SizedBox(height: AppSpacing.md),
-        GradientButton(
-          onPressed: _isValid ? submit : null,
-          text: widget.submitText,
-          icon: widget.submitIcon,
-          gradient: AppGradients.secondary,
-        ),
-        if (widget.onCancel != null) ...[
-          const SizedBox(height: AppSpacing.sm),
-          GradientButton(
-            onPressed: widget.onCancel,
-            text: widget.cancelText,
-            icon: widget.cancelIcon,
-            gradient: AppGradients.light,
+          TextFormField(
+            controller: _controller,
+            maxLength: 2,
+            decoration: InputDecoration(
+              hintText: "Tap to enter reps",
+              counterText: "",
+              errorStyle: const TextStyle(fontSize: 0),
+              filled: true,
+              fillColor: Colors.white,
+              border: OutlineInputBorder(
+                borderSide: BorderSide.none,
+                borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
+              ),
+            ),
+            textAlign: TextAlign.center,
+            inputFormatters: [
+              FilteringTextInputFormatter(RegExp("[0-9]"), allow: true),
+            ],
+            keyboardType: TextInputType.number,
+            onChanged: (_) {
+              final currentIsValid = _formKey.currentState?.validate() ?? false;
+              setState(() => _isValid = currentIsValid);
+            },
+            validator: (final value) {
+              if (value == null || value.isEmpty) {
+                return "Required";
+              }
+              if (int.parse(value) < widget.minValue) {
+                return "Must be at least ${widget.minValue}";
+              }
+              return null;
+            },
           ),
+          if (widget.infoText != null) ...[
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              "(${widget.infoText})",
+              style: AppTypography.bodyMedium,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: AppSpacing.md),
+          ],
+          const SizedBox(height: AppSpacing.md),
+          GradientButton(
+            onPressed: _isValid ? submit : null,
+            text: widget.submitText,
+            icon: widget.submitIcon,
+            gradient: AppGradients.secondary,
+          ),
+          if (widget.onCancel != null) ...[
+            const SizedBox(height: AppSpacing.sm),
+            GradientButton(
+              onPressed: widget.onCancel,
+              text: widget.cancelText,
+              icon: widget.cancelIcon,
+              gradient: AppGradients.light,
+            ),
+          ],
         ],
-      ],
-    ),
-  );
+      ),
+    );
+  }
 
   @override
   void dispose() {

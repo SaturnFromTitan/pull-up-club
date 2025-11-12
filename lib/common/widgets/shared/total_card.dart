@@ -22,27 +22,29 @@ class TotalCard extends StatelessWidget {
   final LinearGradient? gradient;
 
   @override
-  Widget build(final BuildContext context) => Container(
-    decoration: BoxDecoration(
-      color: color,
-      gradient: gradient,
-      borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
-    ),
-    padding: const EdgeInsets.all(AppSpacing.paddingSmall),
-    child: Column(
-      children: [
-        Text(emoji, style: AppTypography.headlineLarge.copyWith(fontSize: 30)),
-        Text(value, style: AppTypography.headlineLarge.copyWith(fontSize: 26)),
-        Text(
-          text,
-          style: AppTypography.bodyMedium.copyWith(
-            fontSize: 16,
-            fontWeight: FontWeight.w300,
+  Widget build(final BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: color,
+        gradient: gradient,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
+      ),
+      padding: const EdgeInsets.all(AppSpacing.paddingSmall),
+      child: Column(
+        children: [
+          Text(emoji, style: AppTypography.headlineLarge.copyWith(fontSize: 30)),
+          Text(value, style: AppTypography.headlineLarge.copyWith(fontSize: 26)),
+          Text(
+            text,
+            style: AppTypography.bodyMedium.copyWith(
+              fontSize: 16,
+              fontWeight: FontWeight.w300,
+            ),
           ),
-        ),
-      ],
-    ),
-  );
+        ],
+      ),
+    );
+  }
 
   @override
   void debugFillProperties(final DiagnosticPropertiesBuilder properties) {

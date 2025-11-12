@@ -2,7 +2,7 @@ import "package:drift/drift.dart";
 import "package:drift_flutter/drift_flutter.dart";
 import "package:logging/logging.dart";
 import "package:path_provider/path_provider.dart";
-import "package:pull_up_club/features/workout/models.dart";
+import "package:pull_up_club/domain/models.dart";
 
 part "workout_database.g.dart";
 

@@ -1,4 +1,4 @@
-import "package:pull_up_club/features/workout/models.dart";
+import "package:pull_up_club/domain/models.dart";
 
 String twoDigits(final int n) => n.toString().padLeft(2, "0");
 

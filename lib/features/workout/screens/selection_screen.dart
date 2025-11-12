@@ -5,14 +5,14 @@ import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:pull_up_club/common/constants/app_constants.dart";
-import "package:pull_up_club/common/providers/app_provider.dart";
+import "package:pull_up_club/common/providers/workout_history_provider.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
 import "package:pull_up_club/common/themes/app_theme.dart";
 import "package:pull_up_club/common/themes/app_typography.dart";
-import "package:pull_up_club/common/widgets/gradient_button.dart";
-import "package:pull_up_club/common/widgets/gradient_surface.dart";
-import "package:pull_up_club/features/workout/models.dart";
+import "package:pull_up_club/common/widgets/core/gradient_button.dart";
+import "package:pull_up_club/common/widgets/core/gradient_surface.dart";
+import "package:pull_up_club/domain/models.dart";
 import "package:pull_up_club/features/workout/providers/workout_provider.dart";
 import "package:pull_up_club/features/workout/screens/workouts/ladders_screen.dart";
 import "package:pull_up_club/features/workout/screens/workouts/max_sets_screen.dart";
@@ -88,8 +88,10 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
   }
 
   Future<int?> askForTargetReps() async {
-    final appProvider = context.read<AppProvider>();
-    final defaultData = _calculateDefaultTargetReps(appProvider.completedWorkouts);
+    final workoutHistoryProvider = context.read<WorkoutHistoryProvider>();
+    final defaultData = _calculateDefaultTargetReps(
+      workoutHistoryProvider.completedWorkouts,
+    );
 
     final res = await showDialog<int>(
       context: context,
@@ -153,8 +155,8 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
 
   @override
   Widget build(final BuildContext context) {
-    final appProvider = context.watch<AppProvider>();
-    final nextWorkoutType = appProvider.getNextWorkoutType();
+    final workoutHistoryProvider = context.watch<WorkoutHistoryProvider>();
+    final nextWorkoutType = workoutHistoryProvider.getNextWorkoutType();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -263,64 +265,66 @@ class _WorkoutCard extends StatelessWidget {
   static const double _iconSize = 55;
 
   @override
-  Widget build(final BuildContext context) => GestureDetector(
-    onTap: onTap,
-    child: Container(
-      height: _cardHeight,
-      decoration: BoxDecoration(
-        color: AppColors.glassBackground,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusLarge),
-        border: Border.all(
-          color: isSelected
-              ? AppColors.glassBorderActive
-              : AppColors.glassBorderInactive,
+  Widget build(final BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: _cardHeight,
+        decoration: BoxDecoration(
+          color: AppColors.glassBackground,
+          borderRadius: BorderRadius.circular(AppSpacing.radiusLarge),
+          border: Border.all(
+            color: isSelected
+                ? AppColors.glassBorderActive
+                : AppColors.glassBorderInactive,
+          ),
+        ),
+        padding: const EdgeInsets.all(AppSpacing.paddingSmall),
+        child: Stack(
+          children: [
+            Row(
+              children: [
+                GradientSurface(
+                  width: _iconSize,
+                  height: _iconSize,
+                  gradient: gradient,
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
+                  boxShadow: defaultBoxShadows,
+                  child: Center(child: icon),
+                ),
+
+                const SizedBox(width: AppSpacing.md),
+
+                // Text content
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(title, style: AppTypography.headlineMedium),
+                      const SizedBox(height: AppSpacing.xs),
+                      Flexible(
+                        child: Text(
+                          description,
+                          style: AppTypography.headlineSmall.copyWith(
+                            color: AppColors.onColorSecondary,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            // Next badge
+            if (isNext) const Positioned(top: 0, right: 0, child: _NextBadge()),
+          ],
         ),
       ),
-      padding: const EdgeInsets.all(AppSpacing.paddingSmall),
-      child: Stack(
-        children: [
-          Row(
-            children: [
-              GradientSurface(
-                width: _iconSize,
-                height: _iconSize,
-                gradient: gradient,
-                borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
-                boxShadow: defaultBoxShadows,
-                child: Center(child: icon),
-              ),
-
-              const SizedBox(width: AppSpacing.md),
-
-              // Text content
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(title, style: AppTypography.headlineMedium),
-                    const SizedBox(height: AppSpacing.xs),
-                    Flexible(
-                      child: Text(
-                        description,
-                        style: AppTypography.headlineSmall.copyWith(
-                          color: AppColors.onColorSecondary,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          // Next badge
-          if (isNext) const Positioned(top: 0, right: 0, child: _NextBadge()),
-        ],
-      ),
-    ),
-  );
+    );
+  }
 
   @override
   void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
@@ -339,18 +343,20 @@ class _NextBadge extends StatelessWidget {
   const _NextBadge();
 
   @override
-  Widget build(final BuildContext context) => Container(
-    padding: const EdgeInsets.symmetric(
-      horizontal: AppSpacing.md,
-      vertical: AppSpacing.xs,
-    ),
-    decoration: BoxDecoration(
-      color: AppColors.yellow,
-      borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
-    ),
-    child: Text(
-      "Next",
-      style: AppTypography.bodyMedium.copyWith(color: AppColors.onLight),
-    ),
-  );
+  Widget build(final BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.xs,
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.yellow,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
+      ),
+      child: Text(
+        "Next",
+        style: AppTypography.bodyMedium.copyWith(color: AppColors.onLight),
+      ),
+    );
+  }
 }

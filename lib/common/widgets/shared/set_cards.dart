@@ -4,7 +4,7 @@ import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
 import "package:pull_up_club/common/themes/app_theme.dart";
 import "package:pull_up_club/common/themes/app_typography.dart";
-import "package:pull_up_club/common/widgets/gradient_surface.dart";
+import "package:pull_up_club/common/widgets/core/gradient_surface.dart";
 
 class SetCards extends StatelessWidget {
   const SetCards({
@@ -26,44 +26,46 @@ class SetCards extends StatelessWidget {
   static const double _cardSpacing = AppSpacing.sm;
 
   @override
-  Widget build(final BuildContext context) => LayoutBuilder(
-    builder: (final context, final constraints) {
-      final cardWidth =
-          (constraints.maxWidth -
-              _containerPadding * 2 -
-              _cardSpacing * (_maxCardsPerRow - 1)) /
-          _maxCardsPerRow;
-      final cardHeight = 2 / 3 * cardWidth;
+  Widget build(final BuildContext context) {
+    return LayoutBuilder(
+      builder: (final context, final constraints) {
+        final cardWidth =
+            (constraints.maxWidth -
+                _containerPadding * 2 -
+                _cardSpacing * (_maxCardsPerRow - 1)) /
+            _maxCardsPerRow;
+        final cardHeight = 2 / 3 * cardWidth;
 
-      final wrap = Wrap(
-        alignment: WrapAlignment.center,
-        spacing: _cardSpacing,
-        runSpacing: AppSpacing.md,
-        children: List.generate(
-          numExpectedCards,
-          (final i) => _SetCard(
-            value: i < values.length ? values[i] : null,
-            width: cardWidth,
-            height: cardHeight,
+        final wrap = Wrap(
+          alignment: WrapAlignment.center,
+          spacing: _cardSpacing,
+          runSpacing: AppSpacing.md,
+          children: List.generate(
+            numExpectedCards,
+            (final i) => _SetCard(
+              value: i < values.length ? values[i] : null,
+              width: cardWidth,
+              height: cardHeight,
+            ),
           ),
-        ),
-      );
-
-      if (withContainer) {
-        return Container(
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: AppColors.glassBackground,
-            borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
-          ),
-          padding: const EdgeInsets.all(_containerPadding),
-          child: wrap,
         );
-      } else {
-        return wrap;
-      }
-    },
-  );
+
+        if (withContainer) {
+          return Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: AppColors.glassBackground,
+              borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
+            ),
+            padding: const EdgeInsets.all(_containerPadding),
+            child: wrap,
+          );
+        } else {
+          return wrap;
+        }
+      },
+    );
+  }
 
   @override
   void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
@@ -84,19 +86,21 @@ class _SetCard extends StatelessWidget {
   final double height;
 
   @override
-  Widget build(final BuildContext context) => Opacity(
-    opacity: value == null ? 0.1 : 1.0,
-    child: GradientSurface(
-      height: height,
-      width: width,
-      gradient: value == null ? AppGradients.light : AppGradients.secondary,
-      borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
-      boxShadow: defaultBoxShadows,
-      child: Center(
-        child: Text(value ?? _placeholderValue, style: AppTypography.headlineSmall),
+  Widget build(final BuildContext context) {
+    return Opacity(
+      opacity: value == null ? 0.1 : 1.0,
+      child: GradientSurface(
+        height: height,
+        width: width,
+        gradient: value == null ? AppGradients.light : AppGradients.secondary,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
+        boxShadow: defaultBoxShadows,
+        child: Center(
+          child: Text(value ?? _placeholderValue, style: AppTypography.headlineSmall),
+        ),
       ),
-    ),
-  );
+    );
+  }
 
   @override
   void debugFillProperties(final DiagnosticPropertiesBuilder properties) {

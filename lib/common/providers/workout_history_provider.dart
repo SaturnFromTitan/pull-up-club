@@ -1,18 +1,19 @@
 import "dart:async";
 
 import "package:flutter/material.dart";
-import "package:pull_up_club/common/services/workout_database.dart";
-import "package:pull_up_club/features/workout/models.dart";
+import "package:pull_up_club/data/repositories/workout_repository.dart";
+import "package:pull_up_club/domain/models.dart";
 
-class AppProvider extends ChangeNotifier {
-  AppProvider() {
+class WorkoutHistoryProvider extends ChangeNotifier {
+  WorkoutHistoryProvider(this._repository) {
     unawaited(_loadWorkouts());
   }
-  int _tabIndex = 0;
+
+  final WorkoutRepository _repository;
+
   bool _isLoading = true;
   List<Workout> _completedWorkouts = <Workout>[];
 
-  int get tabIndex => _tabIndex;
   bool get isLoading => _isLoading;
   List<Workout> get completedWorkouts => _completedWorkouts;
 
@@ -21,7 +22,7 @@ class AppProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _completedWorkouts = await WorkoutDatabase.instance.getAllWorkouts();
+      _completedWorkouts = await _repository.getAllWorkouts();
     } on Exception catch (e) {
       // Handle error - for now, just log it
       debugPrint("Error loading workouts: $e");
@@ -33,7 +34,7 @@ class AppProvider extends ChangeNotifier {
 
   Future<void> addWorkout(final Workout workout) async {
     try {
-      final savedWorkout = await WorkoutDatabase.instance.insertWorkout(workout);
+      final savedWorkout = await _repository.saveWorkout(workout);
       _completedWorkouts.add(savedWorkout);
       notifyListeners();
     } on Exception catch (e) {
@@ -47,25 +48,13 @@ class AppProvider extends ChangeNotifier {
       if (workout.id == null) {
         throw Exception("Cannot delete workout without ID");
       }
-      await WorkoutDatabase.instance.deleteWorkout(workout.id!);
+      await _repository.deleteWorkout(workout.id!);
       _completedWorkouts.remove(workout);
       notifyListeners();
     } on Exception catch (e) {
       debugPrint("Error deleting workout: $e");
       rethrow;
     }
-  }
-
-  void setTabIndex(final int value) {
-    if (value == _tabIndex) {
-      return;
-    }
-    _tabIndex = value;
-    notifyListeners();
-  }
-
-  void resetTab() {
-    setTabIndex(0);
   }
 
   /// Determines the next workout type based on the most recent workout.

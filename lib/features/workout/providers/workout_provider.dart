@@ -1,9 +1,9 @@
 import "dart:async";
 
 import "package:flutter/material.dart";
-import "package:pull_up_club/common/providers/app_provider.dart";
+import "package:pull_up_club/common/providers/workout_history_provider.dart";
 import "package:pull_up_club/common/services/sound_service.dart";
-import "package:pull_up_club/features/workout/models.dart";
+import "package:pull_up_club/domain/models.dart";
 
 class WorkoutProvider extends ChangeNotifier {
   // initialisation
@@ -72,9 +72,9 @@ class WorkoutProvider extends ChangeNotifier {
 
   bool isResting() => _restTimer?.isActive ?? false;
 
-  Future<void> finish(final AppProvider appProvider) async {
+  Future<void> finish(final WorkoutHistoryProvider workoutHistoryProvider) async {
     _workout.finish();
-    await appProvider.addWorkout(_workout);
+    await workoutHistoryProvider.addWorkout(_workout);
   }
 
   @override
