@@ -1,21 +1,29 @@
 import "package:flutter/material.dart";
 
-/// Provider that manages navigation state (tab index).
-/// This is a UI/presentation concern and is kept separate from business logic.
+/// Enum representing the available tabs in the app.
+enum AppTab { workout, history }
+
+/// Provider that manages navigation state (tab selection).
 class NavigationProvider extends ChangeNotifier {
-  int _tabIndex = 0;
+  static const AppTab _defaultTab = AppTab.workout;
+  AppTab _currentTab = _defaultTab;
 
-  int get tabIndex => _tabIndex;
+  AppTab get currentTab => _currentTab;
 
-  void setTabIndex(final int value) {
-    if (value == _tabIndex) {
+  void setTabIndex(final int index) {
+    final tab = AppTab.values[index];
+    if (tab == _currentTab) {
       return;
     }
-    _tabIndex = value;
+    _currentTab = tab;
     notifyListeners();
   }
 
   void resetTab() {
-    setTabIndex(0);
+    if (_currentTab == _defaultTab) {
+      return;
+    }
+    _currentTab = _defaultTab;
+    notifyListeners();
   }
 }

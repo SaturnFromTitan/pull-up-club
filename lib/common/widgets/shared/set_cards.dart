@@ -27,7 +27,7 @@ class SetCards extends StatelessWidget {
 
   @override
   Widget build(final BuildContext context) {
-    final highlightCurrentGroup = numExpectedCards < values.length;
+    final highlightCurrentGroup = numExpectedCards > values.length;
     return LayoutBuilder(
       builder: (final context, final constraints) {
         final cardWidth =
