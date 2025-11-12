@@ -14,7 +14,7 @@ class SetCards extends StatelessWidget {
     this.withContainer = true,
   }) : assert(
          numExpectedCards == null || numExpectedCards >= values.length,
-         "numExpectedCards must be >= values.length",
+         "if numExpectedCards is set it must be >= values.length",
        ),
        numExpectedCards = numExpectedCards ?? values.length;
   final List<String> values;
@@ -27,6 +27,7 @@ class SetCards extends StatelessWidget {
 
   @override
   Widget build(final BuildContext context) {
+    final highlightCurrentGroup = numExpectedCards < values.length;
     return LayoutBuilder(
       builder: (final context, final constraints) {
         final cardWidth =
@@ -46,6 +47,7 @@ class SetCards extends StatelessWidget {
               value: i < values.length ? values[i] : null,
               width: cardWidth,
               height: cardHeight,
+              isHighlighted: highlightCurrentGroup && i == values.length,
             ),
           ),
         );
@@ -78,12 +80,18 @@ class SetCards extends StatelessWidget {
 }
 
 class _SetCard extends StatelessWidget {
-  const _SetCard({required this.width, required this.height, this.value});
+  const _SetCard({
+    required this.width,
+    required this.height,
+    this.value,
+    this.isHighlighted = false,
+  });
 
   static const String _placeholderValue = "?";
   final String? value;
   final double width;
   final double height;
+  final bool isHighlighted;
 
   @override
   Widget build(final BuildContext context) {
@@ -93,6 +101,7 @@ class _SetCard extends StatelessWidget {
         height: height,
         width: width,
         gradient: value == null ? AppGradients.light : AppGradients.secondary,
+        border: isHighlighted ? Border.all(color: AppColors.glassBorderActive) : null,
         borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
         boxShadow: defaultBoxShadows,
         child: Center(
@@ -108,6 +117,7 @@ class _SetCard extends StatelessWidget {
     properties
       ..add(StringProperty("value", value))
       ..add(DoubleProperty("width", width))
-      ..add(DoubleProperty("height", height));
+      ..add(DoubleProperty("height", height))
+      ..add(DiagnosticsProperty<bool>("isHighlighted", isHighlighted));
   }
 }
