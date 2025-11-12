@@ -1,6 +1,7 @@
 import "dart:async";
 
 import "package:flutter/material.dart";
+import "package:logging/logging.dart";
 import "package:pull_up_club/data/repositories/workout_repository.dart";
 import "package:pull_up_club/domain/models.dart";
 
@@ -8,6 +9,7 @@ class WorkoutHistoryProvider extends ChangeNotifier {
   WorkoutHistoryProvider(this._repository) {
     unawaited(_loadWorkouts());
   }
+  static final Logger _logger = Logger("WorkoutHistoryProvider");
 
   final WorkoutRepository _repository;
 
@@ -24,8 +26,7 @@ class WorkoutHistoryProvider extends ChangeNotifier {
     try {
       _completedWorkouts = await _repository.getAllWorkouts();
     } on Exception catch (e) {
-      // Handle error - for now, just log it
-      debugPrint("Error loading workouts: $e");
+      _logger.fine("Error loading workouts: $e");
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -38,7 +39,7 @@ class WorkoutHistoryProvider extends ChangeNotifier {
       _completedWorkouts.add(savedWorkout);
       notifyListeners();
     } on Exception catch (e) {
-      debugPrint("Error saving workout: $e");
+      _logger.fine("Error saving workout: $e");
       rethrow;
     }
   }
@@ -52,7 +53,7 @@ class WorkoutHistoryProvider extends ChangeNotifier {
       _completedWorkouts.remove(workout);
       notifyListeners();
     } on Exception catch (e) {
-      debugPrint("Error deleting workout: $e");
+      _logger.fine("Error deleting workout: $e");
       rethrow;
     }
   }
