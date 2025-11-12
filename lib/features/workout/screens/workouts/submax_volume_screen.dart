@@ -1,6 +1,6 @@
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
-import "package:pull_up_club/common/providers/app_provider.dart";
+import "package:pull_up_club/common/providers/workout_history_provider.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
 import "package:pull_up_club/common/widgets/gradient_button.dart";
@@ -34,9 +34,9 @@ class _SubmaxVolumeScreenState extends BaseWorkoutState<SubmaxVolumeScreen> {
   @override
   Widget getInputs(
     final WorkoutProvider workoutProvider,
-    final AppProvider appProvider,
+    final WorkoutHistoryProvider workoutHistoryProvider,
   ) {
-    final buttons = _getButtons(workoutProvider, appProvider);
+    final buttons = _getButtons(workoutProvider, workoutHistoryProvider);
 
     final customRepsForm = RepsForm(
       onValidSubmit: (final reps) {
@@ -45,7 +45,7 @@ class _SubmaxVolumeScreenState extends BaseWorkoutState<SubmaxVolumeScreen> {
           group: workoutProvider.workout.sets.length + 1,
           completedReps: reps,
           workoutProvider: workoutProvider,
-          appProvider: appProvider,
+          workoutHistoryProvider: workoutHistoryProvider,
         );
       },
       onCancel: () {
@@ -68,7 +68,7 @@ class _SubmaxVolumeScreenState extends BaseWorkoutState<SubmaxVolumeScreen> {
 
   List<Widget> _getButtons(
     final WorkoutProvider workoutProvider,
-    final AppProvider appProvider,
+    final WorkoutHistoryProvider workoutHistoryProvider,
   ) {
     final targetReps = getTargetReps();
     final buttons = [
@@ -78,7 +78,7 @@ class _SubmaxVolumeScreenState extends BaseWorkoutState<SubmaxVolumeScreen> {
             group: workoutProvider.workout.sets.length + 1,
             completedReps: targetReps,
             workoutProvider: workoutProvider,
-            appProvider: appProvider,
+            workoutHistoryProvider: workoutHistoryProvider,
           );
         },
         text: "Done",
@@ -91,7 +91,7 @@ class _SubmaxVolumeScreenState extends BaseWorkoutState<SubmaxVolumeScreen> {
             group: workoutProvider.workout.sets.length + 1,
             completedReps: targetReps - 1,
             workoutProvider: workoutProvider,
-            appProvider: appProvider,
+            workoutHistoryProvider: workoutHistoryProvider,
           );
         },
         text: "I did ${targetReps - 1}",
@@ -107,7 +107,7 @@ class _SubmaxVolumeScreenState extends BaseWorkoutState<SubmaxVolumeScreen> {
               group: workoutProvider.workout.sets.length + 1,
               completedReps: targetReps - 2,
               workoutProvider: workoutProvider,
-              appProvider: appProvider,
+              workoutHistoryProvider: workoutHistoryProvider,
             );
           },
           text: "I did ${targetReps - 2}",

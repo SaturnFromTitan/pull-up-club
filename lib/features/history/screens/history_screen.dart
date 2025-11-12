@@ -2,7 +2,7 @@ import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:logging/logging.dart";
 import "package:provider/provider.dart";
-import "package:pull_up_club/common/providers/app_provider.dart";
+import "package:pull_up_club/common/providers/workout_history_provider.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
 import "package:pull_up_club/common/themes/app_typography.dart";
@@ -18,8 +18,8 @@ class HistoryScreen extends StatelessWidget {
 
   @override
   Widget build(final BuildContext context) {
-    final appProvider = context.watch<AppProvider>();
-    final workouts = appProvider.completedWorkouts.reversed.toList();
+    final workoutHistoryProvider = context.watch<WorkoutHistoryProvider>();
+    final workouts = workoutHistoryProvider.completedWorkouts.reversed.toList();
     final numWorkouts = workouts.length;
     final totalReps = workouts.fold(0, (final t, final w) => t + w.totalReps());
 
@@ -75,10 +75,10 @@ class _DismissablePastWorkout extends StatelessWidget {
 
   final Workout workout;
   Future<void> _onDelete(final BuildContext context) async {
-    final appProvider = context.read<AppProvider>();
+    final workoutHistoryProvider = context.read<WorkoutHistoryProvider>();
 
     try {
-      await appProvider.deleteWorkout(workout);
+      await workoutHistoryProvider.deleteWorkout(workout);
     } on Exception catch (e) {
       final message = "Error deleting workout: $e";
       HistoryScreen._logger.severe(message);

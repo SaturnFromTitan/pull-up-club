@@ -3,7 +3,8 @@ import "package:flutter/material.dart";
 import "package:logging/logging.dart";
 import "package:provider/provider.dart";
 import "package:pull_up_club/common/constants/app_constants.dart";
-import "package:pull_up_club/common/providers/app_provider.dart";
+import "package:pull_up_club/common/providers/navigation_provider.dart";
+import "package:pull_up_club/common/providers/workout_history_provider.dart";
 import "package:pull_up_club/common/shell_screen.dart";
 import "package:pull_up_club/common/themes/app_theme.dart";
 
@@ -24,7 +25,10 @@ class App extends StatelessWidget {
 
   @override
   Widget build(final BuildContext context) => MultiProvider(
-    providers: [ChangeNotifierProvider(create: (final context) => AppProvider())],
+    providers: [
+      ChangeNotifierProvider(create: (final context) => NavigationProvider()),
+      ChangeNotifierProvider(create: (final context) => WorkoutHistoryProvider()),
+    ],
     child: MaterialApp(
       title: AppConstants.appTitle,
       theme: appTheme,

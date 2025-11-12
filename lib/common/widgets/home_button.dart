@@ -1,7 +1,7 @@
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
-import "package:pull_up_club/common/providers/app_provider.dart";
+import "package:pull_up_club/common/providers/navigation_provider.dart";
 import "package:pull_up_club/common/shell_screen.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/widgets/gradient_button.dart";
@@ -20,7 +20,7 @@ class HomeButton extends StatelessWidget {
   @override
   Widget build(final BuildContext context) => GradientButton(
     onPressed: () async {
-      context.read<AppProvider>().resetTab();
+      context.read<NavigationProvider>().resetTab();
 
       await Navigator.of(
         context,

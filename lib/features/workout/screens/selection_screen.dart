@@ -5,7 +5,7 @@ import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:pull_up_club/common/constants/app_constants.dart";
-import "package:pull_up_club/common/providers/app_provider.dart";
+import "package:pull_up_club/common/providers/workout_history_provider.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
 import "package:pull_up_club/common/themes/app_theme.dart";
@@ -88,8 +88,10 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
   }
 
   Future<int?> askForTargetReps() async {
-    final appProvider = context.read<AppProvider>();
-    final defaultData = _calculateDefaultTargetReps(appProvider.completedWorkouts);
+    final workoutHistoryProvider = context.read<WorkoutHistoryProvider>();
+    final defaultData = _calculateDefaultTargetReps(
+      workoutHistoryProvider.completedWorkouts,
+    );
 
     final res = await showDialog<int>(
       context: context,
@@ -153,8 +155,8 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
 
   @override
   Widget build(final BuildContext context) {
-    final appProvider = context.watch<AppProvider>();
-    final nextWorkoutType = appProvider.getNextWorkoutType();
+    final workoutHistoryProvider = context.watch<WorkoutHistoryProvider>();
+    final nextWorkoutType = workoutHistoryProvider.getNextWorkoutType();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

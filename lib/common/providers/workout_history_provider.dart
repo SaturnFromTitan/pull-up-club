@@ -4,15 +4,18 @@ import "package:flutter/material.dart";
 import "package:pull_up_club/common/services/workout_database.dart";
 import "package:pull_up_club/features/workout/models.dart";
 
-class AppProvider extends ChangeNotifier {
-  AppProvider() {
+/// Provider that manages workout history data.
+/// The database (WorkoutDatabase) serves as the single source of truth for
+/// workout data. This provider maintains an in-memory cache for efficient
+/// UI updates, but the database is authoritative.
+class WorkoutHistoryProvider extends ChangeNotifier {
+  WorkoutHistoryProvider() {
     unawaited(_loadWorkouts());
   }
-  int _tabIndex = 0;
+
   bool _isLoading = true;
   List<Workout> _completedWorkouts = <Workout>[];
 
-  int get tabIndex => _tabIndex;
   bool get isLoading => _isLoading;
   List<Workout> get completedWorkouts => _completedWorkouts;
 
@@ -54,18 +57,6 @@ class AppProvider extends ChangeNotifier {
       debugPrint("Error deleting workout: $e");
       rethrow;
     }
-  }
-
-  void setTabIndex(final int value) {
-    if (value == _tabIndex) {
-      return;
-    }
-    _tabIndex = value;
-    notifyListeners();
-  }
-
-  void resetTab() {
-    setTabIndex(0);
   }
 
   /// Determines the next workout type based on the most recent workout.

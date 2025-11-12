@@ -3,7 +3,7 @@ import "dart:async";
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
-import "package:pull_up_club/common/providers/app_provider.dart";
+import "package:pull_up_club/common/providers/workout_history_provider.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
 import "package:pull_up_club/common/themes/app_typography.dart";
@@ -29,7 +29,7 @@ abstract class BaseWorkoutState<T extends BaseWorkoutScreen> extends State<T> {
   int? getTargetReps();
   Widget getInputs(
     final WorkoutProvider workoutProvider,
-    final AppProvider appProvider,
+    final WorkoutHistoryProvider workoutHistoryProvider,
   );
 
   int getCompletedGroups(final WorkoutProvider workoutProvider) =>
@@ -68,7 +68,7 @@ abstract class BaseWorkoutState<T extends BaseWorkoutScreen> extends State<T> {
     required final int group,
     required final int completedReps,
     required final WorkoutProvider workoutProvider,
-    required final AppProvider appProvider,
+    required final WorkoutHistoryProvider workoutHistoryProvider,
   }) {
     // add set
     final set_ = WorkoutSet(
@@ -82,7 +82,7 @@ abstract class BaseWorkoutState<T extends BaseWorkoutScreen> extends State<T> {
     if (isFinished(workoutProvider)) {
       // can't await here as `finishSet` is meant to be called synchronously
       // on button press
-      unawaited(workoutProvider.finish(appProvider));
+      unawaited(workoutProvider.finish(workoutHistoryProvider));
       navigateToSuccess(workoutProvider);
     } else {
       workoutProvider.rest(restDurationSeconds);
@@ -92,10 +92,10 @@ abstract class BaseWorkoutState<T extends BaseWorkoutScreen> extends State<T> {
 
   @override
   Widget build(final BuildContext context) {
-    final appProvider = context.read<AppProvider>();
+    final workoutHistoryProvider = context.read<WorkoutHistoryProvider>();
     final workoutProvider = context.watch<WorkoutProvider>();
     final targetReps = getTargetReps();
-    final inputs = getInputs(workoutProvider, appProvider);
+    final inputs = getInputs(workoutProvider, workoutHistoryProvider);
     const instructionTextStyle = AppTypography.headlineLarge;
     const instructionIconStyle = TextStyle(fontSize: 110, color: Colors.white);
     const instructionsNoTargetReps = Column(

@@ -1,5 +1,5 @@
 import "package:flutter/material.dart";
-import "package:pull_up_club/common/providers/app_provider.dart";
+import "package:pull_up_club/common/providers/workout_history_provider.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
 import "package:pull_up_club/common/widgets/gradient_button.dart";
@@ -31,7 +31,7 @@ class _LaddersState extends BaseWorkoutState<LaddersScreen> {
   @override
   Widget getInputs(
     final WorkoutProvider workoutProvider,
-    final AppProvider appProvider,
+    final WorkoutHistoryProvider workoutHistoryProvider,
   ) {
     final buttons = [
       GradientButton(
@@ -40,7 +40,7 @@ class _LaddersState extends BaseWorkoutState<LaddersScreen> {
             group: _completedGroups + 1,
             completedReps: getTargetReps(),
             workoutProvider: workoutProvider,
-            appProvider: appProvider,
+            workoutHistoryProvider: workoutHistoryProvider,
           );
           _targetReps++;
         },
@@ -57,7 +57,7 @@ class _LaddersState extends BaseWorkoutState<LaddersScreen> {
             group: _completedGroups,
             completedReps: getTargetReps(),
             workoutProvider: workoutProvider,
-            appProvider: appProvider,
+            workoutHistoryProvider: workoutHistoryProvider,
           );
           _targetReps = 1;
         },
@@ -87,7 +87,7 @@ class _LaddersState extends BaseWorkoutState<LaddersScreen> {
           group: _completedGroups,
           completedReps: reps,
           workoutProvider: workoutProvider,
-          appProvider: appProvider,
+          workoutHistoryProvider: workoutHistoryProvider,
         );
         _targetReps = 1;
         _showCustomRepsForm = false;
