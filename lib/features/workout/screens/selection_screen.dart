@@ -142,7 +142,7 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
         workoutScreen = const LaddersScreen();
     }
     unawaited(
-      Navigator.of(context).push(
+      Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: (_) => ChangeNotifierProvider(
             create: (_) => WorkoutProvider(workoutType: _selected),

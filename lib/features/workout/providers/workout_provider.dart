@@ -1,7 +1,6 @@
 import "dart:async";
 
 import "package:flutter/material.dart";
-import "package:pull_up_club/common/providers/workout_history_provider.dart";
 import "package:pull_up_club/common/services/sound_service.dart";
 import "package:pull_up_club/domain/models.dart";
 
@@ -33,10 +32,6 @@ class WorkoutProvider extends ChangeNotifier {
   int get restTotalSeconds => _restTotalSeconds;
 
   // lifecyle management
-  void addSet(final WorkoutSet set_) {
-    _workout.sets.add(set_);
-  }
-
   void rest(final int durationSeconds) {
     _restRemainingSeconds = durationSeconds;
     _restTotalSeconds = durationSeconds;
@@ -71,11 +66,6 @@ class WorkoutProvider extends ChangeNotifier {
   }
 
   bool isResting() => _restTimer?.isActive ?? false;
-
-  Future<void> finish(final WorkoutHistoryProvider workoutHistoryProvider) async {
-    _workout.finish();
-    await workoutHistoryProvider.addWorkout(_workout);
-  }
 
   @override
   void dispose() {
