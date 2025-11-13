@@ -1,28 +1,33 @@
 import "package:flutter/material.dart";
+import "package:google_fonts/google_fonts.dart";
 
 class AppTypography {
-  // Font family
-  static const String fontFamily = "Inter";
+  AppTypography._();
 
-  // Display styles
-  static const TextStyle displayLarge = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 27,
+  // Playful app title style
+  static final TextStyle displayAppTitle = GoogleFonts.poppins(
+    fontSize: 40,
+    fontWeight: FontWeight.w600,
+    height: 1.3,
+    letterSpacing: 1.2,
+  );
+
+  // Regular display styles
+  static TextStyle displayLarge = GoogleFonts.inter(
+    fontSize: 35,
     fontWeight: FontWeight.w500,
     height: 1.5,
     letterSpacing: 0.3,
   );
 
-  static const TextStyle displayMedium = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 24,
+  static TextStyle displayMedium = GoogleFonts.inter(
+    fontSize: 30,
     fontWeight: FontWeight.w500,
     height: 1.4,
     letterSpacing: 0.2,
   );
 
-  static const TextStyle displaySmall = TextStyle(
-    fontFamily: fontFamily,
+  static TextStyle displaySmall = GoogleFonts.inter(
     fontSize: 22,
     fontWeight: FontWeight.w500,
     height: 1.4,
@@ -30,24 +35,21 @@ class AppTypography {
   );
 
   // Headline styles
-  static const TextStyle headlineLarge = TextStyle(
-    fontFamily: fontFamily,
+  static TextStyle headlineLarge = GoogleFonts.inter(
     fontSize: 20,
     fontWeight: FontWeight.w500,
     height: 1.56,
     letterSpacing: -0.43,
   );
 
-  static const TextStyle headlineMedium = TextStyle(
-    fontFamily: fontFamily,
+  static TextStyle headlineMedium = GoogleFonts.inter(
     fontSize: 18,
     fontWeight: FontWeight.w400,
     height: 1.5,
     letterSpacing: -0.44,
   );
 
-  static const TextStyle headlineSmall = TextStyle(
-    fontFamily: fontFamily,
+  static TextStyle headlineSmall = GoogleFonts.inter(
     fontSize: 16,
     fontWeight: FontWeight.w400,
     height: 1.5,
@@ -55,24 +57,21 @@ class AppTypography {
   );
 
   // Body styles
-  static const TextStyle bodyLarge = TextStyle(
-    fontFamily: fontFamily,
+  static TextStyle bodyLarge = GoogleFonts.inter(
     fontSize: 16,
     fontWeight: FontWeight.w400,
     height: 1.5,
     letterSpacing: 0.15,
   );
 
-  static const TextStyle bodyMedium = TextStyle(
-    fontFamily: fontFamily,
+  static TextStyle bodyMedium = GoogleFonts.inter(
     fontSize: 14,
     fontWeight: FontWeight.w400,
     height: 1.43,
     letterSpacing: 0.25,
   );
 
-  static const TextStyle bodySmall = TextStyle(
-    fontFamily: fontFamily,
+  static TextStyle bodySmall = GoogleFonts.inter(
     fontSize: 12,
     fontWeight: FontWeight.w400,
     height: 1.33,

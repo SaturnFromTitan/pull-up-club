@@ -23,6 +23,10 @@ class AppColors {
   static const Color yellow = Color(0xFFFDC700);
   static const Color gold = Color(0xFFFFE680);
 
+  // Skip Rest button colors
+  static const Color skipRestBorder = Color(0x80FF8904);
+  static const Color skipRestText = Color(0xFFFFD6A7);
+
   // Gradient color lists
   static const List<Color> gradientPrimary = [Color(0xFFF6339A), Color(0xFFFF6900)];
   static const List<Color> gradientSecondary = [Color(0xFF00C950), Color(0xFF2B7FFF)];
@@ -42,6 +46,7 @@ class AppColors {
   static const List<Color> gradientAccentGreen = [Color(0xFF22C55E), Color(0xFF16A34A)];
   static const List<Color> gradientRepCount = [Color(0xFF155DFC), Color(0xFF0092B8)];
   static const List<Color> gradientLightOpaque = [Color(0x1AFFFFFF), Color(0x12FFFFFF)];
+  static const List<Color> gradientSkipRest = [Color(0x33FF6900), Color(0x33FF8904)];
 }
 
 class AppGradients {
@@ -79,6 +84,9 @@ class AppGradients {
   );
   static const LinearGradient lightOpaque = LinearGradient(
     colors: AppColors.gradientLightOpaque,
+  );
+  static const LinearGradient skipRest = LinearGradient(
+    colors: AppColors.gradientSkipRest,
   );
 }
 

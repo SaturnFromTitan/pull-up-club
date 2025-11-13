@@ -13,6 +13,7 @@ class GradientSurface extends StatelessWidget {
     this.boxShadow,
     this.height,
     this.width,
+    this.textColor,
   });
   final LinearGradient gradient;
   final Widget? child;
@@ -21,10 +22,11 @@ class GradientSurface extends StatelessWidget {
   final List<BoxShadow>? boxShadow;
   final double? height;
   final double? width;
+  final Color? textColor;
 
   @override
   Widget build(final BuildContext context) {
-    final textColor = getTextColorOnGradient(gradient, context);
+    final actualTextColor = textColor ?? getTextColorOnGradient(gradient, context);
 
     return Container(
       height: height,
@@ -37,9 +39,9 @@ class GradientSurface extends StatelessWidget {
       ),
       child: child != null
           ? DefaultTextStyle.merge(
-              style: TextStyle(color: textColor),
+              style: TextStyle(color: actualTextColor),
               child: IconTheme.merge(
-                data: IconThemeData(color: textColor),
+                data: IconThemeData(color: actualTextColor),
                 child: child!,
               ),
             )
@@ -56,6 +58,7 @@ class GradientSurface extends StatelessWidget {
       ..add(DiagnosticsProperty<BorderRadius?>("borderRadius", borderRadius))
       ..add(IterableProperty<BoxShadow>("boxShadow", boxShadow))
       ..add(DoubleProperty("height", height))
-      ..add(DoubleProperty("width", width));
+      ..add(DoubleProperty("width", width))
+      ..add(DiagnosticsProperty<Color?>("textColor", textColor));
   }
 }

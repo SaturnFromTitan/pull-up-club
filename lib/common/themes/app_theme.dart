@@ -22,7 +22,7 @@ final appTheme = ThemeData(
   ),
 
   // Text theme
-  textTheme: const TextTheme(
+  textTheme: TextTheme(
     displayLarge: AppTypography.displayLarge,
     displayMedium: AppTypography.displayMedium,
     displaySmall: AppTypography.displaySmall,
@@ -51,11 +51,3 @@ final appTheme = ThemeData(
     ),
   ),
 );
-
-const List<BoxShadow> defaultBoxShadows = [
-  BoxShadow(
-    color: AppColors.shadow,
-    blurRadius: AppSpacing.radiusSmall,
-    offset: Offset(0, 4),
-  ),
-];

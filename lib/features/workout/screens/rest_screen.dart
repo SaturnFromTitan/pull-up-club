@@ -72,7 +72,7 @@ class _RestScreenState extends State<RestScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           const SizedBox(height: AppSpacing.sm),
-          Text("😴", style: AppTypography.displayMedium.copyWith(fontSize: 64)),
+          Text("😴", style: AppTypography.displayLarge.copyWith(fontSize: 64)),
           const _RestTimerSpinner(size: 200),
           SizedBox(
             width: MediaQuery.of(context).size.width * 0.5,
@@ -80,7 +80,9 @@ class _RestScreenState extends State<RestScreen> {
               onPressed: workoutProvider.resume,
               text: "Skip Rest",
               icon: Icons.skip_next,
-              gradient: AppGradients.secondary,
+              gradient: AppGradients.skipRest,
+              border: Border.all(color: AppColors.skipRestBorder),
+              textColor: AppColors.skipRestText,
             ),
           ),
           SetCards(
@@ -88,7 +90,10 @@ class _RestScreenState extends State<RestScreen> {
             numExpectedCards: workoutProvider.workout.maxGroups,
             highlightedIndex: widget.currentGroupIndex,
           ),
-          const HomeButton(text: "Exit", icon: Icons.exit_to_app),
+          SizedBox(
+            width: MediaQuery.of(context).size.width * 0.5,
+            child: const HomeButton(text: "Exit", icon: Icons.exit_to_app),
+          ),
         ],
       ),
     );
