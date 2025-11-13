@@ -11,6 +11,7 @@ class SetCards extends StatelessWidget {
     required this.values,
     super.key,
     final int? numExpectedCards,
+    this.highlightedIndex,
     this.withContainer = true,
   }) : assert(
          numExpectedCards == null || numExpectedCards >= values.length,
@@ -19,6 +20,7 @@ class SetCards extends StatelessWidget {
        numExpectedCards = numExpectedCards ?? values.length;
   final List<String> values;
   final int numExpectedCards;
+  final int? highlightedIndex;
   final bool withContainer;
 
   static const int _maxCardsPerRow = 5;
@@ -27,7 +29,6 @@ class SetCards extends StatelessWidget {
 
   @override
   Widget build(final BuildContext context) {
-    final highlightCurrentGroup = numExpectedCards > values.length;
     return LayoutBuilder(
       builder: (final context, final constraints) {
         final cardWidth =
@@ -47,7 +48,7 @@ class SetCards extends StatelessWidget {
               value: i < values.length ? values[i] : null,
               width: cardWidth,
               height: cardHeight,
-              isHighlighted: highlightCurrentGroup && i == values.length,
+              isHighlighted: i == highlightedIndex,
             ),
           ),
         );
@@ -75,6 +76,7 @@ class SetCards extends StatelessWidget {
     properties
       ..add(IterableProperty<String>("values", values))
       ..add(IntProperty("numExpectedCards", numExpectedCards))
+      ..add(IntProperty("highlightedIndex", highlightedIndex))
       ..add(DiagnosticsProperty<bool>("withContainer", withContainer));
   }
 }
@@ -95,17 +97,28 @@ class _SetCard extends StatelessWidget {
 
   @override
   Widget build(final BuildContext context) {
-    return Opacity(
-      opacity: value == null ? 0.1 : 1.0,
-      child: GradientSurface(
-        height: height,
-        width: width,
-        gradient: value == null ? AppGradients.light : AppGradients.secondary,
-        border: isHighlighted ? Border.all(color: AppColors.glassBorderActive) : null,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
-        boxShadow: defaultBoxShadows,
-        child: Center(
-          child: Text(value ?? _placeholderValue, style: AppTypography.headlineSmall),
+    double textOpacity;
+    if (value != null) {
+      textOpacity = 1.0;
+    } else if (isHighlighted) {
+      textOpacity = 0.7;
+    } else {
+      textOpacity = 0.1;
+    }
+
+    return GradientSurface(
+      height: height,
+      width: width,
+      gradient: value == null ? AppGradients.lightOpaque : AppGradients.secondary,
+      border: isHighlighted ? Border.all(color: AppColors.glassBorderActive) : null,
+      borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
+      boxShadow: defaultBoxShadows,
+      child: Center(
+        child: Text(
+          value ?? _placeholderValue,
+          style: AppTypography.headlineSmall.copyWith(
+            color: AppColors.onColor.withValues(alpha: textOpacity),
+          ),
         ),
       ),
     );

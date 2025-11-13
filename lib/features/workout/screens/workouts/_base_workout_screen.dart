@@ -29,16 +29,16 @@ abstract class BaseWorkoutState<T extends BaseWorkoutScreen> extends State<T> {
   int? getTargetReps();
   Widget getInputs();
 
-  int getCompletedGroups() {
+  int getNumCompletedGroups() {
     final workoutProvider = context.read<WorkoutProvider>();
     return workoutProvider.workout.sets.length;
   }
 
   bool isLastGroup() =>
-      getCompletedGroups() == context.read<WorkoutProvider>().workout.maxGroups - 1;
+      getNumCompletedGroups() == context.read<WorkoutProvider>().workout.maxGroups - 1;
 
   bool isFinished() =>
-      getCompletedGroups() == context.read<WorkoutProvider>().workout.maxGroups;
+      getNumCompletedGroups() == context.read<WorkoutProvider>().workout.maxGroups;
 
   void navigateToSuccess() {
     final workoutProvider = context.read<WorkoutProvider>();
@@ -58,7 +58,7 @@ abstract class BaseWorkoutState<T extends BaseWorkoutScreen> extends State<T> {
         MaterialPageRoute(
           builder: (_) => ChangeNotifierProvider.value(
             value: workoutProvider,
-            child: const RestScreen(),
+            child: RestScreen(currentGroupIndex: getNumCompletedGroups()),
           ),
         ),
       ),
@@ -146,6 +146,7 @@ abstract class BaseWorkoutState<T extends BaseWorkoutScreen> extends State<T> {
           SetCards(
             values: getSetCardValues(workoutProvider.workout),
             numExpectedCards: workoutProvider.workout.maxGroups,
+            highlightedIndex: getNumCompletedGroups(),
           ),
           const HomeButton(text: "Exit", icon: Icons.exit_to_app),
         ],
