@@ -111,6 +111,7 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
               RepsForm(
                 submitText: "Start",
                 submitIcon: Icons.play_arrow,
+                submitGradient: AppGradients.primary,
                 onValidSubmit: (final reps) => Navigator.pop(context, reps),
                 minValue: 1,
                 cancelText: "Cancel",
@@ -231,11 +232,16 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
         const SizedBox(height: _cardGap),
 
         // Start workout button
-        GradientButton(
-          text: "Start Workout",
-          icon: Icons.play_arrow,
-          onPressed: _handleSubmit,
-          gradient: AppGradients.primary,
+        Center(
+          child: SizedBox(
+            width: MediaQuery.of(context).size.width * 0.8,
+            child: GradientButton(
+              text: "Start Workout",
+              icon: Icons.play_arrow,
+              onPressed: _handleSubmit,
+              gradient: AppGradients.primary,
+            ),
+          ),
         ),
         const SizedBox(height: AppSpacing.lg),
       ],

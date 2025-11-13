@@ -12,6 +12,7 @@ class RepsForm extends StatefulWidget {
     super.key,
     this.submitText = "Submit",
     this.submitIcon = Icons.check,
+    this.submitGradient = AppGradients.secondary,
     this.minValue = 0,
     this.cancelText = "Back",
     this.cancelIcon = Icons.arrow_back,
@@ -21,6 +22,7 @@ class RepsForm extends StatefulWidget {
   });
   final String submitText;
   final IconData submitIcon;
+  final LinearGradient submitGradient;
   final void Function(int reps) onValidSubmit;
   final int minValue;
   final String cancelText;
@@ -38,6 +40,7 @@ class RepsForm extends StatefulWidget {
     properties
       ..add(StringProperty("submitText", submitText))
       ..add(DiagnosticsProperty<IconData>("submitIcon", submitIcon))
+      ..add(DiagnosticsProperty<LinearGradient?>("submitGradient", submitGradient))
       ..add(
         ObjectFlagProperty<void Function(int reps)>.has("onValidSubmit", onValidSubmit),
       )
@@ -133,7 +136,7 @@ class _RepsFormState extends State<RepsForm> {
             onPressed: _isValid ? submit : null,
             text: widget.submitText,
             icon: widget.submitIcon,
-            gradient: AppGradients.secondary,
+            gradient: widget.submitGradient,
           ),
           if (widget.onCancel != null) ...[
             const SizedBox(height: AppSpacing.sm),

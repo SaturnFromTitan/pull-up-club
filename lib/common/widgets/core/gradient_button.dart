@@ -1,7 +1,6 @@
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:pull_up_club/common/themes/app_box_shadows.dart";
-import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
 import "package:pull_up_club/common/themes/app_typography.dart";
 import "package:pull_up_club/common/widgets/core/gradient_surface.dart";
@@ -13,11 +12,15 @@ class GradientButton extends StatelessWidget {
     required this.gradient,
     super.key,
     this.onPressed,
+    this.border,
+    this.textColor,
   });
   final String text;
   final VoidCallback? onPressed;
   final IconData icon;
   final LinearGradient gradient;
+  final Border? border;
+  final Color? textColor;
 
   @override
   Widget build(final BuildContext context) {
@@ -29,8 +32,9 @@ class GradientButton extends StatelessWidget {
           gradient: gradient,
           height: AppSpacing.buttonHeight,
           borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
-          border: Border.all(color: AppColors.onLightSecondary, width: 0.2),
+          border: border,
           boxShadow: AppBoxShadows.dark,
+          textColor: textColor,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -39,7 +43,7 @@ class GradientButton extends StatelessWidget {
               Text(
                 text,
                 style: AppTypography.headlineMedium.copyWith(
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ],
@@ -56,6 +60,8 @@ class GradientButton extends StatelessWidget {
       ..add(StringProperty("text", text))
       ..add(ObjectFlagProperty<VoidCallback?>.has("onPressed", onPressed))
       ..add(DiagnosticsProperty<IconData>("icon", icon))
-      ..add(DiagnosticsProperty<LinearGradient>("gradient", gradient));
+      ..add(DiagnosticsProperty<LinearGradient>("gradient", gradient))
+      ..add(DiagnosticsProperty<Border?>("border", border))
+      ..add(DiagnosticsProperty<Color?>("textColor", textColor));
   }
 }
