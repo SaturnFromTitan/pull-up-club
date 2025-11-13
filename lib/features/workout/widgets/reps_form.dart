@@ -102,6 +102,9 @@ class _RepsFormState extends State<RepsForm> {
               FilteringTextInputFormatter(RegExp("[0-9]"), allow: true),
             ],
             keyboardType: TextInputType.number,
+            onTapOutside: (final event) {
+              FocusScope.of(context).unfocus();
+            },
             onChanged: (_) {
               final currentIsValid = _formKey.currentState?.validate() ?? false;
               setState(() => _isValid = currentIsValid);
