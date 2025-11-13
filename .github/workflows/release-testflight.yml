@@ -65,10 +65,10 @@ jobs:
         working-directory: ios
         env:
           APP_BUNDLE_ID: com.saturnfromtitan.pullupclub
-          APP_STORE_CONNECT_KEY_ID: ${{ vars.APP_STORE_CONNECT_KEY_ID }}
-          APP_STORE_CONNECT_ISSUER_ID: ${{ vars.APP_STORE_CONNECT_ISSUER_ID }}
+          APP_STORE_CONNECT_KEY_ID: SMB27J9U63
+          APP_STORE_CONNECT_ISSUER_ID: 22b3172d-3eba-4290-afb8-7dbb1961ce38
           APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
-          APPLE_TEAM_ID: ${{ vars.APPLE_TEAM_ID }}
+          APPLE_TEAM_ID: U8FWPQDZJJ
           MATCH_GIT_URL: https://x-access-token:${{ secrets.CERTS_TOKEN }}@github.com/SaturnFromTitan/pull-up-club-certificates.git
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
         run: bundle exec fastlane beta
