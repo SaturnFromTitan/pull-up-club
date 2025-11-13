@@ -52,7 +52,7 @@ class HistoryScreen extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: AppSpacing.sm),
+        const SizedBox(height: AppSpacing.md),
         Expanded(
           child: ListView(
             children: [

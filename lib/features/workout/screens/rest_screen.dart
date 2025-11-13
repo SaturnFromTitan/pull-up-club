@@ -72,7 +72,7 @@ class _RestScreenState extends State<RestScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           const SizedBox(height: AppSpacing.sm),
-          Text("😴", style: AppTypography.displayMedium.copyWith(fontSize: 64)),
+          Text("😴", style: AppTypography.displayLarge.copyWith(fontSize: 64)),
           const _RestTimerSpinner(size: 200),
           SizedBox(
             width: MediaQuery.of(context).size.width * 0.5,

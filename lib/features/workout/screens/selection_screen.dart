@@ -28,7 +28,7 @@ class WorkoutSelectionScreen extends StatefulWidget {
 
 class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
   WorkoutType _selected = WorkoutType.maxSets;
-  static const double _cardGap = AppSpacing.base * 3;
+  static const double _cardGap = AppSpacing.md;
   static const double _iconSize = 27;
 
   ({int? defaultValue, String? infoText}) _calculateDefaultTargetReps(
@@ -176,7 +176,7 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
 
               Text(
                 "The plan for doubling your max pull ups!",
-                style: AppTypography.headlineSmall.copyWith(
+                style: AppTypography.headlineLarge.copyWith(
                   color: AppColors.onColorSecondary,
                 ),
                 textAlign: TextAlign.center,
@@ -185,7 +185,7 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
           ),
         ),
 
-        const SizedBox(height: _cardGap),
+        const SizedBox(height: AppSpacing.lg),
 
         // Workout cards section
         Expanded(

@@ -7,7 +7,7 @@ class AppTypography {
   // Display styles
   static const TextStyle displayLarge = TextStyle(
     fontFamily: fontFamily,
-    fontSize: 27,
+    fontSize: 35,
     fontWeight: FontWeight.w500,
     height: 1.5,
     letterSpacing: 0.3,
@@ -15,7 +15,7 @@ class AppTypography {
 
   static const TextStyle displayMedium = TextStyle(
     fontFamily: fontFamily,
-    fontSize: 24,
+    fontSize: 30,
     fontWeight: FontWeight.w500,
     height: 1.4,
     letterSpacing: 0.2,
