@@ -43,7 +43,7 @@ abstract class BaseWorkoutState<T extends BaseWorkoutScreen> extends State<T> {
   void navigateToSuccess() {
     final workoutProvider = context.read<WorkoutProvider>();
     unawaited(
-      Navigator.of(context).push(
+      Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: (_) => SuccessScreen(workout: workoutProvider.workout),
         ),
@@ -67,6 +67,7 @@ abstract class BaseWorkoutState<T extends BaseWorkoutScreen> extends State<T> {
 
   void finishSet({required final int group, required final int completedReps}) {
     final workoutProvider = context.read<WorkoutProvider>();
+    final workout = workoutProvider.workout;
 
     // add set
     final set_ = WorkoutSet(
@@ -74,14 +75,15 @@ abstract class BaseWorkoutState<T extends BaseWorkoutScreen> extends State<T> {
       targetReps: getTargetReps(),
       completedReps: completedReps,
     );
-    workoutProvider.addSet(set_);
+    workout.sets.add(set_);
 
     // navigate
     if (isFinished()) {
       // can't await here as `finishSet` is meant to be called synchronously
       // on button press
       final workoutHistoryProvider = context.read<WorkoutHistoryProvider>();
-      unawaited(workoutProvider.finish(workoutHistoryProvider));
+      workout.finish();
+      unawaited(workoutHistoryProvider.addWorkout(workout));
       navigateToSuccess();
     } else {
       workoutProvider.rest(restDurationSeconds);
