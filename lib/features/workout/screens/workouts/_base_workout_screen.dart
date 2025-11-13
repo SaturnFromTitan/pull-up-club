@@ -96,24 +96,24 @@ abstract class BaseWorkoutState<T extends BaseWorkoutScreen> extends State<T> {
     final workoutProvider = context.watch<WorkoutProvider>();
     final targetReps = getTargetReps();
     final inputs = getInputs();
-    const instructionTextStyle = AppTypography.headlineLarge;
+    final instructionTextStyle = AppTypography.headlineLarge;
     const instructionIconStyle = TextStyle(fontSize: 110, color: Colors.white);
-    const instructionsNoTargetReps = Column(
+    final instructionsNoTargetReps = Column(
       children: [
-        SizedBox(height: AppSpacing.xxxl),
+        const SizedBox(height: AppSpacing.xxxl),
         Text(
           "Do as many reps as possible!",
           style: instructionTextStyle,
           textAlign: TextAlign.center,
         ),
-        Text("🔥", style: instructionIconStyle, textAlign: TextAlign.center),
-        SizedBox(height: AppSpacing.md),
+        const Text("🔥", style: instructionIconStyle, textAlign: TextAlign.center),
+        const SizedBox(height: AppSpacing.md),
       ],
     );
     final instructionsTargetReps = Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Text("do", style: instructionTextStyle),
+        Text("do", style: instructionTextStyle),
         const SizedBox(width: AppSpacing.sm),
         ShaderMask(
           shaderCallback: (final bounds) => AppGradients.repCount.createShader(bounds),

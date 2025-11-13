@@ -25,7 +25,7 @@ class HistoryScreen extends StatelessWidget {
 
     return Column(
       children: [
-        const Text(
+        Text(
           "Workout History",
           textAlign: TextAlign.center,
           style: AppTypography.displayMedium,

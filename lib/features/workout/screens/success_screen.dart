@@ -87,7 +87,7 @@ class _SuccessScreenState extends State<SuccessScreen>
                   opacity: _headlineOpacity,
                   child: SlideTransition(
                     position: _headlineOffset,
-                    child: const Text(
+                    child: Text(
                       "Workout Completed!",
                       style: AppTypography.displayLarge,
                       textAlign: TextAlign.center,

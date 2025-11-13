@@ -22,7 +22,7 @@ final appTheme = ThemeData(
   ),
 
   // Text theme
-  textTheme: const TextTheme(
+  textTheme: TextTheme(
     displayLarge: AppTypography.displayLarge,
     displayMedium: AppTypography.displayMedium,
     displaySmall: AppTypography.displaySmall,

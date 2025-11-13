@@ -102,7 +102,7 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               const Text("🎯", style: TextStyle(fontSize: 40, color: Colors.white)),
-              const Text(
+              Text(
                 "Enter Your Target Reps",
                 style: AppTypography.headlineLarge,
                 textAlign: TextAlign.center,
@@ -166,13 +166,13 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
           width: double.infinity,
           child: Column(
             children: [
-              const Text(
+              Text(
                 AppConstants.appTitle,
-                style: AppTypography.displayLarge,
+                style: AppTypography.displayAppTitle,
                 textAlign: TextAlign.center,
               ),
 
-              const SizedBox(height: AppSpacing.sm),
+              const SizedBox(height: AppSpacing.md),
 
               Text(
                 "The plan for doubling your max pull ups!",
@@ -185,7 +185,7 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
           ),
         ),
 
-        const SizedBox(height: AppSpacing.lg),
+        const SizedBox(height: AppSpacing.xl),
 
         // Workout cards section
         Expanded(
