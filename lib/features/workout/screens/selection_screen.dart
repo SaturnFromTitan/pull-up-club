@@ -6,9 +6,9 @@ import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:pull_up_club/common/constants/app_constants.dart";
 import "package:pull_up_club/common/providers/workout_history_provider.dart";
+import "package:pull_up_club/common/themes/app_box_shadows.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
-import "package:pull_up_club/common/themes/app_theme.dart";
 import "package:pull_up_club/common/themes/app_typography.dart";
 import "package:pull_up_club/common/widgets/core/gradient_button.dart";
 import "package:pull_up_club/common/widgets/core/gradient_surface.dart";
@@ -271,13 +271,14 @@ class _WorkoutCard extends StatelessWidget {
       child: Container(
         height: _cardHeight,
         decoration: BoxDecoration(
-          color: AppColors.glassBackground,
+          color: AppColors.gradientSurface[1],
           borderRadius: BorderRadius.circular(AppSpacing.radiusLarge),
           border: Border.all(
             color: isSelected
                 ? AppColors.glassBorderActive
                 : AppColors.glassBorderInactive,
           ),
+          boxShadow: isSelected ? AppBoxShadows.light : null,
         ),
         padding: const EdgeInsets.all(AppSpacing.paddingSmall),
         child: Stack(
@@ -289,7 +290,7 @@ class _WorkoutCard extends StatelessWidget {
                   height: _iconSize,
                   gradient: gradient,
                   borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
-                  boxShadow: defaultBoxShadows,
+                  boxShadow: AppBoxShadows.dark,
                   child: Center(child: icon),
                 ),
 
@@ -352,6 +353,7 @@ class _NextBadge extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.yellow,
         borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
+        boxShadow: AppBoxShadows.light,
       ),
       child: Text(
         "Next",

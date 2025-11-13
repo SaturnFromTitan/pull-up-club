@@ -1,8 +1,8 @@
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
+import "package:pull_up_club/common/themes/app_box_shadows.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
-import "package:pull_up_club/common/themes/app_theme.dart";
 import "package:pull_up_club/common/themes/app_typography.dart";
 import "package:pull_up_club/common/widgets/core/gradient_surface.dart";
 
@@ -30,7 +30,7 @@ class GradientButton extends StatelessWidget {
           height: AppSpacing.buttonHeight,
           borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
           border: Border.all(color: AppColors.onLightSecondary, width: 0.2),
-          boxShadow: defaultBoxShadows,
+          boxShadow: AppBoxShadows.dark,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

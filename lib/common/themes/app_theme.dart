@@ -51,11 +51,3 @@ final appTheme = ThemeData(
     ),
   ),
 );
-
-const List<BoxShadow> defaultBoxShadows = [
-  BoxShadow(
-    color: AppColors.shadow,
-    blurRadius: AppSpacing.radiusSmall,
-    offset: Offset(0, 4),
-  ),
-];
