@@ -14,10 +14,17 @@ import "package:pull_up_club/common/widgets/shared/set_cards.dart";
 import "package:pull_up_club/features/workout/providers/workout_provider.dart";
 
 class RestScreen extends StatefulWidget {
-  const RestScreen({super.key});
+  const RestScreen({required this.currentGroupIndex, super.key});
+  final int currentGroupIndex;
 
   @override
   State<RestScreen> createState() => _RestScreenState();
+
+  @override
+  void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(IntProperty("currentGroupIndex", currentGroupIndex));
+  }
 }
 
 class _RestScreenState extends State<RestScreen> {
@@ -79,6 +86,7 @@ class _RestScreenState extends State<RestScreen> {
           SetCards(
             values: getSetCardValues(workoutProvider.workout),
             numExpectedCards: workoutProvider.workout.maxGroups,
+            highlightedIndex: widget.currentGroupIndex,
           ),
           const HomeButton(text: "Exit", icon: Icons.exit_to_app),
         ],

@@ -41,6 +41,7 @@ class AppColors {
   ];
   static const List<Color> gradientAccentGreen = [Color(0xFF22C55E), Color(0xFF16A34A)];
   static const List<Color> gradientRepCount = [Color(0xFF155DFC), Color(0xFF0092B8)];
+  static const List<Color> gradientLightOpaque = [Color(0x1AFFFFFF), Color(0x12FFFFFF)];
 }
 
 class AppGradients {
@@ -75,6 +76,9 @@ class AppGradients {
   );
   static const LinearGradient light = LinearGradient(
     colors: [AppColors.surfaceLight, AppColors.glassBorderActive],
+  );
+  static const LinearGradient lightOpaque = LinearGradient(
+    colors: AppColors.gradientLightOpaque,
   );
 }
 

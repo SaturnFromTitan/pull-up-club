@@ -20,6 +20,11 @@ generate:
 icons:
   dart run flutter_launcher_icons
 
+# run formatter on all files
+format:
+  pre-commit run dart-format --all-files
+
+
 # run pre-commit linters on all files
 lint:
   pre-commit run --all-files

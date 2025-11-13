@@ -11,14 +11,16 @@ class SetCards extends StatelessWidget {
     required this.values,
     super.key,
     final int? numExpectedCards,
+    this.highlightedIndex,
     this.withContainer = true,
   }) : assert(
          numExpectedCards == null || numExpectedCards >= values.length,
-         "numExpectedCards must be >= values.length",
+         "if numExpectedCards is set it must be >= values.length",
        ),
        numExpectedCards = numExpectedCards ?? values.length;
   final List<String> values;
   final int numExpectedCards;
+  final int? highlightedIndex;
   final bool withContainer;
 
   static const int _maxCardsPerRow = 5;
@@ -46,6 +48,7 @@ class SetCards extends StatelessWidget {
               value: i < values.length ? values[i] : null,
               width: cardWidth,
               height: cardHeight,
+              isHighlighted: i == highlightedIndex,
             ),
           ),
         );
@@ -73,30 +76,49 @@ class SetCards extends StatelessWidget {
     properties
       ..add(IterableProperty<String>("values", values))
       ..add(IntProperty("numExpectedCards", numExpectedCards))
+      ..add(IntProperty("highlightedIndex", highlightedIndex))
       ..add(DiagnosticsProperty<bool>("withContainer", withContainer));
   }
 }
 
 class _SetCard extends StatelessWidget {
-  const _SetCard({required this.width, required this.height, this.value});
+  const _SetCard({
+    required this.width,
+    required this.height,
+    this.value,
+    this.isHighlighted = false,
+  });
 
   static const String _placeholderValue = "?";
   final String? value;
   final double width;
   final double height;
+  final bool isHighlighted;
 
   @override
   Widget build(final BuildContext context) {
-    return Opacity(
-      opacity: value == null ? 0.1 : 1.0,
-      child: GradientSurface(
-        height: height,
-        width: width,
-        gradient: value == null ? AppGradients.light : AppGradients.secondary,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
-        boxShadow: defaultBoxShadows,
-        child: Center(
-          child: Text(value ?? _placeholderValue, style: AppTypography.headlineSmall),
+    double textOpacity;
+    if (value != null) {
+      textOpacity = 1.0;
+    } else if (isHighlighted) {
+      textOpacity = 0.7;
+    } else {
+      textOpacity = 0.1;
+    }
+
+    return GradientSurface(
+      height: height,
+      width: width,
+      gradient: value == null ? AppGradients.lightOpaque : AppGradients.secondary,
+      border: isHighlighted ? Border.all(color: AppColors.glassBorderActive) : null,
+      borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
+      boxShadow: defaultBoxShadows,
+      child: Center(
+        child: Text(
+          value ?? _placeholderValue,
+          style: AppTypography.headlineSmall.copyWith(
+            color: AppColors.onColor.withValues(alpha: textOpacity),
+          ),
         ),
       ),
     );
@@ -108,6 +130,7 @@ class _SetCard extends StatelessWidget {
     properties
       ..add(StringProperty("value", value))
       ..add(DoubleProperty("width", width))
-      ..add(DoubleProperty("height", height));
+      ..add(DoubleProperty("height", height))
+      ..add(DiagnosticsProperty<bool>("isHighlighted", isHighlighted));
   }
 }

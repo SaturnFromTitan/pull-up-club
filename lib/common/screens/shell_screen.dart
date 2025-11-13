@@ -23,7 +23,7 @@ class Shell extends StatelessWidget {
 
     return ScreenScaffold(
       bottomNavigationBar: GradientNavigationBar(
-        selectedIndex: navigationProvider.tabIndex,
+        selectedIndex: navigationProvider.currentTab.index,
         onDestinationSelected: navigationProvider.setTabIndex,
         destinations: const [
           NavigationDestination(
@@ -38,10 +38,10 @@ class Shell extends StatelessWidget {
           ),
         ],
       ),
-      child: IndexedStack(
-        index: navigationProvider.tabIndex,
-        children: const [WorkoutSelectionScreen(), HistoryScreen()],
-      ),
+      child: switch (navigationProvider.currentTab) {
+        AppTab.workout => const WorkoutSelectionScreen(),
+        AppTab.history => const HistoryScreen(),
+      },
     );
   }
 }
