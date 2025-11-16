@@ -2,7 +2,7 @@ import "package:pull_up_club/domain/models.dart";
 
 String twoDigits(final int n) => n.toString().padLeft(2, "0");
 
-String formatMinutesSeconds(final int totalMillis) {
+String displayDuration(final int totalMillis) {
   final totalSeconds = (totalMillis / 1_000).ceil();
   final minutes = twoDigits(totalSeconds ~/ 60);
   final seconds = twoDigits(totalSeconds % 60);

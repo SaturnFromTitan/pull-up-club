@@ -171,7 +171,7 @@ class _PastWorkout extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text("💪 ${workout.totalReps()} reps"),
-                  Text("⏱️ ${formatMinutesSeconds(workout.durationSeconds() ?? 0)}"),
+                  Text("⏱️ ${displayDuration(workout.durationMillis() ?? 0)}"),
                 ],
               ),
             ],
