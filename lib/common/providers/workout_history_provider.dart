@@ -1,4 +1,5 @@
 import "dart:async";
+import "dart:math";
 
 import "package:flutter/material.dart";
 import "package:logging/logging.dart";
@@ -70,5 +71,61 @@ class WorkoutHistoryProvider extends ChangeNotifier {
     );
     final nextIndex = (currentIndex + 1) % WorkoutType.values.length;
     return WorkoutType.values[nextIndex];
+  }
+
+  /// Calculates the default target reps for submax volume workouts based on workout history.
+  /// Returns a record with the default value and info text explaining the suggestion.
+  ({int? defaultValue, String? infoText}) calculateDefaultTargetReps() {
+    // Find the most recent submax volume workout
+    final submaxWorkouts = _completedWorkouts
+        .where((final w) => w.workoutType == WorkoutType.submaxVolume)
+        .toList();
+
+    if (submaxWorkouts.isNotEmpty) {
+      final mostRecentSubmax = submaxWorkouts.last;
+
+      // Check if all sets completed the target reps
+      final targetReps = mostRecentSubmax.sets.first.targetReps!;
+      final allCompleted = mostRecentSubmax.sets.every(
+        (final set) => set.completedReps >= targetReps,
+      );
+
+      if (allCompleted) {
+        return (
+          defaultValue: targetReps + 1,
+          infoText: "Increased your target by 1 rep",
+        );
+      } else {
+        return (defaultValue: targetReps, infoText: "Same target as the last time");
+      }
+    }
+
+    // No submax volume workout, check for max sets workout
+    final maxSetsWorkouts = _completedWorkouts
+        .where((final w) => w.workoutType == WorkoutType.maxSets)
+        .toList();
+
+    if (maxSetsWorkouts.isNotEmpty) {
+      // Find the highest rep count
+      final highestReps = maxSetsWorkouts.last.sets
+          .map((final set) => set.completedReps)
+          .reduce(max);
+      final suggestedReps = (highestReps / 2).floor();
+
+      if (suggestedReps > 0) {
+        return (
+          defaultValue: suggestedReps,
+          infoText: "That's 50% of your latest max reps",
+        );
+      } else {
+        return (defaultValue: null, infoText: "Please increase your Max Reps first");
+      }
+    }
+
+    // No workouts found
+    return (
+      defaultValue: null,
+      infoText: "Complete a Max Sets workout first to get a suggestion",
+    );
   }
 }
