@@ -13,6 +13,9 @@ class WorkoutHistoryProvider extends ChangeNotifier {
 
   final WorkoutRepository _repository;
 
+  /// Expose repository for sync operations
+  WorkoutRepository get repository => _repository;
+
   bool _isLoading = true;
   List<Workout> _completedWorkouts = <Workout>[];
 
@@ -38,8 +41,21 @@ class WorkoutHistoryProvider extends ChangeNotifier {
       final savedWorkout = await _repository.saveWorkout(workout);
       _completedWorkouts.add(savedWorkout);
       notifyListeners();
+      // Sync happens automatically in repository.saveWorkout()
     } on Exception catch (e) {
       _logger.fine("Error saving workout: $e");
+      rethrow;
+    }
+  }
+
+  /// Manually trigger a sync
+  Future<void> sync() async {
+    try {
+      await _repository.sync();
+      // Reload workouts after sync to get any server changes
+      await _loadWorkouts();
+    } on Exception catch (e) {
+      _logger.fine("Error syncing: $e");
       rethrow;
     }
   }
