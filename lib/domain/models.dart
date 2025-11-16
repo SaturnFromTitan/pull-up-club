@@ -41,7 +41,7 @@ class Workout {
     if (end == null) {
       return null;
     }
-    return end!.second - start.second;
+    return end!.difference(start).inSeconds;
   }
 
   int totalReps() => sets.fold(0, (final t, final s) => t + s.completedReps);
