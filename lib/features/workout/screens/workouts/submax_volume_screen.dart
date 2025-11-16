@@ -26,7 +26,7 @@ class _SubmaxVolumeScreenState extends BaseWorkoutState<SubmaxVolumeScreen> {
   bool _showCustomRepsForm = false;
 
   @override
-  int get restDurationSeconds => 60;
+  int get restDurationMillis => 60 * 1_000;
 
   @override
   int getTargetReps() => widget.targetReps;

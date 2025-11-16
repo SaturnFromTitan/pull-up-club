@@ -137,7 +137,7 @@ class _RestTimerSpinnerState extends State<_RestTimerSpinner>
   Widget build(final BuildContext context) {
     final workoutProvider = context.watch<WorkoutProvider>();
 
-    final remaining = workoutProvider.restTimeRemaining;
+    final remaining = workoutProvider.restRemainingMillis;
 
     const double ringThickness = 6;
     const arcPortion = 0.25;

@@ -18,7 +18,7 @@ class _LaddersState extends BaseWorkoutState<LaddersScreen> {
   bool _showCustomRepsForm = false;
 
   @override
-  int get restDurationSeconds => 30;
+  int get restDurationMillis => 30 * 1_000;
 
   @override
   int getNumCompletedGroups() => _completedGroups;
