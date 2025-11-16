@@ -27,19 +27,30 @@ class RestScreen extends StatefulWidget {
   }
 }
 
-class _RestScreenState extends State<RestScreen> {
+class _RestScreenState extends State<RestScreen> with WidgetsBindingObserver {
   bool _didPop = false;
   late final WorkoutProvider _workoutProvider;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _workoutProvider = context.read<WorkoutProvider>();
     _workoutProvider.addListener(_onWorkoutChanged);
 
     // If we somehow arrive when not resting, pop once after first frame
     if (!_workoutProvider.isResting()) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _safePop());
+    }
+  }
+
+  @override
+  void didChangeAppLifecycleState(final AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    // When app resumes from background, recalculate the timer
+    // to account for time that passed while in background
+    if (state == AppLifecycleState.resumed) {
+      _workoutProvider.recalculateRestTimer();
     }
   }
 
@@ -59,6 +70,7 @@ class _RestScreenState extends State<RestScreen> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _workoutProvider.removeListener(_onWorkoutChanged);
     super.dispose();
   }
