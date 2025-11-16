@@ -14,7 +14,7 @@ install:
 
 # watches for code changes and generates code with incremental rebuilds
 generate:
-  dart run build_runner watch
+  dart run build_runner build
 
 # generate iOS app icons from assets/app_icon.png via flutter_launcher_icons
 icons:
@@ -23,7 +23,6 @@ icons:
 # run formatter on all files
 format:
   pre-commit run dart-format --all-files
-
 
 # run pre-commit linters on all files
 lint:

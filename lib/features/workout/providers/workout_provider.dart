@@ -1,4 +1,5 @@
 import "dart:async";
+import "dart:math";
 
 import "package:flutter/material.dart";
 import "package:pull_up_club/common/services/sound_service.dart";
@@ -22,30 +23,41 @@ class WorkoutProvider extends ChangeNotifier {
       );
   // private state
   final Workout _workout;
-  int _restRemainingSeconds = 0;
+  DateTime? _restStartTime;
   int _restTotalSeconds = 0;
   Timer? _restTimer;
 
   // getters
   Workout get workout => _workout;
-  int get restTimeRemaining => _restRemainingSeconds;
+
+  int get restTimeRemaining {
+    if (_restStartTime == null) {
+      return 0;
+    }
+    final elapsed = DateTime.now()
+        .toUtc()
+        .difference(_restStartTime!.toUtc())
+        .inSeconds;
+    return max(0, _restTotalSeconds - elapsed);
+  }
+
   int get restTotalSeconds => _restTotalSeconds;
 
   // lifecyle management
   void rest(final int durationSeconds) {
-    _restRemainingSeconds = durationSeconds;
+    _restStartTime = DateTime.now().toUtc();
     _restTotalSeconds = durationSeconds;
 
     _restTimer = Timer.periodic(const Duration(seconds: 1), (final timer) {
-      _restRemainingSeconds--;
+      final remaining = restTimeRemaining;
 
       // Play countdown sound on last 3 seconds (3, 2, 1)
-      if (1 <= _restRemainingSeconds && _restRemainingSeconds <= 3) {
+      if (1 <= remaining && remaining <= 3) {
         unawaited(SoundService.instance.playCountdown());
       }
 
       // Play complete sound when timer reaches 0
-      if (_restRemainingSeconds <= 0) {
+      if (remaining <= 0) {
         unawaited(SoundService.instance.playCountdownCompleted());
         resume(stopSounds: false);
         return;
@@ -60,12 +72,13 @@ class WorkoutProvider extends ChangeNotifier {
       unawaited(SoundService.instance.stop());
     }
     _restTimer?.cancel();
-    _restRemainingSeconds = 0;
+    _restTimer = null;
+    _restStartTime = null;
     _restTotalSeconds = 0;
     notifyListeners();
   }
 
-  bool isResting() => _restTimer?.isActive ?? false;
+  bool isResting() => _restStartTime != null;
 
   @override
   void dispose() {
