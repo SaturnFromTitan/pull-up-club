@@ -13,7 +13,7 @@ class MaxSetsScreen extends BaseWorkoutScreen {
 
 class _MaxSetsScreenState extends BaseWorkoutState<MaxSetsScreen> {
   @override
-  int get restDurationSeconds => 5 * 60;
+  int get restDurationMillis => 5 * 60 * 1_000;
 
   @override
   Null getTargetReps() => null;

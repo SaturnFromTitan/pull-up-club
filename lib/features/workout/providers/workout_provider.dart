@@ -24,36 +24,40 @@ class WorkoutProvider extends ChangeNotifier {
   // private state
   final Workout _workout;
   DateTime? _restStartTime;
-  int _restTotalSeconds = 0;
+  int _restTotalMillis = 0;
   Timer? _restTimer;
 
   // getters
   Workout get workout => _workout;
 
-  int get restTimeRemaining {
+  int get restRemainingMillis {
     if (_restStartTime == null) {
       return 0;
     }
-    final elapsed = DateTime.now()
+    final elapsedMillis = DateTime.now()
         .toUtc()
         .difference(_restStartTime!.toUtc())
-        .inSeconds;
-    return max(0, _restTotalSeconds - elapsed);
+        .inMilliseconds;
+    return max(0, _restTotalMillis - elapsedMillis);
   }
 
-  int get restTotalSeconds => _restTotalSeconds;
-
   // lifecyle management
-  void rest(final int durationSeconds) {
+  void rest(final int durationMillis) {
     _restStartTime = DateTime.now().toUtc();
-    _restTotalSeconds = durationSeconds;
+    _restTotalMillis = durationMillis;
 
     _restTimer = Timer.periodic(const Duration(seconds: 1), (final timer) {
-      final remaining = restTimeRemaining;
+      final remaining = restRemainingMillis;
 
       // Play countdown sound on last 3 seconds (3, 2, 1)
-      if (1 <= remaining && remaining <= 3) {
-        unawaited(SoundService.instance.playCountdown());
+      // Only play sound when remaining transitions to 3, 2, or 1 (i.e., just after a whole second tick)
+      // This ensures that beeps after backgrounding are not repeated in rapid succession
+      const precision = 100; // 100ms
+      for (final targetSecond in [3, 2, 1]) {
+        if ((remaining - targetSecond * 1_000).abs() < precision) {
+          unawaited(SoundService.instance.playCountdown());
+          break;
+        }
       }
 
       // Play complete sound when timer reaches 0
@@ -74,7 +78,7 @@ class WorkoutProvider extends ChangeNotifier {
     _restTimer?.cancel();
     _restTimer = null;
     _restStartTime = null;
-    _restTotalSeconds = 0;
+    _restTotalMillis = 0;
     notifyListeners();
   }
 

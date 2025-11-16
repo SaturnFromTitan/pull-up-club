@@ -24,7 +24,7 @@ abstract class BaseWorkoutScreen extends StatefulWidget {
 }
 
 abstract class BaseWorkoutState<T extends BaseWorkoutScreen> extends State<T> {
-  int get restDurationSeconds;
+  int get restDurationMillis;
 
   int? getTargetReps();
   Widget getInputs();
@@ -86,7 +86,7 @@ abstract class BaseWorkoutState<T extends BaseWorkoutScreen> extends State<T> {
       unawaited(workoutHistoryProvider.addWorkout(workout));
       navigateToSuccess();
     } else {
-      workoutProvider.rest(restDurationSeconds);
+      workoutProvider.rest(restDurationMillis);
       navigateToRest();
     }
   }
@@ -162,6 +162,6 @@ abstract class BaseWorkoutState<T extends BaseWorkoutScreen> extends State<T> {
   @override
   void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(IntProperty("restDurationSeconds", restDurationSeconds));
+    properties.add(IntProperty("restDurationMillis", restDurationMillis));
   }
 }
