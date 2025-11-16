@@ -34,7 +34,10 @@ class WorkoutProvider extends ChangeNotifier {
     if (_restStartTime == null) {
       return 0;
     }
-    final elapsed = DateTime.now().difference(_restStartTime!).inSeconds;
+    final elapsed = DateTime.now()
+        .toUtc()
+        .difference(_restStartTime!.toUtc())
+        .inSeconds;
     return max(0, _restTotalSeconds - elapsed);
   }
 
@@ -42,7 +45,7 @@ class WorkoutProvider extends ChangeNotifier {
 
   // lifecyle management
   void rest(final int durationSeconds) {
-    _restStartTime = DateTime.now();
+    _restStartTime = DateTime.now().toUtc();
     _restTotalSeconds = durationSeconds;
 
     _restTimer = Timer.periodic(const Duration(seconds: 1), (final timer) {
@@ -76,24 +79,6 @@ class WorkoutProvider extends ChangeNotifier {
   }
 
   bool isResting() => _restStartTime != null;
-
-  /// Recalculates the rest timer based on elapsed time.
-  /// Call this when the app resumes from background to ensure accuracy.
-  void recalculateRestTimer() {
-    if (!isResting()) {
-      return;
-    }
-    final remaining = restTimeRemaining;
-
-    // If timer expired while in background, complete it
-    if (remaining <= 0) {
-      unawaited(SoundService.instance.playCountdownCompleted());
-      resume(stopSounds: false);
-      return;
-    }
-
-    notifyListeners();
-  }
 
   @override
   void dispose() {
