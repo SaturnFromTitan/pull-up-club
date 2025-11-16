@@ -167,7 +167,7 @@ class _RestTimerSpinnerState extends State<_RestTimerSpinner>
               ),
               // center content
               Text(
-                formatMinutesSeconds(remaining),
+                displayDuration(remaining),
                 style: AppTypography.displayLarge.copyWith(fontSize: 50),
               ),
             ],

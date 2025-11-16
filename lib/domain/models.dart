@@ -37,11 +37,11 @@ class Workout {
     end ??= DateTime.now().toUtc();
   }
 
-  int? durationSeconds() {
+  int? durationMillis() {
     if (end == null) {
       return null;
     }
-    return end!.difference(start).inSeconds;
+    return end!.difference(start).inMilliseconds;
   }
 
   int totalReps() => sets.fold(0, (final t, final s) => t + s.completedReps);

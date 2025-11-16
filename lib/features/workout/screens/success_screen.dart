@@ -71,7 +71,7 @@ class _SuccessScreenState extends State<SuccessScreen>
 
   @override
   Widget build(final BuildContext context) {
-    final durationText = formatMinutesSeconds(widget.workout.durationSeconds() ?? 0);
+    final durationText = displayDuration(widget.workout.durationMillis() ?? 0);
     final totalReps = widget.workout.totalReps();
 
     return ScreenScaffold(
