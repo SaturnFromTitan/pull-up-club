@@ -62,3 +62,13 @@ and **optionally** you can also install the pre-commit hooks via
 ```sh
 pre-commit install
 ```
+
+### Privacy Policy
+
+The privacy policy is located in `docs/privacy-policy.html` and is hosted on GitHub Pages. To update the "Last updated" date from git commit history, run:
+
+```sh
+just privacy-date
+```
+
+This will automatically extract the last commit date for the privacy policy file and update it in the HTML.
