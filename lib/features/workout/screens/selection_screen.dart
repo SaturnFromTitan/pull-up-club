@@ -43,7 +43,7 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               const Text("🎯", style: TextStyle(fontSize: 40, color: Colors.white)),
-              Text(
+              const Text(
                 "Enter Your Target Reps",
                 style: AppTypography.headlineLarge,
                 textAlign: TextAlign.center,
@@ -108,7 +108,7 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
           width: double.infinity,
           child: Column(
             children: [
-              Text(
+              const Text(
                 AppConstants.appTitle,
                 style: AppTypography.displayAppTitle,
                 textAlign: TextAlign.center,

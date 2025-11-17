@@ -1,1 +1,2 @@
 assets/app_icon.png filter=lfs diff=lfs merge=lfs -text
+assets/fonts/*.ttf filter=lfs diff=lfs merge=lfs -text
