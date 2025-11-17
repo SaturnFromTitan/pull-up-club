@@ -117,7 +117,7 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
               const SizedBox(height: AppSpacing.md),
 
               Text(
-                "The plan for doubling your max pull ups!",
+                "The plan for doubling your max pull-ups!",
                 style: AppTypography.headlineLarge.copyWith(
                   color: AppColors.onColorSecondary,
                 ),
@@ -127,12 +127,20 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
           ),
         ),
 
-        const SizedBox(height: AppSpacing.xl),
+        const SizedBox(height: AppSpacing.xxl),
 
         // Workout cards section
         Expanded(
           child: Column(
             children: [
+              Text(
+                "Do these workouts for 8 weeks,\nwith 1-2 days of rest in between.",
+                style: AppTypography.bodyLarge.copyWith(
+                  color: AppColors.onColorSecondary,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: AppSpacing.lg),
               _WorkoutCard(
                 title: "Max Sets",
                 description: "3x max reps with 5 minutes rest",
