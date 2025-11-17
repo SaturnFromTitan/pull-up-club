@@ -1,0 +1,130 @@
+name: Release to App Store
+
+permissions:
+  contents: write
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: release-appstore
+  cancel-in-progress: false
+
+jobs:
+  check-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get-version.outputs.version }}
+      should-release: ${{ steps.check-version.outputs.should-release }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Get current version from pubspec.yaml
+        id: get-version
+        run: |
+          VERSION=$(grep '^version:' pubspec.yaml | sed 's/version: //' | sed 's/+.*//')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Current version: $VERSION"
+
+      - name: Get latest GitHub release version
+        id: latest-release
+        run: |
+          LATEST_TAG=$(gh release list --limit 1 --json tagName -q '.[0].tagName' 2>/dev/null || echo "")
+          if [ -z "$LATEST_TAG" ]; then
+            echo "No previous releases found"
+            echo "version=" >> $GITHUB_OUTPUT
+          else
+            # Remove 'v' prefix if present
+            LATEST_VERSION=$(echo "$LATEST_TAG" | sed 's/^v//')
+            echo "version=$LATEST_VERSION" >> $GITHUB_OUTPUT
+            echo "Latest release version: $LATEST_VERSION"
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check if version was incremented
+        id: check-version
+        run: |
+          CURRENT_VERSION="${{ steps.get-version.outputs.version }}"
+          LATEST_VERSION="${{ steps.latest-release.outputs.version }}"
+
+          if [ -z "$LATEST_VERSION" ]; then
+            echo "No previous release found, allowing release"
+            echo "should-release=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Compare semantic versions using a more robust method
+          # Convert versions to comparable format (e.g., 1.2.3 -> 001002003)
+          current_normalized=$(echo "$CURRENT_VERSION" | awk -F. '{printf "%03d%03d%03d", $1, $2, $3}')
+          latest_normalized=$(echo "$LATEST_VERSION" | awk -F. '{printf "%03d%03d%03d", $1, $2, $3}')
+
+          if [ "$current_normalized" -gt "$latest_normalized" ]; then
+            echo "Version $CURRENT_VERSION is higher than $LATEST_VERSION, proceeding with release"
+            echo "should-release=true" >> $GITHUB_OUTPUT
+          else
+            echo "Version $CURRENT_VERSION is not higher than $LATEST_VERSION, skipping release"
+            echo "should-release=false" >> $GITHUB_OUTPUT
+          fi
+
+  release:
+    needs: check-version
+    if: needs.check-version.outputs.should-release == 'true'
+    runs-on: macos-15
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+          ruby-version: '3.3'
+          working-directory: ios
+
+      - name: Bundle install
+        working-directory: ios
+        run: bundle install
+
+      - name: Fastlane release → App Store
+        working-directory: ios
+        env:
+          APP_BUNDLE_ID: com.saturnfromtitan.pullupclub
+          APP_STORE_CONNECT_KEY_ID: SMB27J9U63
+          APP_STORE_CONNECT_ISSUER_ID: 22b3172d-3eba-4290-afb8-7dbb1961ce38
+          APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
+          APPLE_TEAM_ID: U8FWPQDZJJ
+        run: bundle exec fastlane release
+
+      - name: Publish build info to summary
+        if: always()
+        run: |
+          if [ -f build/build_info.env ]; then
+            set -a
+            . build/build_info.env
+            set +a
+            {
+              echo "### App Store Release Info"
+              echo ""
+              echo "- Marketing version: ${MARKETING_VERSION}"
+              echo "- Build number: ${BUILD_NUMBER}"
+            } >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Build info not found at build/build_info.env" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ needs.check-version.outputs.version }}
+          name: Release v${{ needs.check-version.outputs.version }}
+          body: |
+            ## Release v${{ needs.check-version.outputs.version }}
+
+            This release has been submitted to the App Store for review.
+          draft: false
+          prerelease: false

@@ -70,4 +70,59 @@ platform :ios do
       skip_submission: true
     )
   end
+
+  desc "Submit existing TestFlight build to App Store for production release"
+  lane :release do
+    require 'yaml'
+    require 'fileutils'
+
+    unless ENV['CI']
+      UI.user_error!("This lane must be run in CI environment (ENV['CI'] is not set)")
+    end
+
+    api_key = app_store_connect_api_key(
+      key_id: ENV['APP_STORE_CONNECT_KEY_ID'],
+      issuer_id: ENV['APP_STORE_CONNECT_ISSUER_ID'],
+      key_content: ENV['APP_STORE_CONNECT_API_KEY']
+    )
+
+    UI.message("Deriving marketing version from pubspec.yaml")
+    pubspec = YAML.load_file(File.expand_path("../../pubspec.yaml", __dir__))
+    marketing_version = pubspec['version'].split('+').first
+
+    # Get the latest build number for this version from TestFlight
+    latest_build_number = latest_testflight_build_number(
+      api_key: api_key,
+      app_identifier: ENV['APP_BUNDLE_ID'],
+      initial_build_number: 0,
+      version: marketing_version
+    )
+
+    if latest_build_number.nil? || latest_build_number == 0
+      UI.user_error!("No build found in TestFlight for version #{marketing_version}. Please ensure a build exists in TestFlight before releasing to App Store.")
+    end
+
+    UI.message("Found build #{latest_build_number} for version #{marketing_version} in TestFlight")
+
+    # Persist build info for CI summary
+    build_info_path = File.expand_path("../../build/build_info.env", __dir__)
+    FileUtils.mkdir_p(File.dirname(build_info_path)) unless Dir.exist?(File.dirname(build_info_path))
+    File.write(build_info_path, "MARKETING_VERSION=#{marketing_version}\nBUILD_NUMBER=#{latest_build_number}\n")
+    sh("cat #{build_info_path}")
+
+    # Submit existing TestFlight build to App Store for review
+    # skip_binary_upload: true means we're using an existing build, not uploading a new one
+    upload_to_app_store(
+      api_key: api_key,
+      app_version: marketing_version
+      build_number: latest_build_number,
+      skip_binary_upload: true,
+      skip_metadata: true,
+      skip_screenshots: true,
+      skip_app_version_update: true,
+      submit_for_review: true,
+      automatic_release: true,
+      force: true,
+    )
+  end
 end
