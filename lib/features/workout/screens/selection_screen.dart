@@ -117,8 +117,8 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
               const SizedBox(height: AppSpacing.md),
 
               Text(
-                "The plan for doubling your max pull-ups!",
-                style: AppTypography.headlineLarge.copyWith(
+                "Double your max pull-ups!",
+                style: AppTypography.displaySmall.copyWith(
                   color: AppColors.onColorSecondary,
                 ),
                 textAlign: TextAlign.center,
@@ -134,8 +134,8 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
           child: Column(
             children: [
               Text(
-                "Do these workouts for 8 weeks,\nwith 1-2 days of rest in between.",
-                style: AppTypography.bodyLarge.copyWith(
+                "Take 1-2 days of rest between workouts.",
+                style: AppTypography.headlineMedium.copyWith(
                   color: AppColors.onColorSecondary,
                 ),
                 textAlign: TextAlign.center,
