@@ -13,7 +13,6 @@ dependencies:
   drift_flutter: ">=0.2.7"
   flutter:
     sdk: flutter
-  google_fonts: ">=6.2.1"
   logging: ">=1.3.0"
   path_provider: ">=2.1.5"
   provider: ">=6.1.5"
@@ -30,6 +29,17 @@ flutter:
   uses-material-design: true
   assets:
     - assets/sounds/
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-VariableFont_opsz,wght.ttf
+          weight: 400
+        - asset: assets/fonts/Inter-VariableFont_opsz,wght.ttf
+          weight: 500
+    - family: Poppins
+      fonts:
+        - asset: assets/fonts/Poppins-SemiBold.ttf
+          weight: 600
 
 flutter_launcher_icons:
   ios: true
