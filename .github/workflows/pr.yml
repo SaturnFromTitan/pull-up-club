@@ -35,3 +35,15 @@ jobs:
 
     - name: Run linters via pre-commit
       run: pre-commit run --all-files --show-diff-on-failure --color always
+
+  check-privacy-date:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v5
+      with:
+        fetch-depth: 0  # Fetch full history to get commit dates
+
+    - name: Check privacy policy date
+      run: docs/update-privacy-date.sh

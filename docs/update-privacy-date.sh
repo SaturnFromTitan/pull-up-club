@@ -1,5 +1,6 @@
 #!/bin/bash
 # Script to update the "Last updated" date in privacy-policy.html from git
+# Exits with non-zero code if the date was updated, zero if it was already up to date
 
 # Get the directory where this script is located
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -23,20 +24,41 @@ fi
 
 # Format the date nicely
 FORMATTED_DATE=$(date -d "$LAST_DATE" +"%B %d, %Y" 2>/dev/null || date -j -f "%Y-%m-%d %H:%M:%S %z" "$LAST_DATE" +"%B %d, %Y" 2>/dev/null || echo "$LAST_DATE")
+FORMATTED_DATE=$(echo "$FORMATTED_DATE" | xargs)  # Trim whitespace
 
-# Update the HTML file
-if [ -f "$FILE" ]; then
-    # Replace "Last updated: " followed by any date (handles both placeholder and existing dates)
-    # Pattern matches: "Last updated: " followed by any text until </p>
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-        # macOS - use sed with extended regex
-        sed -i '' -E "s|(Last updated: )[^<]*(</p>)|\1$FORMATTED_DATE\2|g" "$FILE"
-    else
-        # Linux - use sed with extended regex
-        sed -i -E "s|(Last updated: )[^<]*(</p>)|\1$FORMATTED_DATE\2|g" "$FILE"
-    fi
-    echo "Updated privacy policy date to: $FORMATTED_DATE"
-else
+# Check if file exists
+if [ ! -f "$FILE" ]; then
     echo "Error: $FILE not found"
     exit 1
 fi
+
+# Extract current date from the HTML file
+CURRENT_DATE=$(sed -nE 's/.*Last updated: ([^<]+).*/\1/p' "$FILE" 2>/dev/null)
+if [ -z "$CURRENT_DATE" ]; then
+    echo "Error: Could not extract date from $FILE"
+    echo "Expected format: 'Last updated: <date></p>'"
+    exit 1
+fi
+CURRENT_DATE=$(echo "$CURRENT_DATE" | xargs)  # Trim whitespace
+
+# Check if date needs updating
+if [ "$CURRENT_DATE" = "$FORMATTED_DATE" ]; then
+    echo "✓ Privacy policy date is up to date: $CURRENT_DATE"
+    exit 0
+fi
+
+# Date needs updating
+echo "Updating privacy policy date from '$CURRENT_DATE' to '$FORMATTED_DATE'"
+
+# Replace "Last updated: " followed by any date (handles both placeholder and existing dates)
+# Pattern matches: "Last updated: " followed by any text until </p>
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    # macOS - use sed with extended regex
+    sed -i '' -E "s|(Last updated: )[^<]*(</p>)|\1$FORMATTED_DATE\2|g" "$FILE"
+else
+    # Linux - use sed with extended regex
+    sed -i -E "s|(Last updated: )[^<]*(</p>)|\1$FORMATTED_DATE\2|g" "$FILE"
+fi
+
+echo "Updated privacy policy date to: $FORMATTED_DATE"
+exit 1  # Non-zero exit code indicates the date was changed

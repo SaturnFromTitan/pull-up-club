@@ -29,5 +29,5 @@ lint:
   pre-commit run --all-files
 
 # update privacy policy date from git commit history
-privacy-date:
-  docs/update-privacy-date.sh
+update-privacy-date:
+  docs/update-privacy-date.sh || true
