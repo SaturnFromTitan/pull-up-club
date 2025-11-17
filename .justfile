@@ -27,3 +27,7 @@ format:
 # run pre-commit linters on all files
 lint:
   pre-commit run --all-files
+
+# update privacy policy date from git commit history
+update-privacy-date:
+  docs/update-privacy-date.sh || true
