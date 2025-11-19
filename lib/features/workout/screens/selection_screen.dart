@@ -100,7 +100,7 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
     final workoutHistoryProvider = context.watch<WorkoutHistoryProvider>();
     final nextWorkoutType = workoutHistoryProvider.getNextWorkoutType();
     final screenSize = MediaQuery.of(context).size;
-    final isSmallScreen = screenSize.height < 900;
+    final isSmallScreen = screenSize.height < 850;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -129,8 +129,6 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
             ],
           ),
         ),
-
-        SizedBox(height: isSmallScreen ? AppSpacing.lg : AppSpacing.xxl),
 
         // Workout cards section
         Column(
@@ -182,17 +180,18 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
           ],
         ),
 
-        const SizedBox(height: _cardGap),
-
         // Start workout button
-        Center(
-          child: SizedBox(
-            width: screenSize.width * 0.8,
-            child: GradientButton(
-              text: "Start Workout",
-              icon: Icons.play_arrow,
-              onPressed: _handleSubmit,
-              gradient: AppGradients.primary,
+        Padding(
+          padding: const EdgeInsets.only(bottom: AppSpacing.md),
+          child: Center(
+            child: SizedBox(
+              width: screenSize.width * 0.8,
+              child: GradientButton(
+                text: "Start Workout",
+                icon: Icons.play_arrow,
+                onPressed: _handleSubmit,
+                gradient: AppGradients.primary,
+              ),
             ),
           ),
         ),
