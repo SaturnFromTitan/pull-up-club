@@ -35,7 +35,6 @@ class Screen {
   static double height(final BuildContext c) => MediaQuery.of(c).size.height;
   static double width(final BuildContext c) => MediaQuery.of(c).size.width;
 
-  static const double _smallThreshold = 850;
+  static const double _smallThreshold = 840;
   static bool isSmall(final BuildContext c) => height(c) < _smallThreshold;
-  static bool isLarge(final BuildContext c) => height(c) >= _smallThreshold;
 }

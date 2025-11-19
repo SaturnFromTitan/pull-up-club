@@ -75,7 +75,7 @@ class _RestScreenState extends State<RestScreen> {
           Text("😴", style: AppTypography.displayLarge.copyWith(fontSize: 64)),
           const _RestTimerSpinner(size: 200),
           SizedBox(
-            width: MediaQuery.of(context).size.width * 0.5,
+            width: Screen.width(context) * 0.5,
             child: GradientButton(
               onPressed: workoutProvider.resume,
               text: "Skip Rest",
@@ -91,7 +91,7 @@ class _RestScreenState extends State<RestScreen> {
             highlightedIndex: widget.currentGroupIndex,
           ),
           SizedBox(
-            width: MediaQuery.of(context).size.width * 0.5,
+            width: Screen.width(context) * 0.5,
             child: const HomeButton(text: "Exit", icon: Icons.exit_to_app),
           ),
         ],

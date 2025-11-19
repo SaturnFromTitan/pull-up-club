@@ -141,7 +141,7 @@ class _SuccessScreenState extends State<SuccessScreen>
             ),
             SetCards(values: getSetCardValues(widget.workout)),
             SizedBox(
-              width: MediaQuery.of(context).size.width * 0.5,
+              width: Screen.width(context) * 0.5,
               child: const HomeButton(text: "Home", gradient: AppGradients.primary),
             ),
           ],

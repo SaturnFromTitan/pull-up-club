@@ -151,7 +151,7 @@ abstract class BaseWorkoutState<T extends BaseWorkoutScreen> extends State<T> {
             highlightedIndex: getNumCompletedGroups(),
           ),
           SizedBox(
-            width: MediaQuery.of(context).size.width * 0.5,
+            width: Screen.width(context) * 0.5,
             child: const HomeButton(text: "Exit", icon: Icons.exit_to_app),
           ),
         ],
