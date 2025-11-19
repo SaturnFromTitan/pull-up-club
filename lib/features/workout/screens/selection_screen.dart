@@ -28,7 +28,7 @@ class WorkoutSelectionScreen extends StatefulWidget {
 class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
   WorkoutType _selected = WorkoutType.maxSets;
   static const double _cardGap = AppSpacing.md;
-  static const double _iconSize = 27;
+  static const double _iconSize = 28;
 
   Future<int?> askForTargetReps() async {
     final workoutHistoryProvider = context.read<WorkoutHistoryProvider>();
@@ -99,106 +99,104 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
   Widget build(final BuildContext context) {
     final workoutHistoryProvider = context.watch<WorkoutHistoryProvider>();
     final nextWorkoutType = workoutHistoryProvider.getNextWorkoutType();
-    final screenHeight = MediaQuery.of(context).size.height;
-    final isSmallScreen = screenHeight < 900;
+    final screenSize = MediaQuery.of(context).size;
+    final isSmallScreen = screenSize.height < 900;
 
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          // Header section
-          SizedBox(
-            width: double.infinity,
-            child: Column(
-              children: [
-                const Text(
-                  AppConstants.appTitle,
-                  style: AppTypography.displayAppTitle,
-                  textAlign: TextAlign.center,
-                ),
-
-                SizedBox(height: isSmallScreen ? AppSpacing.xs : AppSpacing.md),
-
-                Text(
-                  "Double your max pull-ups!",
-                  style: AppTypography.displaySmall.copyWith(
-                    color: AppColors.onColorSecondary,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
-          ),
-
-          SizedBox(height: isSmallScreen ? AppSpacing.lg : AppSpacing.xxl),
-
-          // Workout cards section
-          Column(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        // Header section
+        SizedBox(
+          width: double.infinity,
+          child: Column(
             children: [
+              const Text(
+                AppConstants.appTitle,
+                style: AppTypography.displayAppTitle,
+                textAlign: TextAlign.center,
+              ),
+
+              SizedBox(height: isSmallScreen ? AppSpacing.xs : AppSpacing.md),
+
               Text(
-                "Take 1-2 days of rest between workouts.",
-                style: AppTypography.headlineMedium.copyWith(
+                "Double your max pull-ups!",
+                style: AppTypography.displaySmall.copyWith(
                   color: AppColors.onColorSecondary,
                 ),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: isSmallScreen ? AppSpacing.md : AppSpacing.lg),
-              _WorkoutCard(
-                title: "Max Sets",
-                description: "3x max reps with 5 minutes rest",
-                icon: const Icon(Icons.speed, size: _iconSize),
-                gradient: AppGradients.primary,
-                isSelected: _selected == WorkoutType.maxSets,
-                isNext: nextWorkoutType == WorkoutType.maxSets,
-                onTap: () => setState(() => _selected = WorkoutType.maxSets),
-                isSmallScreen: isSmallScreen,
-              ),
-
-              const SizedBox(height: _cardGap),
-
-              _WorkoutCard(
-                title: "Submax Volume",
-                description: "10 sets at 50% max reps with\n1 minute rest",
-                icon: const Icon(Icons.center_focus_strong, size: _iconSize),
-                gradient: AppGradients.accentPurple,
-                isSelected: _selected == WorkoutType.submaxVolume,
-                isNext: nextWorkoutType == WorkoutType.submaxVolume,
-                onTap: () => setState(() => _selected = WorkoutType.submaxVolume),
-                isSmallScreen: isSmallScreen,
-              ),
-
-              const SizedBox(height: _cardGap),
-
-              _WorkoutCard(
-                title: "Ladders",
-                description: "5 ladders (1, 2, 3, ... reps) with\n30 seconds rest",
-                icon: const Icon(Icons.trending_up, size: _iconSize),
-                gradient: AppGradients.accentGreen,
-                isSelected: _selected == WorkoutType.ladders,
-                isNext: nextWorkoutType == WorkoutType.ladders,
-                onTap: () => setState(() => _selected = WorkoutType.ladders),
-                isSmallScreen: isSmallScreen,
-              ),
             ],
           ),
+        ),
 
-          const SizedBox(height: _cardGap),
+        SizedBox(height: isSmallScreen ? AppSpacing.lg : AppSpacing.xxl),
 
-          // Start workout button
-          Center(
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width * 0.8,
-              child: GradientButton(
-                text: "Start Workout",
-                icon: Icons.play_arrow,
-                onPressed: _handleSubmit,
-                gradient: AppGradients.primary,
+        // Workout cards section
+        Column(
+          children: [
+            Text(
+              "Take 1-2 days of rest between workouts.",
+              style: AppTypography.headlineMedium.copyWith(
+                color: AppColors.onColorSecondary,
               ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: isSmallScreen ? AppSpacing.md : AppSpacing.lg),
+            _WorkoutCard(
+              title: "Max Sets",
+              description: "3x max reps with 5 minutes rest",
+              icon: const Icon(Icons.speed, size: _iconSize),
+              gradient: AppGradients.primary,
+              isSelected: _selected == WorkoutType.maxSets,
+              isNext: nextWorkoutType == WorkoutType.maxSets,
+              onTap: () => setState(() => _selected = WorkoutType.maxSets),
+              isSmallScreen: isSmallScreen,
+            ),
+
+            const SizedBox(height: _cardGap),
+
+            _WorkoutCard(
+              title: "Submax Volume",
+              description: "10 sets at 50% max reps with\n1 minute rest",
+              icon: const Icon(Icons.center_focus_strong, size: _iconSize),
+              gradient: AppGradients.accentPurple,
+              isSelected: _selected == WorkoutType.submaxVolume,
+              isNext: nextWorkoutType == WorkoutType.submaxVolume,
+              onTap: () => setState(() => _selected = WorkoutType.submaxVolume),
+              isSmallScreen: isSmallScreen,
+            ),
+
+            const SizedBox(height: _cardGap),
+
+            _WorkoutCard(
+              title: "Ladders",
+              description: "5 ladders (1, 2, 3, ... reps) with\n30 seconds rest",
+              icon: const Icon(Icons.trending_up, size: _iconSize),
+              gradient: AppGradients.accentGreen,
+              isSelected: _selected == WorkoutType.ladders,
+              isNext: nextWorkoutType == WorkoutType.ladders,
+              onTap: () => setState(() => _selected = WorkoutType.ladders),
+              isSmallScreen: isSmallScreen,
+            ),
+          ],
+        ),
+
+        const SizedBox(height: _cardGap),
+
+        // Start workout button
+        Center(
+          child: SizedBox(
+            width: screenSize.width * 0.8,
+            child: GradientButton(
+              text: "Start Workout",
+              icon: Icons.play_arrow,
+              onPressed: _handleSubmit,
+              gradient: AppGradients.primary,
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
@@ -223,15 +221,10 @@ class _WorkoutCard extends StatelessWidget {
   final LinearGradient gradient;
   final VoidCallback onTap;
 
-  static const double _cardHeight = 120;
-  static const double _cardHeightSmall = 110;
-  static const double _iconSize = 55;
-  static const double _iconSizeSmall = 50;
-
   @override
   Widget build(final BuildContext context) {
-    final cardHeight = isSmallScreen ? _cardHeightSmall : _cardHeight;
-    final iconSize = isSmallScreen ? _iconSizeSmall : _iconSize;
+    final cardHeight = isSmallScreen ? 110.0 : 120.0;
+    final iconSize = isSmallScreen ? 50.0 : 55.0;
 
     return GestureDetector(
       onTap: onTap,
