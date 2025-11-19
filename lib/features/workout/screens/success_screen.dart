@@ -89,7 +89,8 @@ class _SuccessScreenState extends State<SuccessScreen>
                     position: _headlineOffset,
                     child: const Text(
                       "Workout Completed!",
-                      style: AppTypography.displayLarge,
+                      style:
+                          AppTypography.displayMedium, // TODO: make the size dynamic?
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -102,7 +103,7 @@ class _SuccessScreenState extends State<SuccessScreen>
                 color: Colors.white,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
-                    vertical: AppSpacing.paddingBig,
+                    vertical: AppSpacing.paddingMedium,
                     horizontal: AppSpacing.paddingSmall,
                   ),
                   child: Column(

@@ -20,6 +20,7 @@ class AppSpacing {
 
   // Padding
   static const double paddingSmall = 20;
+  static const double paddingMedium = 30;
   static const double paddingBig = 40;
 
   // Specific spacing values from design
