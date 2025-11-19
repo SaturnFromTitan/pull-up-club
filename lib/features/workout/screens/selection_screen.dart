@@ -287,7 +287,7 @@ class _WorkoutCard extends StatelessWidget {
               ],
             ),
             // Next badge
-            if (isNext) const Positioned(top: 0, right: 0, child: _NextBadge()),
+            if (isNext) const Positioned(top: 0, right: 0, child: _NextTag()),
           ],
         ),
       ),
@@ -307,8 +307,8 @@ class _WorkoutCard extends StatelessWidget {
   }
 }
 
-class _NextBadge extends StatelessWidget {
-  const _NextBadge();
+class _NextTag extends StatelessWidget {
+  const _NextTag();
 
   @override
   Widget build(final BuildContext context) {
@@ -320,7 +320,6 @@ class _NextBadge extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.yellow,
         borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
-        boxShadow: AppBoxShadows.light,
       ),
       child: Text(
         "Next",
