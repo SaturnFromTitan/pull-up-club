@@ -1,3 +1,5 @@
+import "package:flutter/material.dart";
+
 class AppSpacing {
   // Base spacing unit (4px)
   static const double base = 4;
@@ -25,4 +27,15 @@ class AppSpacing {
 
   // Specific spacing values from design
   static const double buttonHeight = 60;
+}
+
+class Screen {
+  Screen._();
+
+  static double height(final BuildContext c) => MediaQuery.of(c).size.height;
+  static double width(final BuildContext c) => MediaQuery.of(c).size.width;
+
+  static const double _smallThreshold = 850;
+  static bool isSmall(final BuildContext c) => height(c) < _smallThreshold;
+  static bool isLarge(final BuildContext c) => height(c) >= _smallThreshold;
 }
