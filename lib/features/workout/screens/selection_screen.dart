@@ -99,39 +99,42 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
   Widget build(final BuildContext context) {
     final workoutHistoryProvider = context.watch<WorkoutHistoryProvider>();
     final nextWorkoutType = workoutHistoryProvider.getNextWorkoutType();
+    final screenHeight = MediaQuery.of(context).size.height;
+    final isSmallScreen = screenHeight < 900;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Header section
-        SizedBox(
-          width: double.infinity,
-          child: Column(
-            children: [
-              const Text(
-                AppConstants.appTitle,
-                style: AppTypography.displayAppTitle,
-                textAlign: TextAlign.center,
-              ),
-
-              const SizedBox(height: AppSpacing.md),
-
-              Text(
-                "Double your max pull-ups!",
-                style: AppTypography.displaySmall.copyWith(
-                  color: AppColors.onColorSecondary,
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          // Header section
+          SizedBox(
+            width: double.infinity,
+            child: Column(
+              children: [
+                const Text(
+                  AppConstants.appTitle,
+                  style: AppTypography.displayAppTitle,
+                  textAlign: TextAlign.center,
                 ),
-                textAlign: TextAlign.center,
-              ),
-            ],
+
+                SizedBox(height: isSmallScreen ? AppSpacing.xs : AppSpacing.md),
+
+                Text(
+                  "Double your max pull-ups!",
+                  style: AppTypography.displaySmall.copyWith(
+                    color: AppColors.onColorSecondary,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
           ),
-        ),
 
-        const SizedBox(height: AppSpacing.xxl),
+          SizedBox(height: isSmallScreen ? AppSpacing.lg : AppSpacing.xxl),
 
-        // Workout cards section
-        Expanded(
-          child: Column(
+          // Workout cards section
+          Column(
             children: [
               Text(
                 "Take 1-2 days of rest between workouts.",
@@ -140,7 +143,7 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
                 ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: AppSpacing.lg),
+              SizedBox(height: isSmallScreen ? AppSpacing.md : AppSpacing.lg),
               _WorkoutCard(
                 title: "Max Sets",
                 description: "3x max reps with 5 minutes rest",
@@ -149,6 +152,7 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
                 isSelected: _selected == WorkoutType.maxSets,
                 isNext: nextWorkoutType == WorkoutType.maxSets,
                 onTap: () => setState(() => _selected = WorkoutType.maxSets),
+                isSmallScreen: isSmallScreen,
               ),
 
               const SizedBox(height: _cardGap),
@@ -161,6 +165,7 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
                 isSelected: _selected == WorkoutType.submaxVolume,
                 isNext: nextWorkoutType == WorkoutType.submaxVolume,
                 onTap: () => setState(() => _selected = WorkoutType.submaxVolume),
+                isSmallScreen: isSmallScreen,
               ),
 
               const SizedBox(height: _cardGap),
@@ -173,27 +178,27 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
                 isSelected: _selected == WorkoutType.ladders,
                 isNext: nextWorkoutType == WorkoutType.ladders,
                 onTap: () => setState(() => _selected = WorkoutType.ladders),
+                isSmallScreen: isSmallScreen,
               ),
             ],
           ),
-        ),
 
-        const SizedBox(height: _cardGap),
+          const SizedBox(height: _cardGap),
 
-        // Start workout button
-        Center(
-          child: SizedBox(
-            width: MediaQuery.of(context).size.width * 0.8,
-            child: GradientButton(
-              text: "Start Workout",
-              icon: Icons.play_arrow,
-              onPressed: _handleSubmit,
-              gradient: AppGradients.primary,
+          // Start workout button
+          Center(
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width * 0.8,
+              child: GradientButton(
+                text: "Start Workout",
+                icon: Icons.play_arrow,
+                onPressed: _handleSubmit,
+                gradient: AppGradients.primary,
+              ),
             ),
           ),
-        ),
-        const SizedBox(height: AppSpacing.lg),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -207,24 +212,31 @@ class _WorkoutCard extends StatelessWidget {
     required this.onTap,
     this.isSelected = false,
     this.isNext = false,
+    this.isSmallScreen = false,
   });
   final String title;
   final String description;
   final Widget icon;
   final bool isSelected;
   final bool isNext;
+  final bool isSmallScreen;
   final LinearGradient gradient;
   final VoidCallback onTap;
 
   static const double _cardHeight = 120;
+  static const double _cardHeightSmall = 110;
   static const double _iconSize = 55;
+  static const double _iconSizeSmall = 50;
 
   @override
   Widget build(final BuildContext context) {
+    final cardHeight = isSmallScreen ? _cardHeightSmall : _cardHeight;
+    final iconSize = isSmallScreen ? _iconSizeSmall : _iconSize;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: _cardHeight,
+        height: cardHeight,
         decoration: BoxDecoration(
           color: AppColors.gradientSurface[1],
           borderRadius: BorderRadius.circular(AppSpacing.radiusLarge),
@@ -235,21 +247,23 @@ class _WorkoutCard extends StatelessWidget {
           ),
           boxShadow: isSelected ? AppBoxShadows.light : null,
         ),
-        padding: const EdgeInsets.all(AppSpacing.paddingSmall),
+        padding: EdgeInsets.all(
+          isSmallScreen ? AppSpacing.paddingSmall * 0.8 : AppSpacing.paddingSmall,
+        ),
         child: Stack(
           children: [
             Row(
               children: [
                 GradientSurface(
-                  width: _iconSize,
-                  height: _iconSize,
+                  width: iconSize,
+                  height: iconSize,
                   gradient: gradient,
                   borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
                   boxShadow: AppBoxShadows.dark,
                   child: Center(child: icon),
                 ),
 
-                const SizedBox(width: AppSpacing.md),
+                SizedBox(width: isSmallScreen ? AppSpacing.sm : AppSpacing.md),
 
                 // Text content
                 Expanded(
@@ -258,7 +272,7 @@ class _WorkoutCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(title, style: AppTypography.headlineMedium),
-                      const SizedBox(height: AppSpacing.xs),
+                      SizedBox(height: isSmallScreen ? 2 : AppSpacing.xs),
                       Flexible(
                         child: Text(
                           description,
@@ -290,6 +304,7 @@ class _WorkoutCard extends StatelessWidget {
       ..add(StringProperty("description", description))
       ..add(DiagnosticsProperty<bool>("isSelected", isSelected))
       ..add(DiagnosticsProperty<bool>("isNext", isNext))
+      ..add(DiagnosticsProperty<bool>("isSmallScreen", isSmallScreen))
       ..add(DiagnosticsProperty<LinearGradient>("gradient", gradient))
       ..add(ObjectFlagProperty<VoidCallback>.has("onTap", onTap));
   }
