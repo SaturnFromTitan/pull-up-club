@@ -100,97 +100,107 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
     final workoutHistoryProvider = context.watch<WorkoutHistoryProvider>();
     final nextWorkoutType = workoutHistoryProvider.getNextWorkoutType();
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        // Header section
-        SizedBox(
-          width: double.infinity,
-          child: Column(
-            children: [
-              const Text(
-                AppConstants.appTitle,
-                style: AppTypography.displayAppTitle,
-                textAlign: TextAlign.center,
-              ),
+    return LayoutBuilder(
+      builder: (final context, final constraints) {
+        return SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: constraints.maxHeight),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // Header section
+                SizedBox(
+                  width: double.infinity,
+                  child: Column(
+                    children: [
+                      const Text(
+                        AppConstants.appTitle,
+                        style: AppTypography.displayAppTitle,
+                        textAlign: TextAlign.center,
+                      ),
 
-              const SizedBox(height: AppSpacing.sm),
+                      const SizedBox(height: AppSpacing.sm),
 
-              Text(
-                "Double your max pull-ups!",
-                style: AppTypography.displaySmall.copyWith(
-                  color: AppColors.onColorSecondary,
+                      Text(
+                        "Double your max pull-ups!",
+                        style: AppTypography.displaySmall.copyWith(
+                          color: AppColors.onColorSecondary,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
                 ),
-                textAlign: TextAlign.center,
-              ),
-            ],
+
+                // Workout cards section
+                Column(
+                  children: [
+                    Text(
+                      "Take 1-2 days of rest between workouts.",
+                      style: AppTypography.headlineMedium.copyWith(
+                        color: AppColors.onColorSecondary,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    _WorkoutCard(
+                      title: "Max Sets",
+                      description: "3x max reps with 5 minutes rest",
+                      icon: const Icon(Icons.speed, size: _iconSize),
+                      gradient: AppGradients.primary,
+                      isSelected: _selected == WorkoutType.maxSets,
+                      isNext: nextWorkoutType == WorkoutType.maxSets,
+                      onTap: () => setState(() => _selected = WorkoutType.maxSets),
+                    ),
+
+                    const SizedBox(height: _cardGap),
+
+                    _WorkoutCard(
+                      title: "Submax Volume",
+                      description: "10 sets at 50% max reps with\n1 minute rest",
+                      icon: const Icon(Icons.center_focus_strong, size: _iconSize),
+                      gradient: AppGradients.accentPurple,
+                      isSelected: _selected == WorkoutType.submaxVolume,
+                      isNext: nextWorkoutType == WorkoutType.submaxVolume,
+                      onTap: () => setState(() => _selected = WorkoutType.submaxVolume),
+                    ),
+
+                    const SizedBox(height: _cardGap),
+
+                    _WorkoutCard(
+                      title: "Ladders",
+                      description:
+                          "5 ladders (1, 2, 3, ... reps) with\n30 seconds rest",
+                      icon: const Icon(Icons.trending_up, size: _iconSize),
+                      gradient: AppGradients.accentGreen,
+                      isSelected: _selected == WorkoutType.ladders,
+                      isNext: nextWorkoutType == WorkoutType.ladders,
+                      onTap: () => setState(() => _selected = WorkoutType.ladders),
+                    ),
+                  ],
+                ),
+
+                // Start workout button
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+                  child: Center(
+                    child: SizedBox(
+                      width: Screen.width(context) * 0.8,
+                      child: GradientButton(
+                        text: "Start Workout",
+                        icon: Icons.play_arrow,
+                        onPressed: _handleSubmit,
+                        gradient: AppGradients.primary,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-
-        // Workout cards section
-        Column(
-          children: [
-            Text(
-              "Take 1-2 days of rest between workouts.",
-              style: AppTypography.headlineMedium.copyWith(
-                color: AppColors.onColorSecondary,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: AppSpacing.md),
-            _WorkoutCard(
-              title: "Max Sets",
-              description: "3x max reps with 5 minutes rest",
-              icon: const Icon(Icons.speed, size: _iconSize),
-              gradient: AppGradients.primary,
-              isSelected: _selected == WorkoutType.maxSets,
-              isNext: nextWorkoutType == WorkoutType.maxSets,
-              onTap: () => setState(() => _selected = WorkoutType.maxSets),
-            ),
-
-            const SizedBox(height: _cardGap),
-
-            _WorkoutCard(
-              title: "Submax Volume",
-              description: "10 sets at 50% max reps with\n1 minute rest",
-              icon: const Icon(Icons.center_focus_strong, size: _iconSize),
-              gradient: AppGradients.accentPurple,
-              isSelected: _selected == WorkoutType.submaxVolume,
-              isNext: nextWorkoutType == WorkoutType.submaxVolume,
-              onTap: () => setState(() => _selected = WorkoutType.submaxVolume),
-            ),
-
-            const SizedBox(height: _cardGap),
-
-            _WorkoutCard(
-              title: "Ladders",
-              description: "5 ladders (1, 2, 3, ... reps) with\n30 seconds rest",
-              icon: const Icon(Icons.trending_up, size: _iconSize),
-              gradient: AppGradients.accentGreen,
-              isSelected: _selected == WorkoutType.ladders,
-              isNext: nextWorkoutType == WorkoutType.ladders,
-              onTap: () => setState(() => _selected = WorkoutType.ladders),
-            ),
-          ],
-        ),
-
-        // Start workout button
-        Padding(
-          padding: const EdgeInsets.only(bottom: AppSpacing.md),
-          child: Center(
-            child: SizedBox(
-              width: Screen.width(context) * 0.8,
-              child: GradientButton(
-                text: "Start Workout",
-                icon: Icons.play_arrow,
-                onPressed: _handleSubmit,
-                gradient: AppGradients.primary,
-              ),
-            ),
-          ),
-        ),
-      ],
+        );
+      },
     );
   }
 }
