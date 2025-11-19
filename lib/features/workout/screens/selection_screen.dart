@@ -112,24 +112,27 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
                 // Header section
                 SizedBox(
                   width: double.infinity,
-                  child: Column(
-                    children: [
-                      const Text(
-                        AppConstants.appTitle,
-                        style: AppTypography.displayAppTitle,
-                        textAlign: TextAlign.center,
-                      ),
-
-                      const SizedBox(height: AppSpacing.sm),
-
-                      Text(
-                        "Double your max pull-ups!",
-                        style: AppTypography.displaySmall.copyWith(
-                          color: AppColors.onColorSecondary,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                    child: Column(
+                      children: [
+                        const Text(
+                          AppConstants.appTitle,
+                          style: AppTypography.displayAppTitle,
+                          textAlign: TextAlign.center,
                         ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
+
+                        const SizedBox(height: AppSpacing.xs),
+
+                        Text(
+                          "Double your max pull-ups!",
+                          style: AppTypography.displaySmall.copyWith(
+                            color: AppColors.onColorSecondary,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
 
