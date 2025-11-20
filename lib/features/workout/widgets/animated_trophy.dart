@@ -6,7 +6,7 @@ import "package:flutter/material.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
 
 class AnimatedTrophy extends StatefulWidget {
-  const AnimatedTrophy({super.key, this.size = 112});
+  const AnimatedTrophy({required this.size, super.key});
   final double size;
 
   @override

@@ -15,7 +15,7 @@ class GradientNavigationBar extends StatelessWidget {
   final ValueChanged<int> onDestinationSelected;
   final List<NavigationDestination> destinations;
 
-  static const double _iconSize = 25;
+  static const double _iconSize = 24;
 
   @override
   Widget build(final BuildContext context) {
@@ -26,7 +26,7 @@ class GradientNavigationBar extends StatelessWidget {
         left: false,
         right: false,
         child: Padding(
-          padding: const EdgeInsets.only(top: 10),
+          padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: List.generate(destinations.length, (final index) {
@@ -108,7 +108,6 @@ class _NavItem extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             coloredIcon,
-            const SizedBox(height: AppSpacing.xs),
             Text(label, style: labelStyle),
           ],
         ),

@@ -70,7 +70,7 @@ class _SubmaxVolumeScreenState extends BaseWorkoutState<SubmaxVolumeScreen> {
             completedReps: targetReps,
           );
         },
-        text: "Done",
+        text: "I did $targetReps",
         icon: Icons.check,
         gradient: AppGradients.secondary,
       ),
@@ -86,7 +86,7 @@ class _SubmaxVolumeScreenState extends BaseWorkoutState<SubmaxVolumeScreen> {
         gradient: AppGradients.accentGreen,
       ),
     ];
-    if (targetReps >= 2) {
+    if (!Screen.isTiny(context) && targetReps >= 2) {
       buttons.add(
         GradientButton(
           onPressed: () {
@@ -101,20 +101,18 @@ class _SubmaxVolumeScreenState extends BaseWorkoutState<SubmaxVolumeScreen> {
         ),
       );
     }
-    if (targetReps >= 3) {
-      buttons.add(
-        GradientButton(
-          onPressed: () {
-            setState(() {
-              _showCustomRepsForm = !_showCustomRepsForm;
-            });
-          },
-          text: "I did fewer",
-          icon: Icons.trending_down,
-          gradient: AppGradients.light,
-        ),
-      );
-    }
+    buttons.add(
+      GradientButton(
+        onPressed: () {
+          setState(() {
+            _showCustomRepsForm = !_showCustomRepsForm;
+          });
+        },
+        text: "Custom",
+        icon: Icons.question_mark_outlined,
+        gradient: AppGradients.light,
+      ),
+    );
     return buttons;
   }
 }

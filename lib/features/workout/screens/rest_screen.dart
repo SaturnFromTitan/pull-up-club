@@ -71,11 +71,11 @@ class _RestScreenState extends State<RestScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const SizedBox(height: AppSpacing.sm),
+          if (!Screen.isTiny(context)) const SizedBox.shrink(),
           Text("😴", style: AppTypography.displayLarge.copyWith(fontSize: 64)),
           const _RestTimerSpinner(size: 200),
           SizedBox(
-            width: MediaQuery.of(context).size.width * 0.5,
+            width: Screen.width(context) * 0.5,
             child: GradientButton(
               onPressed: workoutProvider.resume,
               text: "Skip Rest",
@@ -91,7 +91,7 @@ class _RestScreenState extends State<RestScreen> {
             highlightedIndex: widget.currentGroupIndex,
           ),
           SizedBox(
-            width: MediaQuery.of(context).size.width * 0.5,
+            width: Screen.width(context) * 0.5,
             child: const HomeButton(text: "Exit", icon: Icons.exit_to_app),
           ),
         ],
@@ -168,7 +168,7 @@ class _RestTimerSpinnerState extends State<_RestTimerSpinner>
               // center content
               Text(
                 displayDuration(remaining),
-                style: AppTypography.displayLarge.copyWith(fontSize: 50),
+                style: AppTypography.displayLarge.copyWith(fontSize: widget.size / 4),
               ),
             ],
           ),
