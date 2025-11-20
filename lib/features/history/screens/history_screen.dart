@@ -120,7 +120,7 @@ class _DismissablePastWorkout extends StatelessWidget {
       background: Container(
         decoration: BoxDecoration(
           color: Colors.red,
-          borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
+          borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
         ),
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: AppSpacing.md),
@@ -148,10 +148,10 @@ class _PastWorkout extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.glassBackground,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
       ),
       width: double.infinity,
-      padding: const EdgeInsets.all(AppSpacing.paddingSmall),
+      padding: const EdgeInsets.all(AppSpacing.paddingSm),
       child: Column(
         children: [
           Row(

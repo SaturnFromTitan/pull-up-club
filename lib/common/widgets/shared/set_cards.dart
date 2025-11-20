@@ -24,7 +24,7 @@ class SetCards extends StatelessWidget {
   final bool withContainer;
 
   static const int _maxCardsPerRow = 5;
-  static const double _containerPadding = AppSpacing.paddingSmall;
+  static const double _containerPadding = AppSpacing.paddingSm;
   static const double _cardSpacing = AppSpacing.sm;
 
   @override
@@ -58,7 +58,7 @@ class SetCards extends StatelessWidget {
             width: double.infinity,
             decoration: BoxDecoration(
               color: AppColors.glassBackground,
-              borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
+              borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
             ),
             padding: const EdgeInsets.all(_containerPadding),
             child: wrap,
@@ -111,12 +111,12 @@ class _SetCard extends StatelessWidget {
       width: width,
       gradient: value == null ? AppGradients.lightOpaque : AppGradients.secondary,
       border: isHighlighted ? Border.all(color: AppColors.glassBorderActive) : null,
-      borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
+      borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
       boxShadow: AppBoxShadows.dark,
       child: Center(
         child: Text(
           value ?? _placeholderValue,
-          style: AppTypography.headlineSmall.copyWith(
+          style: AppTypography.bodyLarge.copyWith(
             color: AppColors.onColor.withValues(alpha: textOpacity),
           ),
         ),

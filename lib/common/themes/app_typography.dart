@@ -8,8 +8,7 @@ class AppTypography {
     fontFamily: "Poppins",
     fontSize: 40,
     fontWeight: FontWeight.w600,
-    height: 1.3,
-    letterSpacing: 1.2,
+    letterSpacing: 1.5,
   );
 
   // Regular display styles
@@ -17,24 +16,21 @@ class AppTypography {
     fontFamily: "Inter",
     fontSize: 35,
     fontWeight: FontWeight.w500,
-    height: 1.5,
-    letterSpacing: 0.3,
+    letterSpacing: 1,
   );
 
   static const TextStyle displayMedium = TextStyle(
     fontFamily: "Inter",
     fontSize: 30,
     fontWeight: FontWeight.w500,
-    height: 1.4,
-    letterSpacing: 0.2,
+    letterSpacing: 1,
   );
 
   static const TextStyle displaySmall = TextStyle(
     fontFamily: "Inter",
     fontSize: 22,
     fontWeight: FontWeight.w500,
-    height: 1.4,
-    letterSpacing: 0.2,
+    letterSpacing: 1,
   );
 
   // Headline styles
@@ -42,24 +38,18 @@ class AppTypography {
     fontFamily: "Inter",
     fontSize: 20,
     fontWeight: FontWeight.w500,
-    height: 1.56,
-    letterSpacing: -0.43,
   );
 
   static const TextStyle headlineMedium = TextStyle(
     fontFamily: "Inter",
     fontSize: 18,
     fontWeight: FontWeight.w400,
-    height: 1.5,
-    letterSpacing: -0.44,
   );
 
   static const TextStyle headlineSmall = TextStyle(
     fontFamily: "Inter",
     fontSize: 16,
     fontWeight: FontWeight.w400,
-    height: 1.5,
-    letterSpacing: -0.29,
   );
 
   // Body styles
@@ -67,23 +57,17 @@ class AppTypography {
     fontFamily: "Inter",
     fontSize: 16,
     fontWeight: FontWeight.w400,
-    height: 1.5,
-    letterSpacing: 0.15,
   );
 
   static const TextStyle bodyMedium = TextStyle(
     fontFamily: "Inter",
     fontSize: 14,
     fontWeight: FontWeight.w400,
-    height: 1.43,
-    letterSpacing: 0.25,
   );
 
   static const TextStyle bodySmall = TextStyle(
     fontFamily: "Inter",
     fontSize: 12,
     fontWeight: FontWeight.w400,
-    height: 1.33,
-    letterSpacing: 0.4,
   );
 }

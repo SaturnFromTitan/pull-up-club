@@ -14,19 +14,20 @@ class AppSpacing {
   static const double xxxl = base * 16; // 64px
 
   // Border radius
-  static const double radiusSmall = 8;
-  static const double radiusMedium = 16;
-  static const double radiusLarge = 22;
-  static const double radiusXLarge = 32;
+  static const double radiusSm = 8;
+  static const double radiusMd = 16;
+  static const double radiusLg = 24;
+  static const double radiusXl = 32;
   static const double radiusFull = 999;
 
   // Padding
-  static const double paddingSmall = 20;
-  static const double paddingMedium = 30;
-  static const double paddingBig = 40;
+  static const double paddingSm = 20;
+  static const double paddingMd = 30;
+  static const double paddingLg = 40;
 
   // Specific spacing values from design
   static const double buttonHeight = 60;
+  static const double buttonDistance = sm;
 }
 
 class Screen {

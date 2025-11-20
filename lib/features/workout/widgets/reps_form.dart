@@ -85,42 +85,45 @@ class _RepsFormState extends State<RepsForm> {
       key: _formKey,
       child: Column(
         children: [
-          const SizedBox(height: AppSpacing.md),
-          TextFormField(
-            controller: _controller,
-            maxLength: 2,
-            decoration: InputDecoration(
-              hintText: "Tap to enter reps",
-              counterText: "",
-              errorStyle: const TextStyle(fontSize: 0),
-              filled: true,
-              fillColor: Colors.white,
-              border: OutlineInputBorder(
-                borderSide: BorderSide.none,
-                borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
+          // const SizedBox(height: AppSpacing.md),
+          SizedBox(
+            height: AppSpacing.buttonHeight,
+            child: TextFormField(
+              controller: _controller,
+              maxLength: 2,
+              decoration: InputDecoration(
+                hintText: "Tap to enter reps",
+                counterText: "",
+                errorStyle: const TextStyle(fontSize: 0),
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderSide: BorderSide.none,
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                ),
               ),
+              textAlign: TextAlign.center,
+              inputFormatters: [
+                FilteringTextInputFormatter(RegExp("[0-9]"), allow: true),
+              ],
+              keyboardType: TextInputType.number,
+              onTapOutside: (final event) {
+                FocusScope.of(context).unfocus();
+              },
+              onChanged: (_) {
+                final currentIsValid = _formKey.currentState?.validate() ?? false;
+                setState(() => _isValid = currentIsValid);
+              },
+              validator: (final value) {
+                if (value == null || value.isEmpty) {
+                  return "Required";
+                }
+                if (int.parse(value) < widget.minValue) {
+                  return "Must be at least ${widget.minValue}";
+                }
+                return null;
+              },
             ),
-            textAlign: TextAlign.center,
-            inputFormatters: [
-              FilteringTextInputFormatter(RegExp("[0-9]"), allow: true),
-            ],
-            keyboardType: TextInputType.number,
-            onTapOutside: (final event) {
-              FocusScope.of(context).unfocus();
-            },
-            onChanged: (_) {
-              final currentIsValid = _formKey.currentState?.validate() ?? false;
-              setState(() => _isValid = currentIsValid);
-            },
-            validator: (final value) {
-              if (value == null || value.isEmpty) {
-                return "Required";
-              }
-              if (int.parse(value) < widget.minValue) {
-                return "Must be at least ${widget.minValue}";
-              }
-              return null;
-            },
           ),
           if (widget.infoText != null) ...[
             const SizedBox(height: AppSpacing.sm),
@@ -131,7 +134,7 @@ class _RepsFormState extends State<RepsForm> {
             ),
             const SizedBox(height: AppSpacing.md),
           ],
-          const SizedBox(height: AppSpacing.md),
+          const SizedBox(height: AppSpacing.buttonDistance),
           GradientButton(
             onPressed: _isValid ? submit : null,
             text: widget.submitText,
@@ -139,7 +142,7 @@ class _RepsFormState extends State<RepsForm> {
             gradient: widget.submitGradient,
           ),
           if (widget.onCancel != null) ...[
-            const SizedBox(height: AppSpacing.sm),
+            const SizedBox(height: AppSpacing.buttonDistance),
             GradientButton(
               onPressed: widget.onCancel,
               text: widget.cancelText,

@@ -100,12 +100,12 @@ class _SuccessScreenState extends State<SuccessScreen>
               color: Colors.white,
               child: Padding(
                 padding: EdgeInsets.only(
-                  top: AppSpacing.paddingSmall,
-                  left: AppSpacing.paddingSmall,
-                  right: AppSpacing.paddingSmall,
+                  top: AppSpacing.paddingSm,
+                  left: AppSpacing.paddingSm,
+                  right: AppSpacing.paddingSm,
                   bottom: Screen.isTiny(context)
-                      ? AppSpacing.paddingSmall
-                      : AppSpacing.paddingMedium,
+                      ? AppSpacing.paddingSm
+                      : AppSpacing.paddingMd,
                 ),
                 child: Column(
                   children: [
