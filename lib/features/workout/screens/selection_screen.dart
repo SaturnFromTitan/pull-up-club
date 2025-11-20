@@ -224,6 +224,7 @@ class _WorkoutCard extends StatelessWidget {
     final iconSize = Screen.isSmall(context) ? 50.0 : 55.0;
     final paddingFactor = Screen.isSmall(context) ? 0.7 : 1.0;
     final paddingVert = paddingFactor * AppSpacing.paddingSm;
+    const descriptionTextStyle = AppTypography.headlineSmall;
 
     return GestureDetector(
       onTap: onTap,
@@ -267,10 +268,10 @@ class _WorkoutCard extends StatelessWidget {
                       const SizedBox(height: AppSpacing.xs),
                       SizedBox(
                         // size every card as if there are 2 description lines
-                        height: 2 * lineHeight(AppTypography.headlineSmall),
+                        height: 2 * lineHeight(descriptionTextStyle),
                         child: Text(
                           description,
-                          style: AppTypography.headlineSmall.copyWith(
+                          style: descriptionTextStyle.copyWith(
                             color: AppColors.onColorSecondary,
                           ),
                           maxLines: 2,

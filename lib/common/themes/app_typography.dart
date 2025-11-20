@@ -8,7 +8,6 @@ class AppTypography {
     fontFamily: "Poppins",
     fontSize: 40,
     fontWeight: FontWeight.w600,
-    height: 1.3,
     letterSpacing: 1.5,
   );
 
@@ -17,7 +16,6 @@ class AppTypography {
     fontFamily: "Inter",
     fontSize: 35,
     fontWeight: FontWeight.w500,
-    height: 1.5,
     letterSpacing: 1,
   );
 
@@ -25,7 +23,6 @@ class AppTypography {
     fontFamily: "Inter",
     fontSize: 30,
     fontWeight: FontWeight.w500,
-    height: 1.4,
     letterSpacing: 1,
   );
 
@@ -33,7 +30,6 @@ class AppTypography {
     fontFamily: "Inter",
     fontSize: 22,
     fontWeight: FontWeight.w500,
-    height: 1.4,
     letterSpacing: 1,
   );
 
@@ -42,21 +38,18 @@ class AppTypography {
     fontFamily: "Inter",
     fontSize: 20,
     fontWeight: FontWeight.w500,
-    height: 1.56,
   );
 
   static const TextStyle headlineMedium = TextStyle(
     fontFamily: "Inter",
     fontSize: 18,
     fontWeight: FontWeight.w400,
-    height: 1.5,
   );
 
   static const TextStyle headlineSmall = TextStyle(
     fontFamily: "Inter",
     fontSize: 16,
     fontWeight: FontWeight.w400,
-    height: 1.5,
   );
 
   // Body styles
@@ -64,20 +57,17 @@ class AppTypography {
     fontFamily: "Inter",
     fontSize: 16,
     fontWeight: FontWeight.w400,
-    height: 1.5,
   );
 
   static const TextStyle bodyMedium = TextStyle(
     fontFamily: "Inter",
     fontSize: 14,
     fontWeight: FontWeight.w400,
-    height: 1.43,
   );
 
   static const TextStyle bodySmall = TextStyle(
     fontFamily: "Inter",
     fontSize: 12,
     fontWeight: FontWeight.w400,
-    height: 1.33,
   );
 }

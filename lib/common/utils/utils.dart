@@ -2,8 +2,8 @@ import "package:flutter/material.dart";
 import "package:pull_up_club/domain/models.dart";
 
 double lineHeight(final TextStyle style) {
-  final fontSize = style.fontSize ?? 0;
-  final lineHeight = style.height ?? 1;
+  final fontSize = style.fontSize ?? 1;
+  final lineHeight = style.height ?? 1.4;
   return fontSize * lineHeight;
 }
 
