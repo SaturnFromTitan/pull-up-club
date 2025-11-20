@@ -26,7 +26,7 @@ class GradientNavigationBar extends StatelessWidget {
         left: false,
         right: false,
         child: Padding(
-          padding: const EdgeInsets.only(top: AppSpacing.sm),
+          padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: List.generate(destinations.length, (final index) {
