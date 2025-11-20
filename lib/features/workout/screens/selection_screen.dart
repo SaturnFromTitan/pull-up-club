@@ -9,6 +9,7 @@ import "package:pull_up_club/common/themes/app_box_shadows.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
 import "package:pull_up_club/common/themes/app_typography.dart";
+import "package:pull_up_club/common/utils/utils.dart";
 import "package:pull_up_club/common/widgets/core/gradient_button.dart";
 import "package:pull_up_club/common/widgets/core/gradient_surface.dart";
 import "package:pull_up_club/domain/models.dart";
@@ -134,7 +135,7 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
                 Column(
                   children: [
                     Text(
-                      "Take 1-2 days of rest between workouts.",
+                      "Take 1-2 rest days between workouts.",
                       style: AppTypography.headlineMedium.copyWith(
                         color: AppColors.onColorSecondary,
                       ),
@@ -220,7 +221,6 @@ class _WorkoutCard extends StatelessWidget {
 
   @override
   Widget build(final BuildContext context) {
-    final cardHeight = Screen.isSmall(context) ? 110.0 : 120.0;
     final iconSize = Screen.isSmall(context) ? 50.0 : 55.0;
     final paddingFactor = Screen.isSmall(context) ? 0.8 : 1.0;
     final padding = paddingFactor * AppSpacing.paddingSm;
@@ -228,7 +228,6 @@ class _WorkoutCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: cardHeight,
         decoration: BoxDecoration(
           color: AppColors.gradientSurface[1],
           borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
@@ -256,23 +255,27 @@ class _WorkoutCard extends StatelessWidget {
                 const SizedBox(width: AppSpacing.md),
 
                 // Text content
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(title, style: AppTypography.headlineMedium),
-                    const SizedBox(height: AppSpacing.xs),
-                    Flexible(
-                      child: Text(
-                        description,
-                        style: AppTypography.headlineSmall.copyWith(
-                          color: AppColors.onColorSecondary,
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(title, style: AppTypography.headlineMedium),
+                      const SizedBox(height: AppSpacing.xs),
+                      SizedBox(
+                        // size every card as if there are 2 description lines
+                        height: 2 * lineHeight(AppTypography.headlineSmall),
+                        child: Text(
+                          description,
+                          style: AppTypography.headlineSmall.copyWith(
+                            color: AppColors.onColorSecondary,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),

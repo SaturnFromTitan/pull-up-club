@@ -1,4 +1,11 @@
+import "package:flutter/material.dart";
 import "package:pull_up_club/domain/models.dart";
+
+double lineHeight(final TextStyle style) {
+  final fontSize = style.fontSize ?? 0;
+  final lineHeight = style.height ?? 1;
+  return fontSize * lineHeight;
+}
 
 String twoDigits(final int n) => n.toString().padLeft(2, "0");
 
