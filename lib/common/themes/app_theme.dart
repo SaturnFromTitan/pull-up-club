@@ -37,17 +37,17 @@ final appTheme = ThemeData(
   // Dialog, cards & chips
   dialogTheme: DialogThemeData(
     shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
+      borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
     ),
   ),
   cardTheme: CardThemeData(
     shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
+      borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
     ),
   ),
   chipTheme: ChipThemeData(
     shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
+      borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
     ),
   ),
 );

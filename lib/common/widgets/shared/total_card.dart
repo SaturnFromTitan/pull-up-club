@@ -27,9 +27,9 @@ class TotalCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: color,
         gradient: gradient,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
       ),
-      padding: const EdgeInsets.all(AppSpacing.paddingSmall),
+      padding: const EdgeInsets.all(AppSpacing.paddingSm),
       child: Column(
         children: [
           Text(emoji, style: AppTypography.headlineLarge.copyWith(fontSize: 30)),

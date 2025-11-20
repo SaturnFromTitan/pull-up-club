@@ -38,7 +38,7 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
       context: context,
       builder: (final context) => Dialog(
         child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.paddingBig),
+          padding: const EdgeInsets.all(AppSpacing.paddingLg),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -223,7 +223,7 @@ class _WorkoutCard extends StatelessWidget {
     final cardHeight = Screen.isSmall(context) ? 110.0 : 120.0;
     final iconSize = Screen.isSmall(context) ? 50.0 : 55.0;
     final paddingFactor = Screen.isSmall(context) ? 0.8 : 1.0;
-    final padding = paddingFactor * AppSpacing.paddingSmall;
+    final padding = paddingFactor * AppSpacing.paddingSm;
 
     return GestureDetector(
       onTap: onTap,
@@ -231,7 +231,7 @@ class _WorkoutCard extends StatelessWidget {
         height: cardHeight,
         decoration: BoxDecoration(
           color: AppColors.gradientSurface[1],
-          borderRadius: BorderRadius.circular(AppSpacing.radiusLarge),
+          borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
           border: Border.all(
             color: isSelected
                 ? AppColors.glassBorderActive
@@ -309,7 +309,7 @@ class _NextTag extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         color: AppColors.yellow,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
       ),
       child: Text(
         "Next",

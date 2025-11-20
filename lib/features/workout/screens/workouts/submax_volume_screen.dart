@@ -53,8 +53,9 @@ class _SubmaxVolumeScreenState extends BaseWorkoutState<SubmaxVolumeScreen> {
         : Column(
             children: List<Widget>.generate(
               buttons.length * 2 - 1,
-              (final i) =>
-                  i.isEven ? buttons[i ~/ 2] : const SizedBox(height: AppSpacing.sm),
+              (final i) => i.isEven
+                  ? buttons[i ~/ 2]
+                  : const SizedBox(height: AppSpacing.buttonDistance),
             ),
           );
   }

@@ -133,7 +133,7 @@ abstract class BaseWorkoutState<T extends BaseWorkoutScreen> extends State<T> {
         children: [
           Card(
             child: Padding(
-              padding: const EdgeInsets.all(AppSpacing.paddingSmall),
+              padding: const EdgeInsets.all(AppSpacing.paddingSm),
               child: Column(
                 children: [
                   if (targetReps == null)

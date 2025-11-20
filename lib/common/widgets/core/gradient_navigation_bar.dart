@@ -97,7 +97,7 @@ class _NavItem extends StatelessWidget {
         decoration: BoxDecoration(
           gradient: isSelected ? AppGradients.primary : null,
           color: isSelected ? null : Colors.transparent,
-          borderRadius: BorderRadius.circular(AppSpacing.radiusLarge),
+          borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
         ),
         padding: const EdgeInsets.symmetric(
           vertical: AppSpacing.sm,

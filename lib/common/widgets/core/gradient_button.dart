@@ -31,7 +31,7 @@ class GradientButton extends StatelessWidget {
         child: GradientSurface(
           gradient: gradient,
           height: AppSpacing.buttonHeight,
-          borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
+          borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
           border: border,
           boxShadow: AppBoxShadows.dark,
           textColor: textColor,

@@ -6,7 +6,7 @@ class AppBoxShadows {
   static const List<BoxShadow> dark = [
     BoxShadow(
       color: AppColors.shadow,
-      blurRadius: AppSpacing.radiusSmall,
+      blurRadius: AppSpacing.radiusSm,
       offset: Offset(0, 4),
     ),
   ];
