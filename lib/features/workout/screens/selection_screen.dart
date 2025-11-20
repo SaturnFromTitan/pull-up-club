@@ -320,7 +320,7 @@ class _NextTag extends StatelessWidget {
       ),
       child: Text(
         "Next",
-        style: AppTypography.bodyMedium.copyWith(color: AppColors.onLight),
+        style: AppTypography.bodySmall.copyWith(color: AppColors.onLight),
       ),
     );
   }
