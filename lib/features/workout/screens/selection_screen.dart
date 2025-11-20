@@ -256,25 +256,23 @@ class _WorkoutCard extends StatelessWidget {
                 const SizedBox(width: AppSpacing.md),
 
                 // Text content
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(title, style: AppTypography.headlineMedium),
-                      const SizedBox(height: AppSpacing.xs),
-                      Flexible(
-                        child: Text(
-                          description,
-                          style: AppTypography.headlineSmall.copyWith(
-                            color: AppColors.onColorSecondary,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title, style: AppTypography.headlineMedium),
+                    const SizedBox(height: AppSpacing.xs),
+                    Flexible(
+                      child: Text(
+                        description,
+                        style: AppTypography.headlineSmall.copyWith(
+                          color: AppColors.onColorSecondary,
                         ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ],
             ),
