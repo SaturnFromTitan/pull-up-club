@@ -168,7 +168,10 @@ class _RestTimerSpinnerState extends State<_RestTimerSpinner>
               // center content
               Text(
                 displayDuration(remaining),
-                style: AppTypography.displayLarge.copyWith(fontSize: widget.size / 4),
+                style: AppTypography.displayLarge.copyWith(
+                  fontSize: widget.size / 4,
+                  fontFeatures: const [FontFeature.tabularFigures()],
+                ),
               ),
             ],
           ),
