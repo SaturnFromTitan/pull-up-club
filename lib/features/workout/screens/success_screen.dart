@@ -81,7 +81,7 @@ class _SuccessScreenState extends State<SuccessScreen>
           children: [
             Column(
               children: [
-                const AnimatedTrophy(),
+                AnimatedTrophy(size: Screen.isTiny(context) ? 100 : 110),
                 const SizedBox(height: 12),
                 FadeTransition(
                   opacity: _headlineOpacity,
@@ -89,8 +89,7 @@ class _SuccessScreenState extends State<SuccessScreen>
                     position: _headlineOffset,
                     child: const Text(
                       "Workout Completed!",
-                      style:
-                          AppTypography.displayMedium, // TODO: make the size dynamic?
+                      style: AppTypography.displayMedium,
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -100,9 +99,13 @@ class _SuccessScreenState extends State<SuccessScreen>
             Card(
               color: Colors.white,
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: AppSpacing.paddingMedium,
-                  horizontal: AppSpacing.paddingSmall,
+                padding: EdgeInsets.only(
+                  top: AppSpacing.paddingSmall,
+                  left: AppSpacing.paddingSmall,
+                  right: AppSpacing.paddingSmall,
+                  bottom: Screen.isTiny(context)
+                      ? AppSpacing.paddingSmall
+                      : AppSpacing.paddingMedium,
                 ),
                 child: Column(
                   children: [
