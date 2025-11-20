@@ -15,8 +15,6 @@ class GradientNavigationBar extends StatelessWidget {
   final ValueChanged<int> onDestinationSelected;
   final List<NavigationDestination> destinations;
 
-  static const double _iconSize = 24;
-
   @override
   Widget build(final BuildContext context) {
     return DecoratedBox(
@@ -75,40 +73,33 @@ class _NavItem extends StatelessWidget {
   final VoidCallback onTap;
 
   static const Color _inactiveColor = AppColors.onLightSecondary;
+  static const double _iconSize = 32;
 
   @override
   Widget build(final BuildContext context) {
-    final labelStyle = AppTypography.bodyMedium.copyWith(
-      color: isSelected ? Colors.white : _inactiveColor,
-    );
-
-    final Widget coloredIcon = IconTheme(
-      data: IconThemeData(
-        size: GradientNavigationBar._iconSize,
-        color: isSelected ? Colors.white : _inactiveColor,
-      ),
-      child: icon,
-    );
-
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: isSelected ? AppGradients.primary : null,
-          color: isSelected ? null : Colors.transparent,
-          borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-        ),
-        padding: const EdgeInsets.symmetric(
-          vertical: AppSpacing.sm,
-          horizontal: AppSpacing.lg,
-        ),
+      child: ShaderMask(
+        shaderCallback: (final bounds) => AppGradients.primary.createShader(bounds),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            coloredIcon,
-            Text(label, style: labelStyle),
+            IconTheme(
+              data: IconThemeData(
+                size: _iconSize,
+                color: isSelected ? Colors.white : _inactiveColor,
+              ),
+              child: icon,
+            ),
+            Text(
+              label,
+              style: AppTypography.bodyMedium.copyWith(
+                color: isSelected ? Colors.white : _inactiveColor,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ],
         ),
       ),
