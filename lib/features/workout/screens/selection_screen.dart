@@ -183,7 +183,7 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
                   child: SizedBox(
-                    width: Screen.width(context) * 0.8,
+                    width: 0.8 * Screen.width(context),
                     child: GradientButton(
                       text: "Start Workout",
                       icon: Icons.play_arrow,
@@ -222,8 +222,8 @@ class _WorkoutCard extends StatelessWidget {
   @override
   Widget build(final BuildContext context) {
     final iconSize = Screen.isSmall(context) ? 50.0 : 55.0;
-    final paddingFactor = Screen.isSmall(context) ? 0.8 : 1.0;
-    final padding = paddingFactor * AppSpacing.paddingSm;
+    final paddingFactor = Screen.isSmall(context) ? 0.7 : 1.0;
+    final paddingVert = paddingFactor * AppSpacing.paddingSm;
 
     return GestureDetector(
       onTap: onTap,
@@ -238,7 +238,10 @@ class _WorkoutCard extends StatelessWidget {
           ),
           boxShadow: isSelected ? AppBoxShadows.light : null,
         ),
-        padding: EdgeInsets.all(padding),
+        padding: EdgeInsets.symmetric(
+          vertical: paddingVert,
+          horizontal: AppSpacing.paddingSm,
+        ),
         child: Stack(
           children: [
             Row(
