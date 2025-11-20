@@ -71,7 +71,7 @@ class _RestScreenState extends State<RestScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const SizedBox(height: AppSpacing.sm),
+          if (!Screen.isTiny(context)) const SizedBox.shrink(),
           Text("😴", style: AppTypography.displayLarge.copyWith(fontSize: 64)),
           const _RestTimerSpinner(size: 200),
           SizedBox(
@@ -168,7 +168,7 @@ class _RestTimerSpinnerState extends State<_RestTimerSpinner>
               // center content
               Text(
                 displayDuration(remaining),
-                style: AppTypography.displayLarge.copyWith(fontSize: 50),
+                style: AppTypography.displayLarge.copyWith(fontSize: widget.size / 4),
               ),
             ],
           ),
