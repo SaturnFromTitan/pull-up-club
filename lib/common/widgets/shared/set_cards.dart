@@ -116,7 +116,7 @@ class _SetCard extends StatelessWidget {
       child: Center(
         child: Text(
           value ?? _placeholderValue,
-          style: AppTypography.headlineSmall.copyWith(
+          style: AppTypography.bodyLarge.copyWith(
             color: AppColors.onColor.withValues(alpha: textOpacity),
           ),
         ),

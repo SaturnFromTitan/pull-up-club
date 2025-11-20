@@ -224,7 +224,7 @@ class _WorkoutCard extends StatelessWidget {
     final iconSize = Screen.isSmall(context) ? 50.0 : 55.0;
     final paddingFactor = Screen.isSmall(context) ? 0.7 : 1.0;
     final paddingVert = paddingFactor * AppSpacing.paddingSm;
-    const descriptionTextStyle = AppTypography.headlineSmall;
+    const descriptionTextStyle = AppTypography.bodyLarge;
 
     return GestureDetector(
       onTap: onTap,
