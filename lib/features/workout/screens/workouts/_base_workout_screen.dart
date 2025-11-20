@@ -128,20 +128,17 @@ abstract class BaseWorkoutState<T extends BaseWorkoutScreen> extends State<T> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          SizedBox(
-            width: double.infinity,
-            child: Card(
-              child: Padding(
-                padding: const EdgeInsets.all(AppSpacing.paddingSmall),
-                child: Column(
-                  children: [
-                    if (targetReps == null)
-                      instructionsNoTargetReps
-                    else
-                      instructionsTargetReps,
-                    inputs,
-                  ],
-                ),
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.paddingSmall),
+              child: Column(
+                children: [
+                  if (targetReps == null)
+                    instructionsNoTargetReps
+                  else
+                    instructionsTargetReps,
+                  inputs,
+                ],
               ),
             ),
           ),

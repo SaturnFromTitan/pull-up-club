@@ -97,45 +97,42 @@ class _SuccessScreenState extends State<SuccessScreen>
                 ),
               ],
             ),
-            SizedBox(
-              width: double.infinity,
-              child: Card(
-                color: Colors.white,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: AppSpacing.paddingMedium,
-                    horizontal: AppSpacing.paddingSmall,
-                  ),
-                  child: Column(
-                    children: [
-                      Text(
-                        widget.workout.workoutType.name,
-                        style: AppTypography.headlineLarge,
-                      ),
-                      const SizedBox(height: AppSpacing.md),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TotalCard(
-                              text: "Total Reps",
-                              value: totalReps.toString(),
-                              emoji: "💪",
-                              gradient: AppGradients.surfaceOnLight,
-                            ),
+            Card(
+              color: Colors.white,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  vertical: AppSpacing.paddingMedium,
+                  horizontal: AppSpacing.paddingSmall,
+                ),
+                child: Column(
+                  children: [
+                    Text(
+                      widget.workout.workoutType.name,
+                      style: AppTypography.headlineLarge,
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TotalCard(
+                            text: "Total Reps",
+                            value: totalReps.toString(),
+                            emoji: "💪",
+                            gradient: AppGradients.surfaceOnLight,
                           ),
-                          const SizedBox(width: AppSpacing.md),
-                          Expanded(
-                            child: TotalCard(
-                              text: "Duration",
-                              value: durationText,
-                              emoji: "⏱️",
-                              gradient: AppGradients.surfaceOnLight,
-                            ),
+                        ),
+                        const SizedBox(width: AppSpacing.md),
+                        Expanded(
+                          child: TotalCard(
+                            text: "Duration",
+                            value: durationText,
+                            emoji: "⏱️",
+                            gradient: AppGradients.surfaceOnLight,
                           ),
-                        ],
-                      ),
-                    ],
-                  ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
             ),

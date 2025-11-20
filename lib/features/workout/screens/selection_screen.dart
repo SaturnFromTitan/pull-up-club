@@ -110,29 +110,27 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 // Header section
-                SizedBox(
-                  width: double.infinity,
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: AppSpacing.md),
-                    child: Column(
-                      children: [
-                        const Text(
-                          AppConstants.appTitle,
-                          style: AppTypography.displayAppTitle,
-                          textAlign: TextAlign.center,
-                        ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const Text(
+                        AppConstants.appTitle,
+                        style: AppTypography.displayAppTitle,
+                        textAlign: TextAlign.center,
+                      ),
 
-                        const SizedBox(height: AppSpacing.xs),
+                      const SizedBox(height: AppSpacing.xs),
 
-                        Text(
-                          "Double your max pull-ups!",
-                          style: AppTypography.displaySmall.copyWith(
-                            color: AppColors.onColorSecondary,
-                          ),
-                          textAlign: TextAlign.center,
+                      Text(
+                        "Double your max pull-ups!",
+                        style: AppTypography.displaySmall.copyWith(
+                          color: AppColors.onColorSecondary,
                         ),
-                      ],
-                    ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
                   ),
                 ),
 
