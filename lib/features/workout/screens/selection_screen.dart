@@ -106,19 +106,16 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
           child: ConstrainedBox(
             constraints: BoxConstraints(minHeight: constraints.maxHeight),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 // Header section
                 Padding(
                   padding: const EdgeInsets.only(bottom: AppSpacing.md),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       const Text(
                         AppConstants.appTitle,
                         style: AppTypography.displayAppTitle,
-                        textAlign: TextAlign.center,
                       ),
 
                       const SizedBox(height: AppSpacing.xs),
@@ -128,7 +125,6 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
                         style: AppTypography.displaySmall.copyWith(
                           color: AppColors.onColorSecondary,
                         ),
-                        textAlign: TextAlign.center,
                       ),
                     ],
                   ),
@@ -185,15 +181,13 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
                 // Start workout button
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
-                  child: Center(
-                    child: SizedBox(
-                      width: Screen.width(context) * 0.8,
-                      child: GradientButton(
-                        text: "Start Workout",
-                        icon: Icons.play_arrow,
-                        onPressed: _handleSubmit,
-                        gradient: AppGradients.primary,
-                      ),
+                  child: SizedBox(
+                    width: Screen.width(context) * 0.8,
+                    child: GradientButton(
+                      text: "Start Workout",
+                      icon: Icons.play_arrow,
+                      onPressed: _handleSubmit,
+                      gradient: AppGradients.primary,
                     ),
                   ),
                 ),
