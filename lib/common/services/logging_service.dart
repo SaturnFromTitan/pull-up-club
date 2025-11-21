@@ -38,11 +38,12 @@ class LoggingService {
         }
       }
 
-      // Configure logger to handle both file logging and console output
       Logger.root.onRecord.listen(_handleLogRecord);
 
       _isInitialized = true;
-      _logger.info("LoggingService initialized");
+      _logger
+        ..info("LoggingService initialized")
+        ..fine("Log file path: ${_logFile!.path}");
     } on Exception catch (e) {
       // Use Logger instead of debugPrint for consistency
       _logger.severe("Failed to initialize LoggingService", e);

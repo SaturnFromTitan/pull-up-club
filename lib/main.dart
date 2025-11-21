@@ -24,8 +24,8 @@ Future<void> main() async {
       WidgetsFlutterBinding.ensureInitialized();
 
       // Initialize logging
-      await LoggingService.instance.initialize();
       Logger.root.level = kDebugMode ? Level.ALL : Level.INFO;
+      await LoggingService.instance.initialize();
 
       // Get app version for Sentry
       String appVersion;
