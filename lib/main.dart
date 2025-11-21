@@ -18,46 +18,41 @@ import "package:sentry_flutter/sentry_flutter.dart";
 
 Future<void> main() async {
   // Wrap everything in a zone to catch unawaited async errors
-  await runZonedGuarded(
-    () async {
-      // Initialize Flutter bindings
-      WidgetsFlutterBinding.ensureInitialized();
+  await runZonedGuarded(() async {
+    // Initialize Flutter bindings
+    WidgetsFlutterBinding.ensureInitialized();
 
-      // Initialize logging
-      Logger.root.level = kDebugMode ? Level.ALL : Level.INFO;
-      await LoggingService.instance.initialize();
+    // Initialize logging
+    Logger.root.level = kDebugMode ? Level.ALL : Level.INFO;
+    await LoggingService.instance.initialize();
 
-      // Get app version for Sentry
-      String appVersion;
-      if (kDebugMode) {
-        appVersion = "pull-up-club@debug";
-      } else {
-        final packageInfo = await PackageInfo.fromPlatform();
-        appVersion =
-            "${packageInfo.packageName}@${packageInfo.version}+${packageInfo.buildNumber}";
-      }
+    // Get app version for Sentry
+    String appVersion;
+    if (kDebugMode) {
+      appVersion = "pull-up-club@debug";
+    } else {
+      final packageInfo = await PackageInfo.fromPlatform();
+      appVersion =
+          "${packageInfo.packageName}@${packageInfo.version}+${packageInfo.buildNumber}";
+    }
 
-      // Initialize Sentry and run app
-      await SentryFlutter.init(
-        (final options) {
-          options
-            ..dsn = kDebugMode
-                ? ""
-                : "https://e8445aeb8a976bca9c47de2073137e70@o4510399352012800.ingest.de.sentry.io/4510399355289680"
-            ..environment = kDebugMode ? "dev" : "prod"
-            ..release = appVersion;
-        },
-        appRunner: () {
-          initSentryOnLogs();
-          setupPlatformErrorHandlers();
-          runApp(const App());
-        },
-      );
-    },
-    (final error, final stackTrace) {
-      Logger("ErrorReporting").severe("zone error", error, stackTrace);
-    },
-  );
+    // Initialize Sentry and run app
+    await SentryFlutter.init(
+      (final options) {
+        options
+          ..dsn = kDebugMode
+              ? ""
+              : "https://e8445aeb8a976bca9c47de2073137e70@o4510399352012800.ingest.de.sentry.io/4510399355289680"
+          ..environment = kDebugMode ? "dev" : "prod"
+          ..release = appVersion;
+      },
+      appRunner: () {
+        initSentryOnLogs();
+        setupPlatformErrorHandlers();
+        runApp(const App());
+      },
+    );
+  }, zoneErrorHandler);
 }
 
 class App extends StatelessWidget {

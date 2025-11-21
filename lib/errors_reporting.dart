@@ -8,6 +8,8 @@ import "package:pull_up_club/common/themes/app_spacing.dart";
 import "package:pull_up_club/common/themes/app_typography.dart";
 import "package:sentry_flutter/sentry_flutter.dart";
 
+Logger _logger = Logger("ErrorReporting");
+
 // Set up Sentry error reporting for logged warnings/errors
 void initSentryOnLogs() {
   Logger.root.onRecord.listen((final record) {
@@ -38,7 +40,7 @@ void initSentryOnLogs() {
           );
         }
       } on Exception catch (e) {
-        Logger("ErrorReporting").warning("Failed to send error to Sentry", e);
+        _logger.warning("Failed to send error to Sentry", e);
       }
     }
   });
@@ -51,9 +53,13 @@ void setupPlatformErrorHandlers() {
   PlatformDispatcher.instance.onError = (final error, final stack) {
     originalPlatformError?.call(error, stack);
 
-    Logger("ErrorReporting").severe("Unhandled platform exception", error, stack);
+    _logger.severe("Unhandled platform exception", error, stack);
     return true;
   };
+}
+
+void zoneErrorHandler(final Object error, final StackTrace stackTrace) {
+  _logger.severe("zone error", error, stackTrace);
 }
 
 Material errorWidget(final FlutterErrorDetails errorDetails) {
