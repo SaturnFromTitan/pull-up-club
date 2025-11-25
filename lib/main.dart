@@ -48,7 +48,7 @@ Future<void> main() async {
       },
       appRunner: () {
         initSentryOnLogs();
-        setupPlatformErrorHandlers();
+        initGlobalErrorHandlers();
         runApp(const App());
       },
     );

@@ -46,14 +46,22 @@ void initSentryOnLogs() {
   });
 }
 
-// Set up global error handlers for unhandled exceptions outside build phase
-void setupPlatformErrorHandlers() {
+// Set up global error handlers for unhandled exceptions
+void initGlobalErrorHandlers() {
+  // Log errors from Flutter framework errors as well
+  final originalFlutterError = FlutterError.onError;
+  FlutterError.onError = (final details) {
+    _logger.severe("Flutter framework error", details.exception, details.stack);
+    originalFlutterError?.call(details);
+  };
+
   // Handle async errors and other unhandled exceptions
   final originalPlatformError = PlatformDispatcher.instance.onError;
-  PlatformDispatcher.instance.onError = (final error, final stack) {
-    originalPlatformError?.call(error, stack);
-
-    _logger.severe("Unhandled platform exception", error, stack);
+  PlatformDispatcher.instance.onError = (final error, final stackTrace) {
+    _logger.severe("Unhandled platform exception", error, stackTrace);
+    if (originalPlatformError != null) {
+      return originalPlatformError(error, stackTrace);
+    }
     return true;
   };
 }
