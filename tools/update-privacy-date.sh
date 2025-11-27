@@ -3,13 +3,11 @@
 # Exits with non-zero code if the date was updated, zero if it was already up to date
 
 # Get the directory where this script is located
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# Go up one directory (from tools/ to repo root) and then into pages/
-REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-FILE="$REPO_ROOT/pages/privacy-policy.html"
+GIT_FILE="docs/privacy-policy.html"
 
-# Get relative path from repo root for git commands
-GIT_FILE="pages/privacy-policy.html"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+FILE="$REPO_ROOT/$GIT_FILE"
 
 # Check if file is tracked in git
 if ! git ls-files --error-unmatch "$GIT_FILE" >/dev/null 2>&1; then

@@ -65,7 +65,7 @@ pre-commit install
 
 ### Privacy Policy
 
-The privacy policy is located in `pages/privacy-policy.html` and is hosted on GitHub Pages. To update the "Last updated" date from git commit history, run:
+The privacy policy is located in `docs/privacy-policy.html` and is hosted on GitHub Pages. To update the "Last updated" date from git commit history, run:
 
 ```sh
 just update-privacy-date
