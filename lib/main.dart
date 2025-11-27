@@ -55,12 +55,18 @@ Future<void> main() async {
               ? ""
               : "https://e8445aeb8a976bca9c47de2073137e70@o4510399352012800.ingest.de.sentry.io/4510399355289680"
           ..environment = kDebugMode ? "dev" : "prod"
-          ..release = appVersion;
+          ..release = appVersion
+          // in the max sets workout, the user might put the app to background for 5 minutes
+          // using 10 minutes to be safe
+          ..autoSessionTrackingInterval = const Duration(minutes: 10);
+        options.replay
+          ..sessionSampleRate = 1.0
+          ..onErrorSampleRate = 1.0;
       },
       appRunner: () {
         initSentryOnLogs();
         initGlobalErrorHandlers();
-        runApp(const App());
+        runApp(SentryWidget(child: const App()));
       },
     );
   }, zoneErrorHandler);
