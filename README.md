@@ -72,3 +72,11 @@ just update-privacy-date
 ```
 
 This will automatically extract the last commit date for the privacy policy file and update it in the HTML.
+
+## Logging and Crash Reporting Guide
+
+The app uses a multi-layered logging and error reporting system:
+
+1. **File-based logging**: All logs are written to a file on the device
+2. **Sentry integration**: Errors and warnings are automatically sent to Sentry (if configured)
+3. **Console logging**: Development logs are printed to console (debug mode only)

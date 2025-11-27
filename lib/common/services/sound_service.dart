@@ -9,10 +9,12 @@ class SoundService {
   static final Logger _logger = Logger("SoundService");
 
   Future<void> _playSound(final String fileName) async {
+    _logger.fine("Playing sound: $fileName");
     try {
       await _player.play(AssetSource("sounds/$fileName"));
-    } on Exception catch (e) {
-      _logger.severe("Error while playing '$fileName': $e");
+      _logger.fine("Completed sound successfully: $fileName");
+    } on Exception catch (e, stackTrace) {
+      _logger.severe("Error while playing '$fileName'", e, stackTrace);
     }
   }
 
@@ -29,10 +31,12 @@ class SoundService {
   }
 
   Future<void> stop() async {
+    _logger.fine("Stopping all sounds");
     try {
       await _player.stop();
-    } on Exception catch (e) {
-      _logger.severe("Error while stopping all sounds: $e");
+      _logger.fine("All sounds stopped successfully");
+    } on Exception catch (e, stackTrace) {
+      _logger.severe("Error while stopping all sounds", e, stackTrace);
     }
   }
 

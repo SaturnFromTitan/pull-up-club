@@ -37,16 +37,22 @@ class WorkoutDatabase extends _$WorkoutDatabase {
   @override
   MigrationStrategy get migration => MigrationStrategy(
     beforeOpen: (final details) async {
+      _logger.info(
+        "Opening database: wasCreated=${details.wasCreated}, "
+        "versionNow=${details.versionNow}, versionBefore=${details.versionBefore}",
+      );
       // Enable foreign key constraints in SQLite
       await customStatement("PRAGMA foreign_keys = ON");
     },
     onCreate: (final m) async {
+      _logger.info("Creating database schema");
       await m.createAll();
-      _logger.fine("Database created");
+      _logger.info("Database created successfully");
     },
   );
 
   Future<Workout> insertWorkout(final Workout workout) async {
+    _logger.info("Inserting workout: $workout");
     final workoutId = await into(workouts).insert(
       WorkoutsCompanion.insert(
         workoutType: workout.workoutType.name,
@@ -55,6 +61,7 @@ class WorkoutDatabase extends _$WorkoutDatabase {
         end: workout.end == null ? const Value.absent() : Value(workout.end),
       ),
     );
+    _logger.info("Workout inserted with ID: $workoutId");
 
     // Insert sets
     for (final set_ in workout.sets) {
@@ -69,6 +76,7 @@ class WorkoutDatabase extends _$WorkoutDatabase {
         ),
       );
     }
+    _logger.fine("Inserted ${workout.sets.length} sets for workout $workoutId");
 
     // Return workout with the generated ID
     return Workout(
@@ -82,12 +90,16 @@ class WorkoutDatabase extends _$WorkoutDatabase {
   }
 
   Future<List<Workout>> getAllWorkouts() async {
+    _logger.info("Loading all workouts from database");
     final workoutRows = await (select(
       workouts,
     )..orderBy([(final t) => OrderingTerm.asc(t.id)])).get();
+    _logger.info("Loaded ${workoutRows.length} workout rows");
+
     final setRows = await (select(
       workoutSets,
     )..orderBy([(final t) => OrderingTerm.asc(t.id)])).get();
+    _logger.info("Loaded ${setRows.length} set rows");
 
     // Group sets by workout_id for quick lookup
     final setsByWorkoutId = <int, List<WorkoutSet>>{};
@@ -125,12 +137,15 @@ class WorkoutDatabase extends _$WorkoutDatabase {
       workoutList.add(workout);
     }
 
+    _logger.info("Successfully loaded ${workoutList.length} workouts from database");
     return workoutList;
   }
 
   Future<void> deleteWorkout(final int workoutId) async {
+    _logger.info("Deleting workout: id=$workoutId");
     await (delete(workouts)..where((final t) => t.id.equals(workoutId))).go();
     // Sets will be deleted automatically due to CASCADE
+    _logger.info("Successfully deleted workout: id=$workoutId");
   }
 }
 

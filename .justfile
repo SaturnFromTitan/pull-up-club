@@ -30,4 +30,4 @@ lint:
 
 # update privacy policy date from git commit history
 update-privacy-date:
-  docs/update-privacy-date.sh || true
+  tools/update-privacy-date.sh || true

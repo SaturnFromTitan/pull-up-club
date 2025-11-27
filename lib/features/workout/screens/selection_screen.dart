@@ -2,6 +2,7 @@ import "dart:async";
 
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
+import "package:logging/logging.dart";
 import "package:provider/provider.dart";
 import "package:pull_up_club/common/constants/app_constants.dart";
 import "package:pull_up_club/common/providers/workout_history_provider.dart";
@@ -27,6 +28,7 @@ class WorkoutSelectionScreen extends StatefulWidget {
 }
 
 class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
+  static final Logger _logger = Logger("WorkoutSelectionScreen");
   WorkoutType _selected = WorkoutType.maxSets;
   static const double _cardGap = AppSpacing.md;
   static const double _iconSize = 28;
@@ -71,6 +73,7 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
   }
 
   Future<void> _handleSubmit() async {
+    _logger.info("Starting workout: type=${_selected.name}");
     StatefulWidget workoutScreen;
     switch (_selected) {
       case WorkoutType.maxSets:
@@ -78,6 +81,9 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
       case WorkoutType.submaxVolume:
         final targetReps = await askForTargetReps();
         if (!mounted || targetReps == null) {
+          _logger.fine(
+            "Workout start cancelled: targetReps dialog cancelled or widget unmounted",
+          );
           return;
         }
         workoutScreen = SubmaxVolumeScreen(targetReps: targetReps);

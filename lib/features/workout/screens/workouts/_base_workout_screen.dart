@@ -2,6 +2,7 @@ import "dart:async";
 
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
+import "package:logging/logging.dart";
 import "package:provider/provider.dart";
 import "package:pull_up_club/common/providers/workout_history_provider.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
@@ -24,6 +25,7 @@ abstract class BaseWorkoutScreen extends StatefulWidget {
 }
 
 abstract class BaseWorkoutState<T extends BaseWorkoutScreen> extends State<T> {
+  static final Logger _logger = Logger("BaseWorkoutScreen");
   int get restDurationMillis;
 
   int? getTargetReps();
@@ -42,17 +44,18 @@ abstract class BaseWorkoutState<T extends BaseWorkoutScreen> extends State<T> {
 
   void navigateToSuccess() {
     final workoutProvider = context.read<WorkoutProvider>();
+    final workout = workoutProvider.workout;
+    _logger.info("Navigating to success screen: $workout");
     unawaited(
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (_) => SuccessScreen(workout: workoutProvider.workout),
-        ),
+        MaterialPageRoute(builder: (_) => SuccessScreen(workout: workout)),
       ),
     );
   }
 
   void navigateToRest() {
     final workoutProvider = context.read<WorkoutProvider>();
+    _logger.info("Navigating to rest screen");
     unawaited(
       Navigator.of(context).push(
         MaterialPageRoute(
@@ -68,17 +71,24 @@ abstract class BaseWorkoutState<T extends BaseWorkoutScreen> extends State<T> {
   void finishSet({required final int group, required final int completedReps}) {
     final workoutProvider = context.read<WorkoutProvider>();
     final workout = workoutProvider.workout;
+    final targetReps = getTargetReps();
+
+    _logger.info(
+      "Finishing set: group=$group, completedReps=$completedReps, "
+      "targetReps=$targetReps, workout: $workout",
+    );
 
     // add set
     final set_ = WorkoutSet(
       group: group,
-      targetReps: getTargetReps(),
+      targetReps: targetReps,
       completedReps: completedReps,
     );
     workout.sets.add(set_);
 
     // navigate
     if (isFinished()) {
+      _logger.info("Workout finished: $workout");
       // can't await here as `finishSet` is meant to be called synchronously
       // on button press
       final workoutHistoryProvider = context.read<WorkoutHistoryProvider>();

@@ -2,6 +2,7 @@ import "dart:async";
 import "dart:math";
 
 import "package:flutter/material.dart";
+import "package:logging/logging.dart";
 import "package:pull_up_club/common/services/sound_service.dart";
 import "package:pull_up_club/domain/models.dart";
 
@@ -21,6 +22,7 @@ class WorkoutProvider extends ChangeNotifier {
           }
         }(),
       );
+  static final Logger _logger = Logger("WorkoutProvider");
   // private state
   final Workout _workout;
   DateTime? _restStartTime;
@@ -43,6 +45,9 @@ class WorkoutProvider extends ChangeNotifier {
 
   // lifecyle management
   void rest(final int durationMillis) {
+    _logger.info(
+      "Starting rest period: duration=${durationMillis}ms, workout: $_workout",
+    );
     _restStartTime = DateTime.now().toUtc();
     _restTotalMillis = durationMillis;
 
@@ -62,6 +67,7 @@ class WorkoutProvider extends ChangeNotifier {
 
       // Play complete sound when timer reaches 0
       if (remaining <= 0) {
+        _logger.info("Rest period completed");
         unawaited(SoundService.instance.playCountdownCompleted());
         resume(stopSounds: false);
         return;
@@ -72,6 +78,7 @@ class WorkoutProvider extends ChangeNotifier {
   }
 
   void resume({final bool stopSounds = true}) {
+    _logger.info("Resuming workout: $_workout");
     if (stopSounds) {
       unawaited(SoundService.instance.stop());
     }
@@ -86,6 +93,7 @@ class WorkoutProvider extends ChangeNotifier {
 
   @override
   void dispose() {
+    _logger.fine("WorkoutProvider disposed: $_workout");
     _restTimer?.cancel();
     super.dispose();
   }

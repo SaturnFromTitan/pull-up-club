@@ -46,4 +46,4 @@ jobs:
         fetch-depth: 0  # Fetch full history to get commit dates
 
     - name: Check privacy policy date
-      run: docs/update-privacy-date.sh
+      run: tools/update-privacy-date.sh
