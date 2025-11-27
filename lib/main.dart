@@ -16,6 +16,8 @@ import "package:pull_up_club/data/repositories/workout_repository.dart";
 import "package:pull_up_club/errors_reporting.dart";
 import "package:sentry_flutter/sentry_flutter.dart";
 
+Logger _logger = Logger("Main");
+
 Future<void> main() async {
   // Wrap everything in a zone to catch unawaited async errors
   await runZonedGuarded(() async {
@@ -29,11 +31,16 @@ Future<void> main() async {
     // Get app version for Sentry
     String appVersion;
     if (kDebugMode) {
-      appVersion = "pull-up-club@debug";
+      appVersion = "pull_up_club@debug";
     } else {
-      final packageInfo = await PackageInfo.fromPlatform();
-      appVersion =
-          "${packageInfo.packageName}@${packageInfo.version}+${packageInfo.buildNumber}";
+      appVersion = "pull_up_club@unknown";
+      try {
+        final packageInfo = await PackageInfo.fromPlatform();
+        appVersion =
+            "${packageInfo.packageName}@${packageInfo.version}+${packageInfo.buildNumber}";
+      } on Exception catch (error) {
+        _logger.severe("Failed to get package info", error);
+      }
     }
 
     // Initialize Sentry and run app
