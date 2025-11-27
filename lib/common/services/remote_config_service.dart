@@ -50,9 +50,10 @@ class RemoteConfigService {
 
   /// Initialize the service and load configuration.
   /// Returns the loaded config (or default if loading fails).
-  Future<AppConfig> initialize() async {
-    if (_isInitialized && _cachedConfig != null) {
-      return _cachedConfig!;
+  Future<void> initialize() async {
+    if (_isInitialized) {
+      _logger.info("Remote config is already initialized");
+      return;
     }
 
     try {
@@ -62,32 +63,13 @@ class RemoteConfigService {
 
       // Try to load from cache first
       _cachedConfig = await _loadFromCache();
-
-      // Check if remote config has changed
-      final shouldDownload = await _shouldDownloadRemoteConfig();
-      if (shouldDownload) {
-        _logger.info("Remote config changed, downloading...");
-        final remoteConfig = await _downloadRemoteConfig();
-        if (remoteConfig != null) {
-          _cachedConfig = remoteConfig;
-          await _saveToCache(remoteConfig);
-          _logger.info("Successfully loaded and cached remote config");
-        } else if (_cachedConfig == null) {
-          // If download failed and no cache exists, use defaults
-          _cachedConfig = AppConfig.defaultConfig;
-          _logger.warning("Failed to load remote config, using defaults");
-        } else {
-          _logger.warning("Failed to load remote config, using cached version");
-        }
-      } else {
-        _logger.info("Remote config unchanged, using cached version");
-      }
+      await _updateCacheWithRemoteConfig();
 
       _isInitialized = true;
-      return _cachedConfig ?? AppConfig.defaultConfig;
+      return;
     } on Exception catch (e, stackTrace) {
       _logger.severe("Failed to initialize RemoteConfigService", e, stackTrace);
-      return _cachedConfig ?? AppConfig.defaultConfig;
+      return;
     }
   }
 
@@ -97,77 +79,69 @@ class RemoteConfigService {
     return _cachedConfig ?? AppConfig.defaultConfig;
   }
 
-  /// Check if remote config should be downloaded by comparing ETag.
-  Future<bool> _shouldDownloadRemoteConfig() async {
+  /// Download remote configuration using If-None-Match header for efficiency.
+  /// Returns null if config hasn't changed (304) or if download fails.
+  /// Returns the new config if it has changed (200).
+  Future<void> _updateCacheWithRemoteConfig() async {
     try {
-      // Use HEAD request to check ETag
-      final headResponse = await http
-          .head(Uri.parse(_configUrl))
-          .timeout(const Duration(milliseconds: 2000));
-
-      if (headResponse.statusCode != 200) {
-        _logger.warning("HEAD request failed with status ${headResponse.statusCode}");
-        return true; // Try to download anyway
-      }
-
-      // Check ETag
-      final remoteEtag = headResponse.headers["etag"];
-      if (remoteEtag != null && _etagFile != null && _etagFile!.existsSync()) {
-        final cachedEtag = await _etagFile!.readAsString();
-        if (cachedEtag.trim() == remoteEtag.trim()) {
-          _logger.fine("ETag matches, no download needed");
-          return false;
+      // Read cached ETag if available
+      String? cachedEtag;
+      if (_etagFile != null && _etagFile!.existsSync()) {
+        try {
+          cachedEtag = (await _etagFile!.readAsString()).trim();
+        } on Exception catch (e) {
+          _logger.info("Failed to read cached ETag: $e");
         }
-        _logger.fine("ETag changed, download needed");
-        return true;
       }
 
-      // If no ETag available or no cached ETag, we should download
-      if (_configFile == null || !_configFile!.existsSync()) {
-        return true;
+      // Build request headers with If-None-Match if we have a cached ETag
+      final headers = <String, String>{};
+      if (cachedEtag != null && cachedEtag.isNotEmpty) {
+        headers["If-None-Match"] = cachedEtag;
       }
 
-      // If we have cached config but no ETag info, download to get ETag
-      return true;
-    } on Exception catch (e) {
-      _logger.warning("Failed to check remote config status: $e");
-      // If we have cached config, don't download on error
-      return _configFile == null || !_configFile!.existsSync();
-    }
-  }
-
-  /// Download remote configuration.
-  Future<AppConfig?> _downloadRemoteConfig() async {
-    try {
       final response = await http
-          .get(Uri.parse(_configUrl))
+          .get(Uri.parse(_configUrl), headers: headers)
           .timeout(const Duration(milliseconds: 2000));
 
-      if (response.statusCode != 200) {
+      // 304 Not Modified - config hasn't changed, use cached version
+      if (response.statusCode == 304) {
+        _logger.info("Remote config unchanged (304 Not Modified)");
+        return;
+      } else if (response.statusCode == 200) {
+        final json = jsonDecode(response.body) as Map<String, dynamic>;
+        final config = AppConfig.fromJson(json);
+
+        // Update the cached config
+        _cachedConfig = config;
+        await _saveToCache(config);
+
+        // Save ETag
+        final etag = response.headers["etag"];
+        if (etag != null && _etagFile != null) {
+          await _etagFile!.writeAsString(etag.trim());
+        }
+
+        _logger.info("Updated cache with remote config");
+        return;
+      } else {
         _logger.warning("Failed to download config: status ${response.statusCode}");
-        return null;
+        return;
       }
-
-      final json = jsonDecode(response.body) as Map<String, dynamic>;
-      final config = AppConfig.fromJson(json);
-
-      // Save ETag if available
-      final etag = response.headers["etag"];
-      if (etag != null && _etagFile != null) {
-        await _etagFile!.writeAsString(etag);
-      }
-
-      return config;
     } on Exception catch (e, stackTrace) {
-      _logger.severe("Failed to download remote config", e, stackTrace);
-      return null;
+      _logger.severe(
+        "Unexpected failure while downloading remote config",
+        e,
+        stackTrace,
+      );
+      return;
     }
   }
 
   /// Load configuration from local cache.
   Future<AppConfig?> _loadFromCache() async {
     if (_configFile == null || !_configFile!.existsSync()) {
-      _logger.warning("No cached config file found");
+      _logger.info("No cached config file found");
       return null;
     }
 
@@ -191,6 +165,7 @@ class RemoteConfigService {
     try {
       final json = jsonEncode(config.toJson());
       await _configFile!.writeAsString(json);
+      _logger.info("Successfully loaded and cached remote config");
     } on Exception catch (e) {
       _logger.warning("Failed to save config to cache: $e");
     }

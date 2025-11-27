@@ -33,7 +33,8 @@ Future<void> main() async {
     await LoggingService.instance.initialize();
 
     // Load remote app configuration
-    final appConfig = await RemoteConfigService.instance.initialize();
+    await RemoteConfigService.instance.initialize();
+    final appConfig = RemoteConfigService.instance.getConfig();
 
     // Get app version for Sentry
     String appVersion;
