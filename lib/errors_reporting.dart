@@ -3,6 +3,7 @@ import "dart:ui";
 
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
+import "package:flutter/services.dart";
 import "package:logging/logging.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
@@ -49,6 +50,7 @@ void initSentryOnLogs() {
 }
 
 // Set up global error handlers for unhandled exceptions
+// inspired by https://docs.flutter.dev/testing/errors#handling-all-types-of-errors
 void initGlobalErrorHandlers() {
   // Log errors from Flutter framework errors as well
   final originalFlutterError = FlutterError.onError;
@@ -115,9 +117,16 @@ class ErrorSelectionScreen extends StatelessWidget {
     );
   }
 
-  void _triggerPlatformError() {
-    // Trigger an unhandled platform exception
+  void _triggerSyncError() {
+    // fyi this will be caught as a flutter error
     throw Exception("sync boom");
+  }
+
+  Future<void> _triggerPlatformError() async {
+    // as described in https://docs.flutter.dev/testing/errors#errors-not-caught-by-flutter
+    // but here it's also caught in the zone handler
+    const channel = MethodChannel("crashy-custom-channel");
+    await channel.invokeMethod("blah");
   }
 
   void _triggerZoneError() {
@@ -144,10 +153,24 @@ class ErrorSelectionScreen extends StatelessWidget {
                 Column(
                   children: [
                     GradientButton(
-                      text: "Test Flutter Error",
+                      text: "Test Build Error",
                       icon: Icons.bug_report,
                       gradient: AppGradients.accentPurple,
                       onPressed: () => _triggerFlutterError(context),
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    GradientButton(
+                      text: "Test Sync Error",
+                      icon: Icons.error_outline,
+                      gradient: AppGradients.accentPurple,
+                      onPressed: _triggerSyncError,
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    GradientButton(
+                      text: "Test Async Error",
+                      icon: Icons.warning,
+                      gradient: AppGradients.accentGreen,
+                      onPressed: _triggerZoneError,
                     ),
                     const SizedBox(height: AppSpacing.md),
                     GradientButton(
@@ -155,13 +178,6 @@ class ErrorSelectionScreen extends StatelessWidget {
                       icon: Icons.error_outline,
                       gradient: AppGradients.secondary,
                       onPressed: _triggerPlatformError,
-                    ),
-                    const SizedBox(height: AppSpacing.md),
-                    GradientButton(
-                      text: "Test Zone Error",
-                      icon: Icons.warning,
-                      gradient: AppGradients.accentGreen,
-                      onPressed: _triggerZoneError,
                     ),
                   ],
                 ),
