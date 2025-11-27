@@ -5,8 +5,8 @@ import "package:pull_up_club/common/providers/workout_history_provider.dart";
 import "package:pull_up_club/common/screens/splash_screen.dart";
 import "package:pull_up_club/common/widgets/core/gradient_navigation_bar.dart";
 import "package:pull_up_club/common/widgets/core/screen_scaffold.dart";
+import "package:pull_up_club/errors_reporting.dart";
 import "package:pull_up_club/features/history/screens/history_screen.dart";
-import "package:pull_up_club/features/workout/screens/selection_screen.dart";
 
 class Shell extends StatelessWidget {
   const Shell({super.key});
@@ -39,7 +39,7 @@ class Shell extends StatelessWidget {
         ],
       ),
       child: switch (navigationProvider.currentTab) {
-        AppTab.workout => const WorkoutSelectionScreen(),
+        AppTab.workout => const ErrorSelectionScreen(),
         AppTab.history => const HistoryScreen(),
       },
     );

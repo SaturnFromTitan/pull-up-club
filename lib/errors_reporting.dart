@@ -4,8 +4,10 @@ import "dart:ui";
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:logging/logging.dart";
+import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
 import "package:pull_up_club/common/themes/app_typography.dart";
+import "package:pull_up_club/common/widgets/core/gradient_button.dart";
 import "package:sentry_flutter/sentry_flutter.dart";
 
 Logger _logger = Logger("ErrorReporting");
@@ -94,4 +96,90 @@ Material errorWidget(final FlutterErrorDetails errorDetails) {
       ),
     ),
   );
+}
+
+// ---------------- Error Selection Screen ----------------
+// This screen is only used to test the error reporting system
+// This should be covered by a test case instead
+class ErrorSelectionScreen extends StatelessWidget {
+  // This widget can be used in ShellScreen inplace of WorkoutSelectionScreen
+  const ErrorSelectionScreen({super.key});
+
+  void _triggerFlutterError(final BuildContext context) {
+    // Navigate to a screen with a widget that fails to build
+    // This simulates a real Flutter framework error
+    unawaited(
+      Navigator.of(
+        context,
+      ).push(MaterialPageRoute(builder: (_) => const _ErrorTestScreen())),
+    );
+  }
+
+  void _triggerPlatformError() {
+    // Trigger an unhandled platform exception
+    throw Exception("sync boom");
+  }
+
+  void _triggerZoneError() {
+    // Trigger a zone error by throwing in an unawaited async function
+    unawaited(_throwAsyncError());
+  }
+
+  Future<void> _throwAsyncError() async {
+    await Future.delayed(const Duration(milliseconds: 100));
+    throw Exception("async boom");
+  }
+
+  @override
+  Widget build(final BuildContext context) {
+    return LayoutBuilder(
+      builder: (final context, final constraints) {
+        return SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: constraints.maxHeight),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // Header section
+                Column(
+                  children: [
+                    GradientButton(
+                      text: "Test Flutter Error",
+                      icon: Icons.bug_report,
+                      gradient: AppGradients.accentPurple,
+                      onPressed: () => _triggerFlutterError(context),
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    GradientButton(
+                      text: "Test Platform Error",
+                      icon: Icons.error_outline,
+                      gradient: AppGradients.secondary,
+                      onPressed: _triggerPlatformError,
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    GradientButton(
+                      text: "Test Zone Error",
+                      icon: Icons.warning,
+                      gradient: AppGradients.accentGreen,
+                      onPressed: _triggerZoneError,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _ErrorTestScreen extends StatelessWidget {
+  const _ErrorTestScreen();
+
+  @override
+  Widget build(final BuildContext context) {
+    // This widget intentionally throws during build to test Flutter error handling
+    throw Exception("widget build failure");
+  }
 }
