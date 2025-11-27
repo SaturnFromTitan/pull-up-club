@@ -21,8 +21,11 @@ Logger _logger = Logger("Main");
 Future<void> main() async {
   // Wrap everything in a zone to catch unawaited async errors
   await runZonedGuarded(() async {
+    _logger.info("App starting: debugMode=$kDebugMode");
+
     // Initialize Flutter bindings
     WidgetsFlutterBinding.ensureInitialized();
+    _logger.fine("Flutter bindings initialized");
 
     // Initialize logging
     Logger.root.level = kDebugMode ? Level.ALL : Level.INFO;
@@ -38,10 +41,11 @@ Future<void> main() async {
         final packageInfo = await PackageInfo.fromPlatform();
         appVersion =
             "${packageInfo.packageName}@${packageInfo.version}+${packageInfo.buildNumber}";
-      } on Exception catch (error) {
-        _logger.severe("Failed to get package info", error);
+      } on Exception catch (error, stackTrace) {
+        _logger.severe("Failed to get package info", error, stackTrace);
       }
     }
+    _logger.info("App version: $appVersion");
 
     // Initialize Sentry and run app
     await SentryFlutter.init(

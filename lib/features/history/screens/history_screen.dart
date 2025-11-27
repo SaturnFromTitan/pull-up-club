@@ -76,12 +76,14 @@ class _DismissablePastWorkout extends StatelessWidget {
   final Workout workout;
   Future<void> _onDelete(final BuildContext context) async {
     final workoutHistoryProvider = context.read<WorkoutHistoryProvider>();
+    HistoryScreen._logger.info("Deleting workout from history screen: $workout");
 
     try {
       await workoutHistoryProvider.deleteWorkout(workout);
-    } on Exception catch (e) {
+      HistoryScreen._logger.info("Workout deleted successfully from history screen");
+    } on Exception catch (e, stackTrace) {
       final message = "Error deleting workout: $e";
-      HistoryScreen._logger.severe(message);
+      HistoryScreen._logger.severe(message, e, stackTrace);
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
       }

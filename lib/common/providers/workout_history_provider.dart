@@ -21,13 +21,15 @@ class WorkoutHistoryProvider extends ChangeNotifier {
   List<Workout> get completedWorkouts => _completedWorkouts;
 
   Future<void> _loadWorkouts() async {
+    _logger.info("Loading workout history");
     _isLoading = true;
     notifyListeners();
 
     try {
       _completedWorkouts = await _repository.getAllWorkouts();
-    } on Exception catch (e) {
-      _logger.fine("Error loading workouts: $e");
+      _logger.info(
+        "Successfully loaded ${_completedWorkouts.length} workouts from history",
+      );
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -35,28 +37,23 @@ class WorkoutHistoryProvider extends ChangeNotifier {
   }
 
   Future<void> addWorkout(final Workout workout) async {
-    try {
-      final savedWorkout = await _repository.saveWorkout(workout);
-      _completedWorkouts.add(savedWorkout);
-      notifyListeners();
-    } on Exception catch (e) {
-      _logger.fine("Error saving workout: $e");
-      rethrow;
-    }
+    _logger.info("Adding workout to history: $workout");
+    final savedWorkout = await _repository.saveWorkout(workout);
+    _completedWorkouts.add(savedWorkout);
+    _logger.info("Workout added to history: id=${savedWorkout.id}");
+    notifyListeners();
   }
 
   Future<void> deleteWorkout(final Workout workout) async {
-    try {
-      if (workout.id == null) {
-        throw Exception("Cannot delete workout without ID");
-      }
-      await _repository.deleteWorkout(workout.id!);
-      _completedWorkouts.remove(workout);
-      notifyListeners();
-    } on Exception catch (e) {
-      _logger.fine("Error deleting workout: $e");
-      rethrow;
+    if (workout.id == null) {
+      _logger.warning("Attempted to delete workout without ID: $workout");
+      throw Exception("Cannot delete workout without ID");
     }
+    _logger.info("Deleting workout from history: $workout");
+    await _repository.deleteWorkout(workout.id!);
+    _completedWorkouts.remove(workout);
+    _logger.info("Workout deleted from history: $workout");
+    notifyListeners();
   }
 
   /// Determines the next workout type based on the most recent workout.

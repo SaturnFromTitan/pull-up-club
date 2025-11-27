@@ -16,35 +16,43 @@ Logger _logger = Logger("ErrorReporting");
 // Set up Sentry error reporting for logged warnings/errors
 void initSentryOnLogs() {
   Logger.root.onRecord.listen((final record) {
-    if (record.level >= Level.WARNING) {
-      try {
-        if (record.error != null) {
-          // If there's an error object, capture it as an exception
-          unawaited(
-            Sentry.captureException(
-              record.error,
-              stackTrace: record.stackTrace,
-              hint: Hint.withMap({
-                "logger": record.loggerName,
-                "message": record.message,
-              }),
-            ),
-          );
-        } else {
-          // Otherwise, capture as a message with appropriate level
-          unawaited(
-            Sentry.captureMessage(
-              "${record.loggerName}: ${record.message}",
-              level: record.level == Level.SEVERE
-                  ? SentryLevel.error
-                  : SentryLevel.warning,
-              hint: Hint.withMap({"logger": record.loggerName}),
-            ),
-          );
-        }
-      } on Exception catch (e) {
-        _logger.warning("Failed to send error to Sentry", e);
+    if (record.level < Level.WARNING) {
+      return;
+    }
+
+    try {
+      if (record.error != null) {
+        // If there's an error object, capture it as an exception
+        unawaited(
+          Sentry.captureException(
+            record.error,
+            stackTrace: record.stackTrace,
+            hint: Hint.withMap({
+              "logger": record.loggerName,
+              "message": record.message,
+              "level": record.level.name,
+              "timestamp": record.time.toIso8601String(),
+            }),
+          ),
+        );
+      } else {
+        // Otherwise, capture as a message with appropriate level
+        unawaited(
+          Sentry.captureMessage(
+            "${record.loggerName}: ${record.message}",
+            level: record.level == Level.SEVERE
+                ? SentryLevel.error
+                : SentryLevel.warning,
+            hint: Hint.withMap({
+              "logger": record.loggerName,
+              "level": record.level.name,
+              "timestamp": record.time.toIso8601String(),
+            }),
+          ),
+        );
       }
+    } on Exception catch (e) {
+      _logger.warning("Failed to send error to Sentry", e);
     }
   });
 }

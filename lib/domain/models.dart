@@ -45,4 +45,17 @@ class Workout {
   }
 
   int totalReps() => sets.fold(0, (final t, final s) => t + s.completedReps);
+
+  @override
+  String toString() {
+    final buffer = StringBuffer("Workout(")
+      ..write("id=$id, ")
+      ..write("type=${workoutType.name}, ")
+      ..write("maxGroups=$maxGroups, ")
+      ..write("sets=${sets.length}")
+      ..write(", totalReps=${totalReps()}")
+      ..write(", inProgress=${end == null}")
+      ..write(")");
+    return buffer.toString();
+  }
 }

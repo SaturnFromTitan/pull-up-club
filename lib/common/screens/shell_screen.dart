@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:logging/logging.dart";
 import "package:provider/provider.dart";
 import "package:pull_up_club/common/providers/navigation_provider.dart";
 import "package:pull_up_club/common/providers/workout_history_provider.dart";
@@ -11,6 +12,7 @@ import "package:pull_up_club/features/history/screens/history_screen.dart";
 class Shell extends StatelessWidget {
   const Shell({super.key});
   static const String route = "/shell";
+  static final Logger _logger = Logger("Shell");
 
   @override
   Widget build(final BuildContext context) {
@@ -18,8 +20,11 @@ class Shell extends StatelessWidget {
     final workoutHistoryProvider = context.watch<WorkoutHistoryProvider>();
 
     if (workoutHistoryProvider.isLoading) {
+      _logger.fine("Showing splash screen: loading workout history");
       return const ScreenScaffold(child: SplashScreen());
     }
+
+    _logger.fine("Building shell screen");
 
     return ScreenScaffold(
       bottomNavigationBar: GradientNavigationBar(
