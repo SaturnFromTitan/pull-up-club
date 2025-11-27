@@ -34,9 +34,9 @@ Future<void> main() async {
     // Get app version for Sentry
     String appVersion;
     if (kDebugMode) {
-      appVersion = "pull_up_club@debug";
+      appVersion = "com.saturnfromtitan.pullupclub@debug";
     } else {
-      appVersion = "pull_up_club@unknown";
+      appVersion = "com.saturnfromtitan.pullupclub@unknown";
       try {
         final packageInfo = await PackageInfo.fromPlatform();
         appVersion =

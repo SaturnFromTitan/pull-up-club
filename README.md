@@ -12,9 +12,11 @@ The app to the great and simple instructions by kboges:
 ## Release
 
 This project uploads a signed build to TestFlight on every push to `main` using Fastlane and GitHub Actions.
-Later on there will be a manual workflow to create an app store & GitHub release.
-The idea is that the latest version is always available on TestFlight and once we're happy with it, it can
-be published to the App Store.
+Releasing to the App Store is done manually via App Store Connect.
+
+### App Store
+
+You can download it in the [Apple App Store](https://apps.apple.com/app/pull-up-club/id6754757771)!
 
 ### Certificates for Fastlane
 
