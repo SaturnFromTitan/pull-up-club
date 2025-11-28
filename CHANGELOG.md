@@ -13,6 +13,10 @@ Technical Improvements:
 - custom domain for privacy notice
 - Remote config
 
+Legal:
+
+- Business Source License (BSL)
+
 ## 1.0.0
 
 Struggling to increase your pull-up count? This app gives you a simple and effective training plan designed to help you double your maximum pull-ups. It works best if you are currently in the 5-12 repetition range. In only eight weeks, you can increase your maximum reps by 50-100% and finally break through your plateau.
