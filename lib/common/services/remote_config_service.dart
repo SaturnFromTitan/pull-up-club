@@ -124,16 +124,11 @@ class RemoteConfigService {
       } else if (response.statusCode == 200) {
         final json = jsonDecode(response.body) as Map<String, dynamic>;
         final config = AppConfig.fromJson(json);
+        final etag = response.headers["etag"];
 
         // Update the cached config
         _cachedConfig = config;
-        await _saveToCache(config);
-
-        // Save ETag
-        final etag = response.headers["etag"];
-        if (etag != null && _etagFile != null) {
-          await _etagFile!.writeAsString(etag.trim());
-        }
+        await _saveToDisk(config, etag);
 
         _logger.info("Updated cache with remote config");
         return;
@@ -170,7 +165,7 @@ class RemoteConfigService {
   }
 
   /// Save configuration to local cache.
-  Future<void> _saveToCache(final AppConfig config) async {
+  Future<void> _saveToDisk(final AppConfig config, final String? etag) async {
     if (_configFile == null) {
       return;
     }
@@ -178,7 +173,11 @@ class RemoteConfigService {
     try {
       final json = jsonEncode(config.toJson());
       await _configFile!.writeAsString(json);
-      _logger.info("Successfully loaded and cached remote config");
+
+      if (etag != null && _etagFile != null) {
+        await _etagFile!.writeAsString(etag.trim());
+      }
+      _logger.info("Successfully config and etag to disk");
     } on Exception catch (e) {
       _logger.warning("Failed to save config to cache: $e");
     }

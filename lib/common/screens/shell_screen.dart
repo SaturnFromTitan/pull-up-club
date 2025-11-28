@@ -24,8 +24,6 @@ class Shell extends StatelessWidget {
       return const ScreenScaffold(child: SplashScreen());
     }
 
-    _logger.fine("Building shell screen");
-
     return ScreenScaffold(
       bottomNavigationBar: GradientNavigationBar(
         selectedIndex: navigationProvider.currentTab.index,
