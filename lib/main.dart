@@ -10,6 +10,7 @@ import "package:pull_up_club/common/providers/navigation_provider.dart";
 import "package:pull_up_club/common/providers/workout_history_provider.dart";
 import "package:pull_up_club/common/screens/shell_screen.dart";
 import "package:pull_up_club/common/services/logging_service.dart";
+import "package:pull_up_club/common/services/remote_config_service.dart";
 import "package:pull_up_club/common/services/workout_database.dart";
 import "package:pull_up_club/common/themes/app_theme.dart";
 import "package:pull_up_club/data/repositories/workout_repository.dart";
@@ -31,6 +32,10 @@ Future<void> main() async {
     Logger.root.level = kDebugMode ? Level.ALL : Level.INFO;
     await LoggingService.instance.initialize();
 
+    // Load remote app configuration
+    await RemoteConfigService.instance.initialize();
+    final appConfig = RemoteConfigService.instance.getConfig();
+
     // Get app version for Sentry
     String appVersion;
     if (kDebugMode) {
@@ -51,9 +56,7 @@ Future<void> main() async {
     await SentryFlutter.init(
       (final options) {
         options
-          ..dsn = kDebugMode
-              ? ""
-              : "https://e8445aeb8a976bca9c47de2073137e70@o4510399352012800.ingest.de.sentry.io/4510399355289680"
+          ..dsn = kDebugMode ? "" : appConfig.sentryDsn
           ..environment = kDebugMode ? "dev" : "prod"
           ..release = appVersion
           // in the max sets workout, the user might put the app to background for 5 minutes

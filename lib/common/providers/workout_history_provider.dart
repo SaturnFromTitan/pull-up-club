@@ -27,9 +27,6 @@ class WorkoutHistoryProvider extends ChangeNotifier {
 
     try {
       _completedWorkouts = await _repository.getAllWorkouts();
-      _logger.info(
-        "Successfully loaded ${_completedWorkouts.length} workouts from history",
-      );
     } finally {
       _isLoading = false;
       notifyListeners();
