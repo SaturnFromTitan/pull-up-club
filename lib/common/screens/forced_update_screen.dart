@@ -3,6 +3,7 @@ import "package:pull_up_club/common/constants/app_constants.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
 import "package:pull_up_club/common/themes/app_typography.dart";
+import "package:pull_up_club/common/widgets/core/gradient_button.dart";
 import "package:pull_up_club/common/widgets/core/screen_scaffold.dart";
 import "package:url_launcher/url_launcher.dart";
 
@@ -34,20 +35,18 @@ class ForcedUpdateScreen extends StatelessWidget {
               ),
               const SizedBox(height: AppSpacing.md),
               const Text(
-                "A new version of Pull-Up Club is available. Please update to continue using the app.",
+                "A new version of ${AppConstants.appTitle} is available. Please update to continue using the app.",
                 style: AppTypography.bodyLarge,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: AppSpacing.xl),
-              FilledButton.icon(
-                onPressed: _openAppStore,
-                icon: const Icon(Icons.open_in_new),
-                label: const Text("Update Now"),
-                style: FilledButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.xl,
-                    vertical: AppSpacing.md,
-                  ),
+              SizedBox(
+                width: Screen.width(context) * 0.6,
+                child: GradientButton(
+                  onPressed: _openAppStore,
+                  text: "Update Now",
+                  icon: Icons.open_in_new,
+                  gradient: AppGradients.primary,
                 ),
               ),
             ],
