@@ -22,6 +22,11 @@ class AppConfig {
     return {"minAppVersion": minAppVersion, "sentryDsn": sentryDsn};
   }
 
+  @override
+  String toString() {
+    return toJson().toString();
+  }
+
   /// Default fallback configuration
   static const AppConfig defaultConfig = AppConfig(
     minAppVersion: "1.0.0",
@@ -66,6 +71,10 @@ class RemoteConfigService {
       await _updateCacheWithRemoteConfig();
 
       _isInitialized = true;
+      _logger
+        ..info("RemoteConfigService initialized; using ${getConfig()}")
+        ..fine("Config file path: ${_configFile!.path}")
+        ..fine("ETag file path: ${_etagFile!.path}");
       return;
     } on Exception catch (e, stackTrace) {
       _logger.severe("Failed to initialize RemoteConfigService", e, stackTrace);
@@ -76,7 +85,11 @@ class RemoteConfigService {
   /// Get the current configuration.
   /// Returns default config if not initialized.
   AppConfig getConfig() {
-    return _cachedConfig ?? AppConfig.defaultConfig;
+    if (_cachedConfig == null) {
+      _logger.info("No cached config found, returning default config");
+      return AppConfig.defaultConfig;
+    }
+    return _cachedConfig!;
   }
 
   /// Download remote configuration using If-None-Match header for efficiency.
