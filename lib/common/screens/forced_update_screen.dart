@@ -9,6 +9,7 @@ import "package:url_launcher/url_launcher.dart";
 
 class ForcedUpdateScreen extends StatelessWidget {
   const ForcedUpdateScreen({super.key});
+  static const String route = "/forced-update";
 
   Future<void> _openAppStore() async {
     final uri = Uri.parse(AppConstants.appStoreUrl);

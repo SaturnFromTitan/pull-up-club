@@ -132,15 +132,7 @@ class App extends StatelessWidget {
   Widget build(final BuildContext context) {
     // Show forced update screen if update is required
     if (requiresUpdate) {
-      return MaterialApp(
-        title: AppConstants.appTitle,
-        theme: appTheme,
-        home: const ForcedUpdateScreen(),
-        builder: (final context, final child) {
-          ErrorWidget.builder = errorWidget;
-          return child ?? const SizedBox.shrink();
-        },
-      );
+      return buildMaterialApp(context, isForcedUpdate: true);
     }
 
     // Otherwise show normal app
@@ -151,16 +143,25 @@ class App extends StatelessWidget {
           create: (final context) => WorkoutHistoryProvider(_workoutRepository),
         ),
       ],
-      child: MaterialApp(
-        title: AppConstants.appTitle,
-        theme: appTheme,
-        initialRoute: Shell.route,
-        routes: {Shell.route: (final context) => const Shell()},
-        builder: (final context, final child) {
-          ErrorWidget.builder = errorWidget;
-          return child ?? const SizedBox.shrink();
-        },
-      ),
+      child: buildMaterialApp(context),
+    );
+  }
+
+  MaterialApp buildMaterialApp(
+    final BuildContext context, {
+    final bool isForcedUpdate = false,
+  }) {
+    final screen = isForcedUpdate ? const ForcedUpdateScreen() : const Shell();
+    final route = isForcedUpdate ? ForcedUpdateScreen.route : Shell.route;
+    return MaterialApp(
+      title: AppConstants.appTitle,
+      theme: appTheme,
+      builder: (final context, final child) {
+        ErrorWidget.builder = errorWidget;
+        return child ?? const SizedBox.shrink();
+      },
+      routes: {route: (final context) => screen},
+      initialRoute: route,
     );
   }
 
