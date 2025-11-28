@@ -4,6 +4,7 @@ import "dart:io";
 import "package:http/http.dart" as http;
 import "package:logging/logging.dart";
 import "package:path_provider/path_provider.dart";
+import "package:pull_up_club/common/constants/app_constants.dart";
 
 /// Configuration model for remote app configuration
 class AppConfig {
@@ -29,9 +30,8 @@ class AppConfig {
 
   /// Default fallback configuration
   static const AppConfig defaultConfig = AppConfig(
-    minAppVersion: "1.0.0",
-    sentryDsn:
-        "https://e8445aeb8a976bca9c47de2073137e70@o4510399352012800.ingest.de.sentry.io/4510399355289680",
+    minAppVersion: AppConstants.defaultMinAppVersion,
+    sentryDsn: AppConstants.defaultSentryDsn,
   );
 }
 
@@ -45,11 +45,6 @@ class RemoteConfigService {
 
   static const String _configFileName = "app_config.json";
   static const String _etagFileName = "app_config.etag";
-  // even though we use a custom URL for github pages, we still refernce the original github
-  // repository URL. It redirects to the custom URL, so it still works.
-  // We hope that this is more robust as we might not continue to pay for the custom domain.
-  static const String _configUrl =
-      "https://saturnfromtitan.github.io/pull-up-club/app-config.json";
 
   AppConfig? _cachedConfig;
   bool _isInitialized = false;
@@ -117,7 +112,7 @@ class RemoteConfigService {
       }
 
       final response = await http
-          .get(Uri.parse(_configUrl), headers: headers)
+          .get(Uri.parse(AppConstants.remoteConfigUrl), headers: headers)
           .timeout(const Duration(milliseconds: 2000));
 
       // 304 Not Modified - config hasn't changed, use cached version

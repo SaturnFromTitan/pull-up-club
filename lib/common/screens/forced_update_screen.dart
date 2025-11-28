@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:pull_up_club/common/constants/app_constants.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
 import "package:pull_up_club/common/themes/app_typography.dart";
@@ -8,11 +9,8 @@ import "package:url_launcher/url_launcher.dart";
 class ForcedUpdateScreen extends StatelessWidget {
   const ForcedUpdateScreen({super.key});
 
-  static const String _appStoreUrl =
-      "https://apps.apple.com/app/pull-up-club/id6754757771";
-
   Future<void> _openAppStore() async {
-    final uri = Uri.parse(_appStoreUrl);
+    final uri = Uri.parse(AppConstants.appStoreUrl);
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     }
