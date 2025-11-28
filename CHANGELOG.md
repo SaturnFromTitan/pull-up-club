@@ -4,14 +4,15 @@
 
 UI / UX:
 
-- reworked the styling of the bottom navigation bar
+- Reworked the styling of the bottom navigation bar
 
 Technical Improvements:
 
 - File-based logging
 - Sentry integration for error reporting
-- custom domain for privacy notice
+- Custom domain for privacy notice
 - Remote config
+- Forced update functionality
 
 Legal:
 
