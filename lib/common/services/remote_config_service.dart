@@ -45,6 +45,9 @@ class RemoteConfigService {
 
   static const String _configFileName = "app_config.json";
   static const String _etagFileName = "app_config.etag";
+  // even though we use a custom URL for github pages, we still refernce the original github
+  // repository URL. It redirects to the custom URL, so it still works.
+  // We hope that this is more robust as we might not continue to pay for the custom domain.
   static const String _configUrl =
       "https://saturnfromtitan.github.io/pull-up-club/app-config.json";
 
