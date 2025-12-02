@@ -13,6 +13,7 @@ dependencies:
   drift_flutter: ">=0.2.7"
   flutter:
     sdk: flutter
+  flutter_markdown: ">=0.7.0"
   http: ">=1.2.0"
   logging: ">=1.3.0"
   package_info_plus: ">=8.0.0"

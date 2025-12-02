@@ -1,5 +1,5 @@
-import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
+import "package:flutter_markdown/flutter_markdown.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
 import "package:pull_up_club/common/themes/app_typography.dart";
@@ -10,70 +10,72 @@ class ProgramInfoScreen extends StatelessWidget {
 
   @override
   Widget build(final BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.only(bottom: AppSpacing.paddingMd),
+    return const SingleChildScrollView(
+      padding: EdgeInsets.only(bottom: AppSpacing.paddingMd),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Center(
+          Center(
             child: Text(
               "Program Info",
               textAlign: TextAlign.center,
               style: AppTypography.displayMedium,
             ),
           ),
-          const SizedBox(height: AppSpacing.lg),
-          const _YouTubeLink(),
-          const SizedBox(height: AppSpacing.md),
-          const Text("... or read my summary:", style: AppTypography.headlineMedium),
-          const SizedBox(height: AppSpacing.md),
-          // Description
-          Text(
-            "This proven program is designed to increase your max pull-ups by around 50-100% in 8-12 weeks. It works best if your current max is between 5 and 12 reps.",
-            style: AppTypography.bodyLarge.copyWith(color: AppColors.onColorSecondary),
-          ),
-          const SizedBox(height: AppSpacing.xs),
-          Text(
-            "This is a three-days-per-week program done on non-consecutive days (e.g. Monday, Wednesday, Friday).",
-            style: AppTypography.bodyLarge.copyWith(color: AppColors.onColorSecondary),
-          ),
-          const SizedBox(height: AppSpacing.lg),
-          // Workouts section
-          Center(
-            child: Text(
-              "Workouts",
-              style: AppTypography.displaySmall.copyWith(fontWeight: FontWeight.w600),
-            ),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          const _ProgramInfoSection(
-            title: "1. Max Sets",
-            descriptions: [
-              "Perform 3 max effort sets to technical failure.",
-              "Rest at least 5 minutes between each set.",
-            ],
-          ),
-          const SizedBox(height: AppSpacing.md),
-          const _ProgramInfoSection(
-            title: "2. Submax Volume",
-            descriptions: [
-              "Perform 10 sets of 50% of your max reps from day 1.",
-              "Rest exactly 1 minute between each set.",
-              "When you complete all 10 sets at the target reps, the target will increase by 1 for the next submax workout.",
-            ],
-          ),
-          const SizedBox(height: AppSpacing.md),
-          const _ProgramInfoSection(
-            title: "3. Ladders",
-            descriptions: [
-              "Perform 5 ladders.",
-              "In each ladder, every set (or rung) increases the number of reps by 1: start with 1 rep, then 2, then 3, and so on.",
-              "When you're not confident you can complete the next rung with good form, stop that ladder and start a new one (reset back to 1 rep).",
-              "Rest exactly 30 seconds between each rung.",
-              "Avoid failure!",
-            ],
-          ),
+          SizedBox(height: AppSpacing.lg),
+          _YouTubeLink(),
+          SizedBox(height: AppSpacing.md),
+          Text("... or read my summary:", style: AppTypography.headlineLarge),
+          SizedBox(height: AppSpacing.md),
+          _ProgramMarkdown(),
         ],
+      ),
+    );
+  }
+}
+
+class _ProgramMarkdown extends StatelessWidget {
+  const _ProgramMarkdown();
+
+  static const String _markdownContent = """
+This proven program is designed to increase your max pull-ups by around 50-100% in 8-12 weeks. It works best if your current max is between 5 and 12 reps.
+
+This is a three-days-per-week program done on non-consecutive days (e.g. Monday, Wednesday, Friday).
+
+## Workouts
+
+### 1. Max Sets
+
+- Perform 3 max effort sets to technical failure.
+- Rest at least 5 minutes between each set.
+
+### 2. Submax Volume
+
+- Perform 10 sets of 50% of your max reps from day 1.
+- Rest exactly 1 minute between each set.
+- When you complete all 10 sets at the target reps, the target will increase by 1 for the next submax workout.
+
+### 3. Ladders
+
+- Perform 5 ladders.
+  - In each ladder, every set (or rung) increases the number of reps by 1: start with 1 rep, then 2, then 3, and so on.
+  - When you're not confident you can complete the next rung with good form, stop that ladder and start a new one (reset back to 1 rep).
+- Rest exactly 30 seconds between each rung.
+- Avoid failure!
+""";
+
+  @override
+  Widget build(final BuildContext context) {
+    return MarkdownBody(
+      data: _markdownContent,
+      styleSheet: MarkdownStyleSheet(
+        h2: AppTypography.headlineLarge.copyWith(
+          color: AppColors.onColor,
+          fontWeight: FontWeight.w600,
+        ),
+        h3: AppTypography.headlineMedium.copyWith(color: AppColors.onColor),
+        p: AppTypography.bodyLarge.copyWith(color: AppColors.onColorSecondary),
+        listBullet: AppTypography.bodyLarge.copyWith(color: AppColors.onColorSecondary),
       ),
     );
   }
@@ -98,7 +100,7 @@ class _YouTubeLink extends StatelessWidget {
           onTap: _openYouTubeVideo,
           child: const Row(
             children: [
-              Icon(Icons.play_circle_outline, color: AppColors.onColor, size: 24),
+              Icon(Icons.play_circle_outline, size: 24),
               SizedBox(width: AppSpacing.xs),
               Text("Watch instructional video", style: AppTypography.bodyLarge),
             ],
@@ -114,38 +116,5 @@ class _YouTubeLink extends StatelessWidget {
         ),
       ],
     );
-  }
-}
-
-class _ProgramInfoSection extends StatelessWidget {
-  const _ProgramInfoSection({required this.title, required this.descriptions});
-  final String title;
-  final List<String> descriptions;
-
-  @override
-  Widget build(final BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: AppTypography.headlineMedium.copyWith(color: AppColors.onColor),
-        ),
-        const SizedBox(height: AppSpacing.xs),
-        for (final description in descriptions)
-          Text(
-            "\u2022 $description",
-            style: AppTypography.bodyLarge.copyWith(color: AppColors.onColorSecondary),
-          ),
-      ],
-    );
-  }
-
-  @override
-  void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties
-      ..add(StringProperty("title", title))
-      ..add(IterableProperty<String>("descriptions", descriptions));
   }
 }
