@@ -5,6 +5,7 @@
 UI / UX:
 
 - Reworked the styling of the bottom navigation bar
+- Added detailed program and workout descriptions to improve the onboarding
 
 Technical Improvements:
 
