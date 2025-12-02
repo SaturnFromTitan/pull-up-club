@@ -140,14 +140,6 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
                 // Workout cards section
                 Column(
                   children: [
-                    Text(
-                      "Take 1-2 rest days between workouts.",
-                      style: AppTypography.headlineMedium.copyWith(
-                        color: AppColors.onColorSecondary,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: AppSpacing.md),
                     _WorkoutCard(
                       title: "Max Sets",
                       description: "3x max reps with 5 minutes rest",
