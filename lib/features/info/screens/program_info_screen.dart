@@ -3,6 +3,7 @@ import "package:flutter/material.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
 import "package:pull_up_club/common/themes/app_typography.dart";
+import "package:url_launcher/url_launcher.dart";
 
 class ProgramInfoScreen extends StatelessWidget {
   const ProgramInfoScreen({super.key});
@@ -21,6 +22,10 @@ class ProgramInfoScreen extends StatelessWidget {
               style: AppTypography.displayMedium,
             ),
           ),
+          const SizedBox(height: AppSpacing.lg),
+          const _YouTubeLink(),
+          const SizedBox(height: AppSpacing.md),
+          const Text("... or read my summary:", style: AppTypography.headlineMedium),
           const SizedBox(height: AppSpacing.md),
           // Description
           Text(
@@ -70,6 +75,44 @@ class ProgramInfoScreen extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _YouTubeLink extends StatelessWidget {
+  const _YouTubeLink();
+
+  Future<void> _openYouTubeVideo() async {
+    final uri = Uri.parse("https://www.youtube.com/watch?v=w9Mu-azxol8");
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
+
+  @override
+  Widget build(final BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        InkWell(
+          onTap: _openYouTubeVideo,
+          child: const Row(
+            children: [
+              Icon(Icons.play_circle_outline, color: AppColors.onColor, size: 24),
+              SizedBox(width: AppSpacing.xs),
+              Text("Watch instructional video", style: AppTypography.bodyLarge),
+            ],
+          ),
+        ),
+        const SizedBox(height: AppSpacing.xs),
+        Text(
+          "Note: I am not associated with the video creator, but I use his workouts for many years and think they're great.",
+          style: AppTypography.bodySmall.copyWith(
+            color: AppColors.onColorSecondary,
+            fontStyle: FontStyle.italic,
+          ),
+        ),
+      ],
     );
   }
 }
