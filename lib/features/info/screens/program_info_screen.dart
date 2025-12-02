@@ -10,6 +10,7 @@ class ProgramInfoScreen extends StatelessWidget {
   @override
   Widget build(final BuildContext context) {
     return SingleChildScrollView(
+      padding: const EdgeInsets.only(bottom: AppSpacing.paddingMd),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -21,48 +22,52 @@ class ProgramInfoScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: AppSpacing.md),
-          // Title
-          Text(
-            "The plan for doubling your max pull-ups!",
-            style: AppTypography.headlineLarge.copyWith(
-              color: AppColors.onColor,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: AppSpacing.md),
           // Description
           Text(
-            "If you do this program consistently, you can expect a 50-100% increase of your max pull-ups within 6-12 weeks. It works best if you're currently in the 5-12 pull-up range. Perform 3 workouts on non-consecutive days of the week, e.g. Monday, Wednesday and Friday. Please use strict form for your own safety and improved muscle stimulus.",
+            "This tried and true program will increase your max pull-ups by 50-100% within 8-12 weeks. It works best if your current max is in the 5-12 rep range.",
+            style: AppTypography.bodyLarge.copyWith(color: AppColors.onColorSecondary),
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          Text(
+            "This is a three day per week program done on non-consecutive days (e.g. Monday, Wednesday, Friday).",
             style: AppTypography.bodyLarge.copyWith(color: AppColors.onColorSecondary),
           ),
           const SizedBox(height: AppSpacing.lg),
           // Workouts section
-          Text(
-            "Workouts:",
-            style: AppTypography.headlineMedium.copyWith(
-              color: AppColors.onColor,
-              fontWeight: FontWeight.w600,
+          Center(
+            child: Text(
+              "Workouts",
+              style: AppTypography.displaySmall.copyWith(fontWeight: FontWeight.w600),
             ),
           ),
           const SizedBox(height: AppSpacing.md),
           const _ProgramInfoSection(
             title: "1. Max Sets",
-            description:
-                "Perform 3 sets of maximum reps with 5 minutes rest between sets. This builds raw strength and tests your current capacity.",
+            descriptions: [
+              "Perform 3 max effort sets to technical failure.",
+              "Rest at least 5 minutes between each set.",
+              "This builds raw strength and tests your current capacity.",
+            ],
           ),
           const SizedBox(height: AppSpacing.md),
           const _ProgramInfoSection(
             title: "2. Sub-max Volume",
-            description:
-                "Complete 10 sets at 50% of your max reps with 1 minute rest. This builds endurance and volume capacity without excessive fatigue.",
+            descriptions: [
+              "Perform 10 sets of 50% of your max reps from day 1.",
+              "Rest exactly 1 minutes between each set.",
+              "When you complete all sets at the target rep, the target will increase by 1.",
+            ],
           ),
           const SizedBox(height: AppSpacing.md),
           const _ProgramInfoSection(
             title: "3. Ladders",
-            description:
-                "Execute 5 ladders starting at 1 rep and increasing by 1 each rung, with 30 seconds rest between rungs. This builds progressive strength and work capacity.",
+            descriptions: [
+              "Perform 5 ladders",
+              "In a ladder, each set (or rung) increases the number of reps by 1. So you start with 1, then 2, 3, etc. When you're not confident that you will complete the next rung with good form, start a new ladder instead, i.e. reset the target reps to 1 again.",
+              "Rest exactly 30 seconds between each rung",
+              "Avoid failure!",
+            ],
           ),
-          const SizedBox(height: AppSpacing.xl),
         ],
       ),
     );
@@ -70,9 +75,9 @@ class ProgramInfoScreen extends StatelessWidget {
 }
 
 class _ProgramInfoSection extends StatelessWidget {
-  const _ProgramInfoSection({required this.title, required this.description});
+  const _ProgramInfoSection({required this.title, required this.descriptions});
   final String title;
-  final String description;
+  final List<String> descriptions;
 
   @override
   Widget build(final BuildContext context) {
@@ -81,13 +86,14 @@ class _ProgramInfoSection extends StatelessWidget {
       children: [
         Text(
           title,
-          style: AppTypography.headlineSmall.copyWith(color: AppColors.onColor),
+          style: AppTypography.headlineMedium.copyWith(color: AppColors.onColor),
         ),
         const SizedBox(height: AppSpacing.xs),
-        Text(
-          description,
-          style: AppTypography.bodyMedium.copyWith(color: AppColors.onColorSecondary),
-        ),
+        for (final description in descriptions)
+          Text(
+            "\u2022 $description",
+            style: AppTypography.bodyLarge.copyWith(color: AppColors.onColorSecondary),
+          ),
       ],
     );
   }
@@ -97,6 +103,6 @@ class _ProgramInfoSection extends StatelessWidget {
     super.debugFillProperties(properties);
     properties
       ..add(StringProperty("title", title))
-      ..add(StringProperty("description", description));
+      ..add(IterableProperty<String>("descriptions", descriptions));
   }
 }
