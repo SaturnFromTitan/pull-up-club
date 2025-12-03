@@ -25,7 +25,7 @@ class ProgramInfoScreen extends StatelessWidget {
           SizedBox(height: AppSpacing.lg),
           _YouTubeLink(),
           SizedBox(height: AppSpacing.md),
-          Text("... or read my summary:", style: AppTypography.headlineLarge),
+          Text("... or read the summary:", style: AppTypography.headlineLarge),
           SizedBox(height: AppSpacing.md),
           _ProgramMarkdown(),
         ],
@@ -108,7 +108,7 @@ class _YouTubeLink extends StatelessWidget {
         ),
         const SizedBox(height: AppSpacing.xs),
         Text(
-          "Note: I am not associated with the video creator, but I use his workouts for many years and think they're great.",
+          "Note: This app is not affiliated with the video creator. This workout program has been selected for its proven effectiveness.",
           style: AppTypography.bodySmall.copyWith(
             color: AppColors.onColorSecondary,
             fontStyle: FontStyle.italic,
