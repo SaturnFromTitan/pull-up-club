@@ -85,7 +85,10 @@ Future<({String appVersion, bool requiresUpdate})> _getAppVersion(
         "${packageInfo.packageName}@${packageInfo.version}+${packageInfo.buildNumber}";
 
     // Check if update is required
-    requiresUpdate = _checkIfUpdateRequired(currentVersion, appConfig.minAppVersion);
+    requiresUpdate = checkIfUpdateRequired(
+      currentVersion: currentVersion,
+      minAppVersion: appConfig.minAppVersion,
+    );
   } on Exception catch (error, stackTrace) {
     _logger.severe("Failed to get package info", error, stackTrace);
   }
@@ -96,7 +99,10 @@ Future<({String appVersion, bool requiresUpdate})> _getAppVersion(
 /// Checks if the current app version is older than the required minimum version.
 /// Returns true if an update is required, false otherwise.
 /// Logs the result and handles FormatException if version parsing fails.
-bool _checkIfUpdateRequired(final String currentVersion, final String minAppVersion) {
+bool checkIfUpdateRequired({
+  required final String currentVersion,
+  required final String minAppVersion,
+}) {
   _logger.info("Comparing versions: current=$currentVersion, target=$minAppVersion");
   try {
     final current = Version.parse(currentVersion);
