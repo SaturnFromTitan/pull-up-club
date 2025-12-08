@@ -28,6 +28,10 @@ format:
 lint:
   pre-commit run --all-files
 
+# run unit tests
+test:
+  flutter test test/
+
 # update privacy policy date from git commit history
 update-privacy-date:
   tools/update-privacy-date.sh || true

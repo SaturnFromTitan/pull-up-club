@@ -1,4 +1,4 @@
-name: Lint
+name: PR checks
 
 on:
   pull_request:
@@ -7,10 +7,32 @@ permissions:
   contents: read
 
 concurrency:
-  group: pr-lint-${{ github.event.pull_request.number }}
+  group: pr-checks-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v5
+
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version-file: pubspec.yaml
+        cache: true
+
+    - name: Install dependencies
+      run: flutter pub get
+
+    - name: Generate code
+      run: flutter pub run build_runner build
+
+    - name: Run unit tests
+      run: flutter test test/
+
   lint:
     runs-on: ubuntu-latest
 

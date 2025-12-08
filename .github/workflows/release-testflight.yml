@@ -13,6 +13,10 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # ⚠️ we should also run the PR checks in this workflow to guard against race conditions when
+  # multiple PRs are merged at the same time.
+  # As long as its only me working on this repo, it suffices to run them only in the PR workflow.
+
   testflight:
     runs-on: macos-15
     # this workflow times our frequently. additional time doesn't seem to solve the issue though
