@@ -24,11 +24,13 @@ List<String> getSetCardValues(final Workout workout) {
     final reps = set_.completedReps;
     repsPerGroup[group] = (repsPerGroup[group] ?? 0) + reps;
   }
-  return repsPerGroup.values.map((final e) => e.toString()).toList();
+  final entries = repsPerGroup.entries.toList()
+    ..sort((final a, final b) => a.key.compareTo(b.key));
+  return entries.map((final e) => e.value.toString()).toList();
 }
 
 String datetimeToString(final DateTime dt) {
-  const weekdayNames = <String>["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  const weekdayNames = <String>["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   const monthNames = <String>[
     "Jan",
     "Feb",

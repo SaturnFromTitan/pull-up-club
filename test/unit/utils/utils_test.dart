@@ -22,7 +22,7 @@ void main() {
     });
 
     test("formats minutes and seconds correctly", () {
-      expect(displayDuration(6_000), "01:00");
+      expect(displayDuration(60_000), "01:00");
       expect(displayDuration(125_000), "02:05");
     });
 

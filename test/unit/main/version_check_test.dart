@@ -36,7 +36,7 @@ void main() {
     test("returns false when current version is newer", () {
       expect(
         checkIfUpdateRequired(currentVersion: "1.0.0", minAppVersion: "0.9.9"),
-        isTrue,
+        isFalse,
       );
       expect(
         checkIfUpdateRequired(currentVersion: "1.0.1", minAppVersion: "1.0.0"),
