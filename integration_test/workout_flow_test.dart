@@ -3,7 +3,6 @@ import "package:flutter_test/flutter_test.dart";
 import "package:integration_test/integration_test.dart";
 import "package:pull_up_club/common/providers/navigation_provider.dart";
 import "package:pull_up_club/domain/models.dart";
-import "package:pull_up_club/main.dart";
 
 import "utils.dart";
 
@@ -15,10 +14,7 @@ void main() {
       const reps = <int>[10, 9, 8];
 
       // Start App -----------------------------------------------------
-      await tester.pumpWidget(
-        const App(requiresUpdate: false, setErrorWidgetBuilder: false),
-      );
-      await tester.pumpAndSettle();
+      await restartApp(tester);
 
       // Home Screen ---------------------------------------------------
       await navigateTo(tester, AppTab.history);
@@ -74,6 +70,9 @@ void main() {
 
       // Home Screen ---------------------------------------------------
       verifyNextBadge(tester, WorkoutType.submaxVolume);
+
+      // ensure the workouts are persisted
+      await restartApp(tester);
       await navigateTo(tester, AppTab.history);
 
       // History Screen ------------------------------------------------

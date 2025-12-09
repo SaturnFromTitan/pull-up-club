@@ -3,6 +3,21 @@ import "package:flutter_test/flutter_test.dart";
 import "package:pull_up_club/common/providers/navigation_provider.dart";
 import "package:pull_up_club/domain/models.dart";
 import "package:pull_up_club/features/workout/screens/selection_screen.dart";
+import "package:pull_up_club/main.dart";
+
+/// (Re-)starts the app by (re-)building the widget tree from scratch
+/// This simulates an app restart, which is useful for testing state persistence
+Future<void> restartApp(final WidgetTester tester) async {
+  // Use a unique key to force Flutter to treat this as a new widget tree
+  // This ensures the old widget tree is properly disposed
+  await tester.pumpWidget(
+    App(key: UniqueKey(), requiresUpdate: false, setErrorWidgetBuilder: false),
+  );
+
+  // Wait for the app to initialize and the splash screen to disappear
+  // The splash screen shows while WorkoutHistoryProvider loads data
+  await tester.pumpAndSettle();
+}
 
 Future<void> navigateTo(final WidgetTester tester, final AppTab tab) async {
   IconData targetIconData;
