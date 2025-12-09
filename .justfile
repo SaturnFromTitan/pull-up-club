@@ -39,3 +39,5 @@ test-integration DEVICE="iPhone 15":
 # update privacy policy date from git commit history
 update-privacy-date:
   tools/update-privacy-date.sh || true
+
+all: clean generate update-privacy-date lint test test-integration
