@@ -59,7 +59,7 @@ jobs:
       run: flutter test test/
 
   test-integration:
-    runs-on: macos-latest
+    runs-on: macos-15
 
     steps:
     - name: Checkout repository
