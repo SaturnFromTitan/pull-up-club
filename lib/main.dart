@@ -61,7 +61,11 @@ Future<void> main() async {
       appRunner: () {
         initSentryOnLogs();
         initGlobalErrorHandlers();
-        runApp(SentryWidget(child: App(requiresUpdate: requiresUpdate)));
+        runApp(
+          SentryWidget(
+            child: App(requiresUpdate: requiresUpdate, setErrorWidgetBuilder: false),
+          ),
+        );
       },
     );
   }, zoneErrorHandler);
@@ -127,9 +131,15 @@ bool checkIfUpdateRequired({
 }
 
 class App extends StatelessWidget {
-  const App({required this.requiresUpdate, super.key});
+  const App({
+    required this.requiresUpdate,
+    required this.setErrorWidgetBuilder,
+    super.key,
+  });
 
   final bool requiresUpdate;
+  // setting ErorWidget.builder is not compatible with the integration test framework
+  final bool setErrorWidgetBuilder;
 
   // Create repository as a static instance to ensure it's only created once
   static final _workoutRepository = WorkoutRepository(WorkoutDatabase.instance);
@@ -138,7 +148,11 @@ class App extends StatelessWidget {
   Widget build(final BuildContext context) {
     // Show forced update screen if update is required
     if (requiresUpdate) {
-      return buildMaterialApp(context, isForcedUpdate: true);
+      return buildMaterialApp(
+        context,
+        isForcedUpdate: true,
+        setErrorWidgetBuilder: setErrorWidgetBuilder,
+      );
     }
 
     // Otherwise show normal app
@@ -149,23 +163,27 @@ class App extends StatelessWidget {
           create: (final context) => WorkoutHistoryProvider(_workoutRepository),
         ),
       ],
-      child: buildMaterialApp(context),
+      child: buildMaterialApp(context, setErrorWidgetBuilder: setErrorWidgetBuilder),
     );
+  }
+
+  Widget builderWithCustomErrorWidget(final BuildContext context, final Widget? child) {
+    ErrorWidget.builder = errorWidget;
+    return child ?? const SizedBox.shrink();
   }
 
   MaterialApp buildMaterialApp(
     final BuildContext context, {
+    required final bool setErrorWidgetBuilder,
     final bool isForcedUpdate = false,
   }) {
     final screen = isForcedUpdate ? const ForcedUpdateScreen() : const Shell();
     final route = isForcedUpdate ? ForcedUpdateScreen.route : Shell.route;
+
     return MaterialApp(
       title: AppConstants.appTitle,
       theme: appTheme,
-      builder: (final context, final child) {
-        ErrorWidget.builder = errorWidget;
-        return child ?? const SizedBox.shrink();
-      },
+      builder: setErrorWidgetBuilder ? builderWithCustomErrorWidget : null,
       routes: {route: (final context) => screen},
       initialRoute: route,
     );
@@ -174,6 +192,8 @@ class App extends StatelessWidget {
   @override
   void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<bool>("requiresUpdate", requiresUpdate));
+    properties
+      ..add(DiagnosticsProperty<bool>("requiresUpdate", requiresUpdate))
+      ..add(DiagnosticsProperty<bool>("setErrorWidgetBuilder", setErrorWidgetBuilder));
   }
 }

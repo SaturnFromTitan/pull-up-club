@@ -32,6 +32,10 @@ lint:
 test:
   flutter test test/
 
+# run integration tests
+test-integration DEVICE="iPhone 15":
+  flutter test integration_test/ -d "{{DEVICE}}" --dart-define=TEST_MODE=true
+
 # update privacy policy date from git commit history
 update-privacy-date:
   tools/update-privacy-date.sh || true

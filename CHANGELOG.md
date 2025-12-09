@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.0
+
+Fixes:
+
+- Fix day of week in Workout History
+
 ## 1.1.0
 
 UI / UX:

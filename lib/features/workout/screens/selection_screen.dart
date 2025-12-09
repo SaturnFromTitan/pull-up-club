@@ -140,7 +140,7 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
                 // Workout cards section
                 Column(
                   children: [
-                    _WorkoutCard(
+                    WorkoutCard(
                       title: "Max Sets",
                       description: "3x max reps with 5 minutes rest",
                       icon: const Icon(Icons.speed, size: _iconSize),
@@ -152,7 +152,7 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
 
                     const SizedBox(height: _cardGap),
 
-                    _WorkoutCard(
+                    WorkoutCard(
                       title: "Submax Volume",
                       description: "10 sets at 50% max reps with\n1 minute rest",
                       icon: const Icon(Icons.center_focus_strong, size: _iconSize),
@@ -164,7 +164,7 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
 
                     const SizedBox(height: _cardGap),
 
-                    _WorkoutCard(
+                    WorkoutCard(
                       title: "Ladders",
                       description:
                           "5 ladders (1, 2, 3, ... reps) with\n30 seconds rest",
@@ -199,8 +199,8 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
   }
 }
 
-class _WorkoutCard extends StatelessWidget {
-  const _WorkoutCard({
+class WorkoutCard extends StatelessWidget {
+  const WorkoutCard({
     required this.title,
     required this.description,
     required this.icon,
@@ -208,6 +208,7 @@ class _WorkoutCard extends StatelessWidget {
     required this.onTap,
     this.isSelected = false,
     this.isNext = false,
+    super.key,
   });
   final String title;
   final String description;

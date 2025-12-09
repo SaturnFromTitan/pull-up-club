@@ -41,7 +41,7 @@ class Shell extends StatelessWidget {
             label: "Program",
           ),
           NavigationDestination(
-            icon: Icon(Icons.history),
+            icon: Icon(Icons.history_outlined),
             selectedIcon: Icon(Icons.history),
             label: "History",
           ),
