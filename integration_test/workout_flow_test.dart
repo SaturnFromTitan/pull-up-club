@@ -1,3 +1,5 @@
+// prints are ok for integration tests
+// ignore_for_file: avoid_print
 import "package:flutter/material.dart";
 import "package:flutter_test/flutter_test.dart";
 import "package:integration_test/integration_test.dart";
@@ -32,6 +34,7 @@ void main() {
       verifyNextBadge(tester, WorkoutType.maxSets);
 
       // Start Workout -------------------------------------------------
+      print("Starting the workout");
       await tester.tap(find.text("Start Workout"));
       await tester.pumpAndSettle();
 
@@ -46,6 +49,7 @@ void main() {
       await enterRepsToFinishWorkout(tester, reps: reps[2]);
 
       // Success Screen ------------------------------------------------
+      print("Checking the success screen");
       expect(find.text("Workout Completed!"), findsOneWidget);
       expect(find.text("Max Sets"), findsOneWidget);
 
@@ -61,6 +65,7 @@ void main() {
       final durationText = find.textContaining(RegExp(r"\d{2}:\d{2}"));
       expect(durationText, findsOneWidget);
 
+      print("Going back home");
       // Navigate back to home to avoid the never-ending animation on success screen
       // Tap the "Home" button
       final homeButton = find.text("Home");
@@ -76,6 +81,7 @@ void main() {
       await navigateTo(tester, AppTab.history);
 
       // History Screen ------------------------------------------------
+      print("Checking the history screen");
       expect(find.text("Workout History"), findsOneWidget);
 
       expect(find.text("Max Sets"), findsOneWidget);
@@ -91,6 +97,7 @@ void main() {
       await deleteWorkout(tester, dismissible: dismissible);
 
       // Verify the workout was deleted
+      print("Verifying the workout was deleted");
       expect(find.text("No workouts yet"), findsOneWidget);
     });
   });

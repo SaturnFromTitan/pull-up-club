@@ -1,3 +1,5 @@
+// prints are ok for integration tests
+// ignore_for_file: avoid_print
 import "package:flutter/material.dart";
 import "package:flutter_test/flutter_test.dart";
 import "package:pull_up_club/common/providers/navigation_provider.dart";
@@ -8,6 +10,7 @@ import "package:pull_up_club/main.dart";
 /// (Re-)starts the app by (re-)building the widget tree from scratch
 /// This simulates an app restart, which is useful for testing state persistence
 Future<void> restartApp(final WidgetTester tester) async {
+  print("restarting the app");
   // Use a unique key to force Flutter to treat this as a new widget tree
   // This ensures the old widget tree is properly disposed
   await tester.pumpWidget(
@@ -20,6 +23,7 @@ Future<void> restartApp(final WidgetTester tester) async {
 }
 
 Future<void> navigateTo(final WidgetTester tester, final AppTab tab) async {
+  print("navigating to $tab via the navBar");
   IconData targetIconData;
   switch (tab) {
     case AppTab.workout:
@@ -37,6 +41,8 @@ Future<void> navigateTo(final WidgetTester tester, final AppTab tab) async {
 }
 
 void verifyNextBadge(final WidgetTester tester, final WorkoutType workoutType) {
+  print("verifying the next badge for ${workoutType.name}");
+
   // ensure there's only one "Next" badge
   final nextBadge = find.text("Next");
   expect(nextBadge, findsOneWidget);
@@ -62,6 +68,7 @@ Future<void> enterRepsAndWaitRest(
   final WidgetTester tester, {
   required final int reps,
 }) async {
+  print("entering $reps reps and waiting for the rest timer to complete");
   await _enterReps(tester, reps: reps);
   await tester.pumpAndSettle();
 }
@@ -70,6 +77,7 @@ Future<void> enterRepsAndSkipRest(
   final WidgetTester tester, {
   required final int reps,
 }) async {
+  print("entering $reps reps and skipping the rest via button");
   await _enterReps(tester, reps: reps);
   // skip rest via button
   await tester.pump(const Duration(milliseconds: 1_000));
@@ -83,6 +91,7 @@ Future<void> enterRepsToFinishWorkout(
   final WidgetTester tester, {
   required final int reps,
 }) async {
+  print("entering $reps reps to finish the workout");
   await _enterReps(tester, reps: reps);
   // can't use pumpAndSettle because the success screen has an endless animation
   // fyi if we don't wait long enough, then the test crashes
@@ -104,6 +113,7 @@ Future<void> deleteWorkout(
   final WidgetTester tester, {
   required final FinderBase<Element> dismissible,
 }) async {
+  print("deleting the workout via swipe");
   // Perform a swipe gesture from right to left (endToStart direction)
   // Start from the right edge and drag to the left
   final center = tester.getCenter(dismissible);
