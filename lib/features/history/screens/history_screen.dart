@@ -54,16 +54,22 @@ class HistoryScreen extends StatelessWidget {
         ),
         const SizedBox(height: AppSpacing.md),
         Expanded(
-          child: ListView(
-            children: [
-              ...[
-                for (final workout in workouts) ...[
-                  _DismissablePastWorkout(workout: workout),
-                  const SizedBox(height: AppSpacing.sm),
-                ],
-              ],
-            ],
-          ),
+          child: workouts.isEmpty
+              ? const Center(
+                  child: Text(
+                    "No workouts yet",
+                    style: AppTypography.headlineMedium,
+                    textAlign: TextAlign.center,
+                  ),
+                )
+              : ListView(
+                  children: [
+                    for (final workout in workouts) ...[
+                      _DismissablePastWorkout(workout: workout),
+                      const SizedBox(height: AppSpacing.sm),
+                    ],
+                  ],
+                ),
         ),
       ],
     );
