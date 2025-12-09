@@ -80,15 +80,58 @@ jobs:
     - name: List available simulators
       run: xcrun simctl list devices available
 
-    - name: Boot iOS simulator
+    - name: Find and boot iOS simulator
+      id: simulator
       run: |
-        # Boot the simulator (ignore error if already booted)
-        xcrun simctl boot "iPhone 15" 2>/dev/null || true
-        # Wait a moment for simulator to be ready
-        sleep 10
+        # Find an available iPhone simulator
+        # Try to find iPhone 15 first, then fallback to any iPhone
+        SIMULATOR_NAME=""
+        if xcrun simctl list devices available | grep -q "iPhone 15"; then
+          SIMULATOR_NAME=$(xcrun simctl list devices available | grep "iPhone 15" | head -1 | sed -E 's/^[[:space:]]*([^(]+).*/\1/' | xargs)
+        else
+          SIMULATOR_NAME=$(xcrun simctl list devices available | grep -i "iPhone" | grep -v "unavailable" | head -1 | sed -E 's/^[[:space:]]*([^(]+).*/\1/' | xargs)
+        fi
+
+        if [ -z "$SIMULATOR_NAME" ]; then
+          echo "No iPhone simulator found, listing all devices:"
+          xcrun simctl list devices
+          exit 1
+        fi
+        echo "Found simulator: $SIMULATOR_NAME"
+        echo "simulator_name=$SIMULATOR_NAME" >> $GITHUB_OUTPUT
+
+        # Boot the simulator by name
+        echo "Booting simulator: $SIMULATOR_NAME"
+        xcrun simctl boot "$SIMULATOR_NAME" 2>/dev/null || true
+
+        # Wait for simulator to be fully ready
+        echo "Waiting for simulator to be ready..."
+        timeout=60
+        elapsed=0
+        while [ $elapsed -lt $timeout ]; do
+          if xcrun simctl list devices | grep "$SIMULATOR_NAME" | grep -q "Booted"; then
+            echo "Simulator is booted"
+            break
+          fi
+          sleep 2
+          elapsed=$((elapsed + 2))
+        done
+
+        if [ $elapsed -ge $timeout ]; then
+          echo "Timeout waiting for simulator to boot"
+          xcrun simctl list devices
+          exit 1
+        fi
+
+        # Additional wait for simulator to be fully ready
+        echo "Waiting additional 5 seconds for simulator to be fully ready..."
+        sleep 5
+
+    - name: List Flutter devices
+      run: flutter devices
 
     - name: Run integration tests
-      run: flutter test integration_test/ -d "iPhone 15" --dart-define=TEST_MODE=true
+      run: flutter test integration_test/ -d "${{ steps.simulator.outputs.simulator_name }}" --dart-define=TEST_MODE=true
 
   check-privacy-date:
     runs-on: ubuntu-latest
