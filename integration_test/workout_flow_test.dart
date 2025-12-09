@@ -51,6 +51,11 @@ void main() {
       final submitButton = find.text("Submit");
       expect(submitButton, findsOneWidget);
       await tester.tap(submitButton);
+      // skip rest via button
+      await tester.pump(const Duration(milliseconds: 1_000));
+      final skipRestButton = find.text("Skip Rest");
+      expect(skipRestButton, findsOneWidget);
+      await tester.tap(skipRestButton);
       await tester.pumpAndSettle();
 
       // 2nd Set ------------------------------------------------
@@ -62,6 +67,7 @@ void main() {
       final submitButton2 = find.text("Submit");
       expect(submitButton2, findsOneWidget);
       await tester.tap(submitButton2);
+      // wait for rest timer to finish
       await tester.pumpAndSettle();
 
       // 3rd Set ------------------------------------------------
