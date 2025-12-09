@@ -1,6 +1,9 @@
 import "package:flutter/material.dart";
 import "package:flutter_test/flutter_test.dart";
 import "package:integration_test/integration_test.dart";
+import "package:pull_up_club/common/providers/navigation_provider.dart";
+import "package:pull_up_club/domain/models.dart";
+import "package:pull_up_club/features/workout/screens/selection_screen.dart";
 import "package:pull_up_club/main.dart";
 
 void main() {
@@ -16,28 +19,22 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // Verify initial state: Check history screen has no workouts
-      // Navigate to history screen
-      final historyIconInitial = find.byIcon(Icons.history);
-      expect(historyIconInitial, findsWidgets);
-      await tester.tap(historyIconInitial.first);
-      await tester.pumpAndSettle();
+      // Home Screen ------------------------------------------------
+      await _navigateTo(tester, AppTab.history);
 
-      // Verify we're on the history screen and it's empty
+      // History Screen ------------------------------------------------
       expect(find.text("Workout History"), findsOneWidget);
       expect(find.text("No workouts yet"), findsOneWidget);
 
-      // Navigate back to home screen (workout tab)
-      final homeIconInitial = find.byIcon(Icons.home_outlined);
-      expect(homeIconInitial, findsWidgets);
-      await tester.tap(homeIconInitial.first);
-      await tester.pumpAndSettle();
+      await _navigateTo(tester, AppTab.workout);
 
-      // Start Workout ------------------------------------------------
+      // Home Screen ------------------------------------------------
       expect(find.text("Double your max pull-ups!"), findsOneWidget);
       expect(find.text("Max Sets"), findsOneWidget);
       expect(find.text("Start Workout"), findsOneWidget);
+      _verifyNextBadge(tester, WorkoutType.maxSets);
 
+      // Start Workout ------------------------------------------------
       await tester.tap(find.text("Start Workout"));
       await tester.pumpAndSettle();
 
@@ -94,13 +91,13 @@ void main() {
       // Check set values (should show 10, 9, 8 for the three sets)
       // Note: getSetCardValues groups by set number and sorts them
       // Since we entered sets in order (10, 9, 8), they should appear as "10", "9", "8"
-      expect(find.text(reps[0].toString()), findsAtLeastNWidgets(1));
-      expect(find.text(reps[1].toString()), findsAtLeastNWidgets(1));
-      expect(find.text(reps[2].toString()), findsAtLeastNWidgets(1));
+      expect(find.text(reps[0].toString()), findsOne);
+      expect(find.text(reps[1].toString()), findsOne);
+      expect(find.text(reps[2].toString()), findsOne);
 
       // Verify duration is displayed (format: MM:SS)
       final durationText = find.textContaining(RegExp(r"\d{2}:\d{2}"));
-      expect(durationText, findsAtLeastNWidgets(1));
+      expect(durationText, findsOne);
 
       // Navigate back to home to avoid the never-ending animation on success screen
       // Tap the "Home" button
@@ -110,23 +107,21 @@ void main() {
       await tester.pumpAndSettle();
 
       // Home Screen ------------------------------------------------
-      final historyIcon = find.byIcon(Icons.history);
-      expect(historyIcon, findsWidgets);
-      await tester.tap(historyIcon.first);
-      await tester.pumpAndSettle();
+      _verifyNextBadge(tester, WorkoutType.submaxVolume);
+      await _navigateTo(tester, AppTab.history);
 
       // History Screen ------------------------------------------------
       expect(find.text("Workout History"), findsOneWidget);
 
-      expect(find.text("Max Sets"), findsAtLeastNWidgets(1));
-      expect(find.text("💪 $totalReps reps"), findsAtLeastNWidgets(1));
+      expect(find.text("Max Sets"), findsOne);
+      expect(find.text("💪 $totalReps reps"), findsOneWidget);
 
-      expect(find.text(reps[0].toString()), findsAtLeastNWidgets(1));
-      expect(find.text(reps[1].toString()), findsAtLeastNWidgets(1));
-      expect(find.text(reps[2].toString()), findsAtLeastNWidgets(1));
+      expect(find.text(reps[0].toString()), findsOne);
+      expect(find.text(reps[1].toString()), findsOne);
+      expect(find.text(reps[2].toString()), findsOne);
 
       final dismissible = find.byType(Dismissible);
-      expect(dismissible, findsAtLeastNWidgets(1));
+      expect(dismissible, findsOne);
 
       // Perform a swipe gesture from right to left (endToStart direction)
       // Start from the right edge and drag to the left
@@ -158,4 +153,43 @@ void main() {
       expect(find.text("No workouts yet"), findsOneWidget);
     });
   });
+}
+
+Future<void> _navigateTo(final WidgetTester tester, final AppTab tab) async {
+  IconData targetIconData;
+  switch (tab) {
+    case AppTab.workout:
+      targetIconData = Icons.home_outlined;
+    case AppTab.programInfo:
+      targetIconData = Icons.info_outline;
+    case AppTab.history:
+      targetIconData = Icons.history_outlined;
+  }
+
+  final targetIcon = find.byIcon(targetIconData);
+  expect(targetIcon, findsOneWidget);
+  await tester.tap(targetIcon.first);
+  await tester.pumpAndSettle();
+}
+
+void _verifyNextBadge(final WidgetTester tester, final WorkoutType workoutType) {
+  // ensure there's only one "Next" badge
+  final nextBadge = find.text("Next");
+  expect(nextBadge, findsOneWidget);
+
+  // Verify the "Next" badge is shown on the Max Sets workout card
+  final maxSetsText = find.text(workoutType.name);
+  expect(maxSetsText, findsOneWidget);
+
+  final maxSetsCard = find.ancestor(
+    of: maxSetsText,
+    matching: find.byType(WorkoutCard),
+  );
+  expect(maxSetsCard, findsOneWidget);
+
+  final maxSetsCardWithNext = find.descendant(
+    of: maxSetsCard,
+    matching: find.text("Next"),
+  );
+  expect(maxSetsCardWithNext, findsOneWidget);
 }
