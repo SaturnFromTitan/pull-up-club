@@ -1,3 +1,5 @@
+import "package:clock/clock.dart";
+
 enum WorkoutType {
   maxSets("Max Sets"),
   submaxVolume("Submax Volume"),
@@ -25,7 +27,7 @@ class Workout {
     required this.maxGroups,
     this.id,
     final DateTime? start,
-  }) : start = start ?? DateTime.now().toUtc();
+  }) : start = start ?? clock.now().toUtc();
   final int? id;
   final WorkoutType workoutType;
   final int maxGroups;
@@ -34,7 +36,7 @@ class Workout {
   List<WorkoutSet> sets = <WorkoutSet>[];
 
   void finish() {
-    end ??= DateTime.now().toUtc();
+    end ??= clock.now().toUtc();
   }
 
   int? durationMillis() {

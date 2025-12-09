@@ -1,8 +1,10 @@
 import "dart:async";
 import "dart:math";
 
+import "package:clock/clock.dart";
 import "package:flutter/material.dart";
 import "package:logging/logging.dart";
+import "package:pull_up_club/common/config/test_config.dart";
 import "package:pull_up_club/common/services/sound_service.dart";
 import "package:pull_up_club/domain/models.dart";
 
@@ -36,7 +38,8 @@ class WorkoutProvider extends ChangeNotifier {
     if (_restStartTime == null) {
       return 0;
     }
-    final elapsedMillis = DateTime.now()
+    final elapsedMillis = clock
+        .now()
         .toUtc()
         .difference(_restStartTime!.toUtc())
         .inMilliseconds;
@@ -45,11 +48,16 @@ class WorkoutProvider extends ChangeNotifier {
 
   // lifecyle management
   void rest(final int durationMillis) {
+    // In test mode, override rest duration to 5 seconds
+    final actualDuration = TestConfig.isTestMode
+        ? TestConfig.testRestDurationMillis
+        : durationMillis;
+
     _logger.info(
-      "Starting rest period: duration=${durationMillis}ms, workout: $_workout",
+      "Starting rest period: duration=${actualDuration}ms (requested: ${durationMillis}ms, testMode: ${TestConfig.isTestMode}), workout: $_workout",
     );
-    _restStartTime = DateTime.now().toUtc();
-    _restTotalMillis = durationMillis;
+    _restStartTime = clock.now().toUtc();
+    _restTotalMillis = actualDuration;
 
     _restTimer = Timer.periodic(const Duration(seconds: 1), (final timer) {
       final remaining = restRemainingMillis;
