@@ -222,11 +222,12 @@ class SupabaseService {
       if (workout.sets.isNotEmpty) {
         final setsData = workout.sets
             .map(
-              (final set) => {
+              (final set_) => {
                 "workout_id": workoutId,
-                "group_number": set.group,
-                "target_reps": set.targetReps,
-                "completed_reps": set.completedReps,
+                "group_number": set_.group,
+                "target_reps": set_.targetReps,
+                "completed_reps": set_.completedReps,
+                "number": set_.number,
               },
             )
             .toList();

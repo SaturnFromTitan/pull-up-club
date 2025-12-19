@@ -15,10 +15,12 @@ class WorkoutSet {
     required this.group,
     required this.targetReps,
     required this.completedReps,
+    required this.number,
   });
   final int group; // to identify ladders
   final int? targetReps;
   final int completedReps;
+  final int number; // Order of the set within the workout (1-based)
 }
 
 class Workout {

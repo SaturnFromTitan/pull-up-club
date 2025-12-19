@@ -7,6 +7,7 @@ class ServerWorkoutSet {
     required this.workoutId,
     required this.groupNumber,
     required this.completedReps,
+    required this.number,
     this.targetReps,
   });
 
@@ -17,6 +18,7 @@ class ServerWorkoutSet {
       groupNumber: json["group_number"] as int,
       targetReps: json["target_reps"] as int?,
       completedReps: json["completed_reps"] as int,
+      number: json["number"] as int,
     );
   }
 
@@ -25,6 +27,7 @@ class ServerWorkoutSet {
   final int groupNumber;
   final int? targetReps;
   final int completedReps;
+  final int number;
 
   /// Converts to local WorkoutSet model.
   WorkoutSet toLocal() {
@@ -32,6 +35,7 @@ class ServerWorkoutSet {
       group: groupNumber,
       targetReps: targetReps,
       completedReps: completedReps,
+      number: number,
     );
   }
 }

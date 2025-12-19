@@ -80,6 +80,7 @@ abstract class BaseWorkoutState<T extends BaseWorkoutScreen> extends State<T> {
 
     // add set
     final set_ = WorkoutSet(
+      number: workout.sets.length + 1,
       group: group,
       targetReps: targetReps,
       completedReps: completedReps,

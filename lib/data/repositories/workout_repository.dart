@@ -116,7 +116,11 @@ class WorkoutRepository {
               updatedAt: serverWorkout.updatedAt,
             );
           } else {
-            await _database.updateWorkoutServerId(local.id!, serverId);
+            await _database.updateWorkoutServerId(
+              local.id!,
+              serverId,
+              updatedAt: serverWorkout!.updatedAt,
+            );
           }
           uploadedCount++;
         }

@@ -23,6 +23,7 @@ class WorkoutSets extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get workoutId =>
       integer().references(Workouts, #id, onDelete: KeyAction.cascade)();
+  IntColumn get number => integer()();
   IntColumn get groupNumber => integer()();
   IntColumn get targetReps => integer().nullable()();
   IntColumn get completedReps => integer()();
@@ -113,6 +114,53 @@ class WorkoutDatabase extends _$WorkoutDatabase {
         // Note: Drift will handle foreign keys automatically
 
         _logger.info("Migrated updated_at column to non-nullable");
+
+        // Add number column to workout_sets table as nullable first (for migration safety)
+        await customStatement("ALTER TABLE workout_sets ADD COLUMN number INTEGER");
+        _logger.info("Added number column to workout_sets table (nullable)");
+
+        // Set number values: for each workout, order sets by id and assign numbers starting from 1
+        // We'll use a subquery to assign sequential numbers based on id ordering
+        await customStatement("""
+          UPDATE workout_sets
+          SET number = (
+            SELECT COUNT(*) + 1
+            FROM workout_sets ws2
+            WHERE ws2.workout_id = workout_sets.workout_id
+              AND ws2.id < workout_sets.id
+          )
+        """);
+        _logger.info("Populated number values for workout sets");
+
+        // Now make number non-nullable by recreating the table
+        // Step 1: Create new table with non-nullable number
+        await customStatement("""
+          CREATE TABLE workout_sets_new (
+            id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+            workout_id INTEGER NOT NULL,
+            number INTEGER NOT NULL,
+            group_number INTEGER NOT NULL,
+            target_reps INTEGER,
+            completed_reps INTEGER NOT NULL,
+            FOREIGN KEY (workout_id) REFERENCES workouts(id) ON DELETE CASCADE
+          )
+        """);
+
+        // Step 2: Copy data from old table to new table
+        await customStatement("""
+          INSERT INTO workout_sets_new (
+            id, workout_id, number, group_number, target_reps, completed_reps
+          )
+          SELECT
+            id, workout_id, COALESCE(number, 1) as number, group_number, target_reps, completed_reps
+          FROM workout_sets
+        """);
+
+        // Step 3: Drop old table and rename new table
+        await customStatement("DROP TABLE workout_sets");
+        await customStatement("ALTER TABLE workout_sets_new RENAME TO workout_sets");
+
+        _logger.info("Migrated number column to non-nullable");
       }
     },
   );
@@ -138,7 +186,8 @@ class WorkoutDatabase extends _$WorkoutDatabase {
     _logger.info("Workout inserted with ID: $workoutId");
 
     // Insert sets
-    for (final set_ in workout.sets) {
+    for (var i = 0; i < workout.sets.length; i++) {
+      final set_ = workout.sets[i];
       await into(workoutSets).insert(
         WorkoutSetsCompanion.insert(
           workoutId: workoutId,
@@ -147,6 +196,7 @@ class WorkoutDatabase extends _$WorkoutDatabase {
               ? const Value.absent()
               : Value(set_.targetReps),
           completedReps: set_.completedReps,
+          number: set_.number,
         ),
       );
     }
@@ -215,6 +265,7 @@ class WorkoutDatabase extends _$WorkoutDatabase {
               ? const Value.absent()
               : Value(set_.targetReps),
           completedReps: set_.completedReps,
+          number: set_.number,
         ),
       );
     }
@@ -243,6 +294,7 @@ class WorkoutDatabase extends _$WorkoutDatabase {
         group: setRow.groupNumber,
         targetReps: setRow.targetReps,
         completedReps: setRow.completedReps,
+        number: setRow.number,
       );
       setsByWorkoutId
           .putIfAbsent(setRow.workoutId, () => <WorkoutSet>[])
@@ -318,6 +370,7 @@ class WorkoutDatabase extends _$WorkoutDatabase {
         group: setRow.groupNumber,
         targetReps: setRow.targetReps,
         completedReps: setRow.completedReps,
+        number: setRow.number,
       );
     }).toList();
 
@@ -371,6 +424,7 @@ class WorkoutDatabase extends _$WorkoutDatabase {
         group: setRow.groupNumber,
         targetReps: setRow.targetReps,
         completedReps: setRow.completedReps,
+        number: setRow.number,
       );
       setsByWorkoutId
           .putIfAbsent(setRow.workoutId, () => <WorkoutSet>[])
@@ -426,6 +480,7 @@ class WorkoutDatabase extends _$WorkoutDatabase {
         group: setRow.groupNumber,
         targetReps: setRow.targetReps,
         completedReps: setRow.completedReps,
+        number: setRow.number,
       );
       setsByWorkoutId
           .putIfAbsent(setRow.workoutId, () => <WorkoutSet>[])
@@ -477,6 +532,7 @@ class WorkoutDatabase extends _$WorkoutDatabase {
         group: setRow.groupNumber,
         targetReps: setRow.targetReps,
         completedReps: setRow.completedReps,
+        number: setRow.number,
       );
       setsByWorkoutId
           .putIfAbsent(setRow.workoutId, () => <WorkoutSet>[])
