@@ -3,6 +3,7 @@ import "dart:math";
 
 import "package:flutter/material.dart";
 import "package:logging/logging.dart";
+import "package:pull_up_club/common/services/sync_service.dart";
 import "package:pull_up_club/data/repositories/workout_repository.dart";
 import "package:pull_up_club/domain/models.dart";
 
@@ -26,6 +27,10 @@ class WorkoutHistoryProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
+      // Perform delta sync before loading local workouts
+      // This happens during app start (splash screen)
+      await SyncService.instance.performSync(isDeltaSync: true);
+
       _completedWorkouts = await _repository.getAllWorkouts();
     } finally {
       _isLoading = false;
@@ -33,11 +38,20 @@ class WorkoutHistoryProvider extends ChangeNotifier {
     }
   }
 
+  /// Refreshes the workout history by reloading from the database.
+  Future<void> refresh() async {
+    await _loadWorkouts();
+  }
+
   Future<void> addWorkout(final Workout workout) async {
     _logger.info("Adding workout to history: $workout");
     final savedWorkout = await _repository.saveWorkout(workout);
     _completedWorkouts.add(savedWorkout);
     _logger.info("Workout added to history: id=${savedWorkout.id}");
+
+    // Upload workout to Supabase (offline-first: failures are silent)
+    unawaited(SyncService.instance.uploadWorkout(savedWorkout));
+
     notifyListeners();
   }
 

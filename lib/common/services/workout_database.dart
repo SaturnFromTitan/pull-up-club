@@ -147,6 +147,23 @@ class WorkoutDatabase extends _$WorkoutDatabase {
     // Sets will be deleted automatically due to CASCADE
     _logger.info("Successfully deleted workout: id=$workoutId");
   }
+
+  /// Gets the start time of the most recent workout, ordered by start time descending.
+  /// Returns null if no workouts exist.
+  Future<DateTime?> getLatestWorkoutStartTime() async {
+    _logger.info("Getting latest workout start time");
+    final workoutRow =
+        await (select(workouts)
+              ..orderBy([(final t) => OrderingTerm.desc(t.start)])
+              ..limit(1))
+            .getSingleOrNull();
+    if (workoutRow == null) {
+      _logger.info("No workouts found");
+      return null;
+    }
+    _logger.info("Latest workout start time: ${workoutRow.start}");
+    return workoutRow.start;
+  }
 }
 
 LazyDatabase _openConnection() => LazyDatabase(() async {

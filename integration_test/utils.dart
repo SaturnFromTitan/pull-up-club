@@ -32,6 +32,8 @@ Future<void> navigateTo(final WidgetTester tester, final AppTab tab) async {
       targetIconData = Icons.info_outline;
     case AppTab.history:
       targetIconData = Icons.history_outlined;
+    case AppTab.account:
+      targetIconData = Icons.person_outline;
   }
 
   final targetIcon = find.byIcon(targetIconData);
