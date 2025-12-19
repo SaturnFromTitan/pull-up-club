@@ -6,9 +6,9 @@ import "package:pull_up_club/common/providers/workout_history_provider.dart";
 import "package:pull_up_club/common/screens/splash_screen.dart";
 import "package:pull_up_club/common/widgets/core/gradient_navigation_bar.dart";
 import "package:pull_up_club/common/widgets/core/screen_scaffold.dart";
+import "package:pull_up_club/features/account/screens/account_screen.dart";
 import "package:pull_up_club/features/history/screens/history_screen.dart";
 import "package:pull_up_club/features/info/screens/program_info_screen.dart";
-import "package:pull_up_club/features/sync/screens/account_screen.dart";
 import "package:pull_up_club/features/workout/screens/selection_screen.dart";
 
 class Shell extends StatelessWidget {

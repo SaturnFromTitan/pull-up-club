@@ -23,15 +23,16 @@ class PackageInfoService {
   PackageInfo _packageInfo = _getDefaultPackageInfo(version: "unknown");
   PackageInfo get packageInfo => _packageInfo;
 
-  String get versionString {
-    final sb = StringBuffer()
-      ..write("${packageInfo.packageName}@${packageInfo.version}");
+  String get versionWithBuildNumber {
+    final sb = StringBuffer()..write(packageInfo.version);
     if (packageInfo.buildNumber.isNotEmpty &&
         packageInfo.buildNumber != _defaultBuildNumber) {
       sb.write("+${packageInfo.buildNumber}");
     }
     return sb.toString();
   }
+
+  String get versionString => "${packageInfo.packageName}@$versionWithBuildNumber";
 
   /// Initializes the service by loading package information.
   /// Should be called once during app startup.
