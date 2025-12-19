@@ -3,7 +3,6 @@ import "dart:math";
 
 import "package:flutter/material.dart";
 import "package:logging/logging.dart";
-import "package:pull_up_club/common/services/sync_service.dart";
 import "package:pull_up_club/data/repositories/workout_repository.dart";
 import "package:pull_up_club/domain/models.dart";
 
@@ -29,7 +28,7 @@ class WorkoutHistoryProvider extends ChangeNotifier {
     try {
       // Perform delta sync before loading local workouts
       // This happens during app start (splash screen)
-      await SyncService.instance.performSync(isDeltaSync: true);
+      await _repository.performSync(isDeltaSync: true);
 
       _completedWorkouts = await _repository.getAllWorkouts();
     } finally {
@@ -43,14 +42,19 @@ class WorkoutHistoryProvider extends ChangeNotifier {
     await _loadWorkouts();
   }
 
+  /// Performs a sync operation.
+  Future<void> performSync({required final bool isDeltaSync}) async {
+    await _repository.performSync(isDeltaSync: isDeltaSync);
+  }
+
   Future<void> addWorkout(final Workout workout) async {
     _logger.info("Adding workout to history: $workout");
     final savedWorkout = await _repository.saveWorkout(workout);
     _completedWorkouts.add(savedWorkout);
     _logger.info("Workout added to history: id=${savedWorkout.id}");
 
-    // Upload workout to Supabase (offline-first: failures are silent)
-    unawaited(SyncService.instance.uploadWorkout(savedWorkout));
+    // Perform delta sync after workout completion (includes uploading the new workout)
+    unawaited(_repository.performSync(isDeltaSync: true));
 
     notifyListeners();
   }
@@ -61,9 +65,17 @@ class WorkoutHistoryProvider extends ChangeNotifier {
       throw Exception("Cannot delete workout without ID");
     }
     _logger.info("Deleting workout from history: $workout");
+
+    // Soft delete locally (offline-first: deletion happens immediately)
     await _repository.deleteWorkout(workout.id!);
     _completedWorkouts.remove(workout);
     _logger.info("Workout deleted from history: $workout");
+
+    // Attempt to sync deletion to server (will retry on next sync if it fails)
+    if (workout.serverId != null) {
+      unawaited(_repository.performSync(isDeltaSync: true));
+    }
+
     notifyListeners();
   }
 

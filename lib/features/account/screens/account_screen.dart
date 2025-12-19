@@ -7,7 +7,6 @@ import "package:pull_up_club/common/constants/app_constants.dart";
 import "package:pull_up_club/common/providers/workout_history_provider.dart";
 import "package:pull_up_club/common/services/package_info_service.dart";
 import "package:pull_up_club/common/services/supabase_service.dart";
-import "package:pull_up_club/common/services/sync_service.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
 import "package:pull_up_club/common/themes/app_typography.dart";
@@ -44,12 +43,11 @@ class _AccountScreenState extends State<AccountScreen> {
       }
 
       // Perform full sync after successful authentication
-      await SyncService.instance.performSync(isDeltaSync: false);
+      final workoutHistoryProvider = context.read<WorkoutHistoryProvider>();
+      await workoutHistoryProvider.performSync(isDeltaSync: false);
 
       // Refresh workout history
       if (mounted) {
-        // TODO: is this really necessary?
-        final workoutHistoryProvider = context.read<WorkoutHistoryProvider>();
         await workoutHistoryProvider.refresh();
 
         setState(() {

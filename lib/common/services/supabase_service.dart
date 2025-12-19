@@ -3,6 +3,7 @@ import "dart:convert";
 import "package:crypto/crypto.dart";
 import "package:logging/logging.dart";
 import "package:pull_up_club/domain/models.dart";
+import "package:pull_up_club/domain/server_models.dart";
 import "package:sign_in_with_apple/sign_in_with_apple.dart";
 import "package:supabase_flutter/supabase_flutter.dart";
 
@@ -119,12 +120,10 @@ class SupabaseService {
     }
   }
 
-  /// Fetches workouts from Supabase with optional delta sync.
+  /// Fetches active workouts from Supabase with optional delta sync.
   /// If [updatedSince] is provided, only returns workouts updated since that time.
   /// Returns empty list if not authenticated or on error.
-  Future<List<Map<String, dynamic>>> fetchWorkouts({
-    final DateTime? updatedSince,
-  }) async {
+  Future<List<ServerWorkout>> fetchWorkouts({final DateTime? updatedSince}) async {
     if (!isAuthenticated) {
       _logger.warning("Cannot fetch workouts: not authenticated");
       return [];
@@ -144,10 +143,51 @@ class SupabaseService {
       }
 
       final response = await query.order("start", ascending: false);
-      _logger.info("Fetched ${response.length} workouts from Supabase");
-      return List<Map<String, dynamic>>.from(response);
+      _logger.info("Fetched ${response.length} active workouts from Supabase");
+
+      return (response as List<dynamic>)
+          .map((final json) => ServerWorkout.fromJson(json as Map<String, dynamic>))
+          .toList();
     } on Exception catch (error, stackTrace) {
       _logger.severe("Failed to fetch workouts from Supabase", error, stackTrace);
+      return [];
+    }
+  }
+
+  /// Fetches deleted workout IDs from Supabase with optional delta sync.
+  /// If [updatedSince] is provided, only returns deletions updated since that time.
+  /// Returns empty list if not authenticated or on error.
+  Future<List<int>> fetchDeletedWorkoutIds({final DateTime? updatedSince}) async {
+    if (!isAuthenticated) {
+      _logger.warning("Cannot fetch deleted workouts: not authenticated");
+      return [];
+    }
+
+    try {
+      _logger.info(
+        "Fetching deleted workout IDs from Supabase${updatedSince != null ? " (delta sync since $updatedSince)" : ""}",
+      );
+      var query = _client!
+          .from("workouts")
+          .select("id")
+          .not("deleted_at", "is", null); // deleted_at IS NOT NULL
+
+      if (updatedSince != null) {
+        query = query.gt("updated_at", updatedSince.toIso8601String());
+      }
+
+      final response = await query;
+      final deletedIds = (response as List<dynamic>)
+          .map((final json) => json["id"] as int)
+          .toList();
+      _logger.info("Fetched ${deletedIds.length} deleted workout IDs from Supabase");
+      return deletedIds;
+    } on Exception catch (error, stackTrace) {
+      _logger.severe(
+        "Failed to fetch deleted workouts from Supabase",
+        error,
+        stackTrace,
+      );
       return [];
     }
   }
@@ -198,6 +238,30 @@ class SupabaseService {
       return workoutId;
     } on Exception catch (error, stackTrace) {
       _logger.severe("Failed to create workout on Supabase", error, stackTrace);
+      return null;
+    }
+  }
+
+  /// Fetches a single workout by its server ID.
+  /// Returns null if not found or on error.
+  Future<ServerWorkout?> fetchWorkoutById(final int serverId) async {
+    if (!isAuthenticated) {
+      _logger.warning("Cannot fetch workout: not authenticated");
+      return null;
+    }
+
+    try {
+      _logger.info("Fetching workout from Supabase: serverId=$serverId");
+      final response = await _client!
+          .from("workouts")
+          .select("*, workout_sets(*)")
+          .eq("id", serverId)
+          .isFilter("deleted_at", null)
+          .single();
+
+      return ServerWorkout.fromJson(response);
+    } on Exception catch (error, stackTrace) {
+      _logger.severe("Failed to fetch workout from Supabase", error, stackTrace);
       return null;
     }
   }

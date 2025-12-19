@@ -26,13 +26,18 @@ class Workout {
     required this.workoutType,
     required this.maxGroups,
     this.id,
+    this.serverId,
     final DateTime? start,
-  }) : start = start ?? clock.now().toUtc();
-  final int? id;
+  }) : start = start ?? clock.now().toUtc(),
+       updatedAt = start;
+  int? id;
+  int? serverId; // Server-side ID from Supabase
   final WorkoutType workoutType;
   final int maxGroups;
   final DateTime start;
   DateTime? end;
+  DateTime? updatedAt; // Last update timestamp for sync conflict resolution
+  DateTime? deletedAt; // Soft delete timestamp (null if not deleted)
   List<WorkoutSet> sets = <WorkoutSet>[];
 
   void finish() {
@@ -52,6 +57,7 @@ class Workout {
   String toString() {
     final buffer = StringBuffer("Workout(")
       ..write("id=$id, ")
+      ..write("serverId=$serverId, ")
       ..write("type=${workoutType.name}, ")
       ..write("maxGroups=$maxGroups, ")
       ..write("sets=${sets.length}")
