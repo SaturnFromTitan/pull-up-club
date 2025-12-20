@@ -12,15 +12,15 @@ enum WorkoutType {
 
 class WorkoutSet {
   WorkoutSet({
+    required this.number,
     required this.group,
     required this.targetReps,
     required this.completedReps,
-    required this.number,
   });
-  final int group; // to identify ladders
+  final int number; // order of the set within the workout (1-based)
+  final int group; // to identify ladders (1-based)
   final int? targetReps;
   final int completedReps;
-  final int number; // Order of the set within the workout (1-based)
 }
 
 class Workout {
@@ -30,6 +30,8 @@ class Workout {
     this.id,
     this.serverId,
     final DateTime? start,
+    this.end,
+    this.sets = const <WorkoutSet>[],
   }) : start = start ?? clock.now().toUtc();
   int? id;
   int? serverId;

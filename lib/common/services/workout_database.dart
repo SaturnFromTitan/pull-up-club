@@ -35,7 +35,7 @@ class WorkoutDatabase extends _$WorkoutDatabase {
   static final Logger _logger = Logger("WorkoutDatabase");
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -53,15 +53,8 @@ class WorkoutDatabase extends _$WorkoutDatabase {
       _logger.info("Database created successfully");
     },
     onUpgrade: (final m, final from, final to) async {
-      _logger.info("Migrating database from version $from to $to");
+      _logger.info("Upgrading database schema from version $from to version $to");
       if (from < 2) {
-        // Add server_id column
-        await m.addColumn(workouts, workouts.serverId);
-        _logger.info("Added server_id column to workouts table");
-        // Add deleted_at column for soft deletes
-        await m.addColumn(workouts, workouts.deletedAt);
-        _logger.info("Added deleted_at column to workouts table");
-
         // Add number column to workout_sets table as nullable first (for migration safety)
         await customStatement("ALTER TABLE workout_sets ADD COLUMN number INTEGER");
         _logger.info("Added number column to workout_sets table (nullable)");
@@ -109,6 +102,46 @@ class WorkoutDatabase extends _$WorkoutDatabase {
 
         _logger.info("Migrated number column to non-nullable");
       }
+      if (from < 3) {
+        // Make end column non-nullable by recreating the workouts table
+        // Step 1: Create new table with non-nullable end
+        await customStatement("""
+          CREATE TABLE workouts_new (
+            id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+            workout_type TEXT NOT NULL,
+            max_groups INTEGER NOT NULL,
+            start INTEGER NOT NULL,
+            end INTEGER NOT NULL
+          )
+        """);
+
+        // Step 2: Copy data from old table to new table, setting end to start for null values
+        // this is just a precaution for absolute safety - in reality end will always be set
+        await customStatement("""
+          INSERT INTO workouts_new (
+            id, workout_type, max_groups, start, end
+          )
+          SELECT
+            id, workout_type, max_groups, start, COALESCE(end, start) as end
+          FROM workouts
+        """);
+
+        // Step 3: Drop old table and rename new table
+        await customStatement("DROP TABLE workouts");
+        await customStatement("ALTER TABLE workouts_new RENAME TO workouts");
+
+        _logger.info("Migrated end column to non-nullable");
+      }
+      if (from < 4) {
+        // Add server_id column
+        await m.addColumn(workouts, workouts.serverId);
+        _logger.info("Added server_id column to workouts table");
+        // Add deleted_at column for soft deletes
+        await m.addColumn(workouts, workouts.deletedAt);
+        _logger.info("Added deleted_at column to workouts table");
+      }
+
+      _logger.info("Database schema upgraded successfully");
     },
   );
 
@@ -132,17 +165,16 @@ class WorkoutDatabase extends _$WorkoutDatabase {
     _logger.info("Workout inserted with ID: $workoutId");
 
     // Insert sets
-    for (var i = 0; i < workout.sets.length; i++) {
-      final set_ = workout.sets[i];
+    for (final set_ in workout.sets) {
       await into(workoutSets).insert(
         WorkoutSetsCompanion.insert(
           workoutId: workoutId,
+          number: set_.number,
           groupNumber: set_.group,
           targetReps: set_.targetReps == null
               ? const Value.absent()
               : Value(set_.targetReps),
           completedReps: set_.completedReps,
-          number: set_.number,
         ),
       );
     }
@@ -209,26 +241,32 @@ class WorkoutDatabase extends _$WorkoutDatabase {
 
   Future<List<Workout>> getAllWorkouts() async {
     _logger.info("Loading all workouts from database");
+    // sorting by "end" instead of "start" because
+    //  - we assume there are no overlapping/concurrent workouts -> it doesn't really matter
+    //  - there's an index on "end", but not on "start"
     final workoutRows =
         await (select(workouts)
               ..where((final t) => t.deletedAt.isNull())
-              ..orderBy([(final t) => OrderingTerm.asc(t.start)]))
+              ..orderBy([(final t) => OrderingTerm.asc(t.end)]))
             .get();
     _logger.info("Loaded ${workoutRows.length} workout rows");
 
-    final setRows = await (select(
-      workoutSets,
-    )..orderBy([(final t) => OrderingTerm.asc(t.id)])).get();
+    final setRows =
+        await (select(workoutSets)..orderBy([
+              (final t) => OrderingTerm.asc(t.workoutId),
+              (final t) => OrderingTerm.asc(t.number),
+            ]))
+            .get();
     _logger.info("Loaded ${setRows.length} set rows");
 
     // Group sets by workout_id for quick lookup
     final setsByWorkoutId = <int, List<WorkoutSet>>{};
     for (final setRow in setRows) {
       final workoutSet = WorkoutSet(
+        number: setRow.number,
         group: setRow.groupNumber,
         targetReps: setRow.targetReps,
         completedReps: setRow.completedReps,
-        number: setRow.number,
       );
       setsByWorkoutId
           .putIfAbsent(setRow.workoutId, () => <WorkoutSet>[])
@@ -242,16 +280,15 @@ class WorkoutDatabase extends _$WorkoutDatabase {
         (final type) => type.name == workoutRow.workoutType,
       );
 
-      final workout =
-          Workout(
-              id: workoutRow.id,
-              serverId: workoutRow.serverId,
-              workoutType: workoutType,
-              maxGroups: workoutRow.maxGroups,
-              start: workoutRow.start,
-            )
-            ..end = workoutRow.end
-            ..sets = setsByWorkoutId[workoutRow.id] ?? <WorkoutSet>[];
+      final workout = Workout(
+        id: workoutRow.id,
+        serverId: workoutRow.serverId,
+        workoutType: workoutType,
+        maxGroups: workoutRow.maxGroups,
+        start: workoutRow.start,
+        end: workoutRow.end,
+        sets: setsByWorkoutId[workoutRow.id] ?? <WorkoutSet>[],
+      );
 
       workoutList.add(workout);
     }
@@ -285,23 +322,22 @@ class WorkoutDatabase extends _$WorkoutDatabase {
       (final type) => type.name == workoutRow.workoutType,
     );
 
-    final workout =
-        Workout(
-            id: workoutRow.id,
-            serverId: workoutRow.serverId,
-            workoutType: workoutType,
-            maxGroups: workoutRow.maxGroups,
-            start: workoutRow.start,
-          )
-          ..end = workoutRow.end
-          ..sets = setRows.map((final setRow) {
-            return WorkoutSet(
-              group: setRow.groupNumber,
-              targetReps: setRow.targetReps,
-              completedReps: setRow.completedReps,
-              number: setRow.number,
-            );
-          }).toList();
+    final workout = Workout(
+      id: workoutRow.id,
+      serverId: workoutRow.serverId,
+      workoutType: workoutType,
+      maxGroups: workoutRow.maxGroups,
+      start: workoutRow.start,
+      end: workoutRow.end,
+      sets: setRows.map((final setRow) {
+        return WorkoutSet(
+          number: setRow.number,
+          group: setRow.groupNumber,
+          targetReps: setRow.targetReps,
+          completedReps: setRow.completedReps,
+        );
+      }).toList(),
+    );
 
     return workout;
   }
@@ -418,16 +454,15 @@ class WorkoutDatabase extends _$WorkoutDatabase {
         (final type) => type.name == workoutRow.workoutType,
       );
 
-      final workout =
-          Workout(
-              id: workoutRow.id,
-              serverId: workoutRow.serverId,
-              workoutType: workoutType,
-              maxGroups: workoutRow.maxGroups,
-              start: workoutRow.start,
-            )
-            ..end = workoutRow.end
-            ..sets = setsByWorkoutId[workoutRow.id] ?? <WorkoutSet>[];
+      final workout = Workout(
+        id: workoutRow.id,
+        serverId: workoutRow.serverId,
+        workoutType: workoutType,
+        maxGroups: workoutRow.maxGroups,
+        start: workoutRow.start,
+        end: workoutRow.end,
+        sets: setsByWorkoutId[workoutRow.id] ?? <WorkoutSet>[],
+      );
       workoutList.add(workout);
     }
 
@@ -477,16 +512,15 @@ class WorkoutDatabase extends _$WorkoutDatabase {
         (final type) => type.name == workoutRow.workoutType,
       );
 
-      final workout =
-          Workout(
-              id: workoutRow.id,
-              serverId: workoutRow.serverId,
-              workoutType: workoutType,
-              maxGroups: workoutRow.maxGroups,
-              start: workoutRow.start,
-            )
-            ..end = workoutRow.end
-            ..sets = setsByWorkoutId[workoutRow.id] ?? <WorkoutSet>[];
+      final workout = Workout(
+        id: workoutRow.id,
+        serverId: workoutRow.serverId,
+        workoutType: workoutType,
+        maxGroups: workoutRow.maxGroups,
+        start: workoutRow.start,
+        end: workoutRow.end,
+        sets: setsByWorkoutId[workoutRow.id] ?? <WorkoutSet>[],
+      );
       workoutList.add(workout);
     }
 
