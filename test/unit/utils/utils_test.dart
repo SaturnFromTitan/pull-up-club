@@ -58,10 +58,10 @@ void main() {
       final workout = Workout(workoutType: WorkoutType.maxSets, maxGroups: 3)
         ..sets = [
           // intentionally using non-sequential group numbers
-          WorkoutSet(group: 1, targetReps: 10, completedReps: 8),
-          WorkoutSet(group: 3, targetReps: 10, completedReps: 6),
-          WorkoutSet(group: 2, targetReps: 10, completedReps: 9),
-          WorkoutSet(group: 1, targetReps: 10, completedReps: 7),
+          WorkoutSet(number: 1, group: 1, targetReps: 10, completedReps: 8),
+          WorkoutSet(number: 2, group: 3, targetReps: 10, completedReps: 6),
+          WorkoutSet(number: 3, group: 2, targetReps: 10, completedReps: 9),
+          WorkoutSet(number: 4, group: 1, targetReps: 10, completedReps: 7),
         ];
 
       final values = getSetCardValues(workout);

@@ -20,6 +20,7 @@ class WorkoutSets extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get workoutId =>
       integer().references(Workouts, #id, onDelete: KeyAction.cascade)();
+  IntColumn get number => integer()();
   IntColumn get groupNumber => integer()();
   IntColumn get targetReps => integer().nullable()();
   IntColumn get completedReps => integer()();
@@ -32,7 +33,7 @@ class WorkoutDatabase extends _$WorkoutDatabase {
   static final Logger _logger = Logger("WorkoutDatabase");
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -48,6 +49,58 @@ class WorkoutDatabase extends _$WorkoutDatabase {
       _logger.info("Creating database schema");
       await m.createAll();
       _logger.info("Database created successfully");
+    },
+    onUpgrade: (final m, final from, final to) async {
+      _logger.info("Upgrading database schema from version $from to version $to");
+      if (from < 2) {
+        // Add number column to workout_sets table as nullable first (for migration safety)
+        await customStatement("ALTER TABLE workout_sets ADD COLUMN number INTEGER");
+        _logger.info("Added number column to workout_sets table (nullable)");
+
+        // Set number values: for each workout, order sets by id and assign numbers starting from 1
+        // We'll use a subquery to assign sequential numbers based on id ordering
+        await customStatement("""
+          UPDATE workout_sets
+          SET number = (
+            SELECT COUNT(*) + 1
+            FROM workout_sets ws2
+            WHERE ws2.workout_id = workout_sets.workout_id
+              AND ws2.id < workout_sets.id
+          )
+        """);
+        _logger.info("Populated number values for workout sets");
+
+        // Now make number non-nullable by recreating the table
+        // Step 1: Create new table with non-nullable number
+        await customStatement("""
+          CREATE TABLE workout_sets_new (
+            id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+            workout_id INTEGER NOT NULL,
+            number INTEGER NOT NULL,
+            group_number INTEGER NOT NULL,
+            target_reps INTEGER,
+            completed_reps INTEGER NOT NULL,
+            FOREIGN KEY (workout_id) REFERENCES workouts(id) ON DELETE CASCADE
+          )
+        """);
+
+        // Step 2: Copy data from old table to new table
+        await customStatement("""
+          INSERT INTO workout_sets_new (
+            id, workout_id, number, group_number, target_reps, completed_reps
+          )
+          SELECT
+            id, workout_id, COALESCE(number, 1) as number, group_number, target_reps, completed_reps
+          FROM workout_sets
+        """);
+
+        // Step 3: Drop old table and rename new table
+        await customStatement("DROP TABLE workout_sets");
+        await customStatement("ALTER TABLE workout_sets_new RENAME TO workout_sets");
+
+        _logger.info("Migrated number column to non-nullable");
+      }
+      _logger.info("Database schema upgraded successfully");
     },
   );
 
@@ -68,6 +121,7 @@ class WorkoutDatabase extends _$WorkoutDatabase {
       await into(workoutSets).insert(
         WorkoutSetsCompanion.insert(
           workoutId: workoutId,
+          number: set_.number,
           groupNumber: set_.group,
           targetReps: set_.targetReps == null
               ? const Value.absent()
@@ -105,6 +159,7 @@ class WorkoutDatabase extends _$WorkoutDatabase {
     final setsByWorkoutId = <int, List<WorkoutSet>>{};
     for (final setRow in setRows) {
       final workoutSet = WorkoutSet(
+        number: setRow.number,
         group: setRow.groupNumber,
         targetReps: setRow.targetReps,
         completedReps: setRow.completedReps,

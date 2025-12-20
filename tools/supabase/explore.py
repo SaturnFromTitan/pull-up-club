@@ -19,7 +19,7 @@ import sys
 import time
 from datetime import datetime, timezone
 
-from dotenv import dotenv_values
+from dotenv import dotenv_values  # pyright: ignore[reportMissingImports]
 from supabase import create_client, Client as SupabaseClient
 
 FILE_PATH = pathlib.Path(__file__).parent.absolute()
