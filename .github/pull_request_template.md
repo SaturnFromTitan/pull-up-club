@@ -1,3 +1,3 @@
 # Checklist
 
-- [ ] Changelog updated
+- [ ] Changelog updated (if applicable)
