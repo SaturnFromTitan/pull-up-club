@@ -57,3 +57,6 @@ ios/fastlane/report.xml
 
 # Generated iOS app icons (flutter_launcher_icons)
 ios/Runner/Assets.xcassets/AppIcon.appiconset/*.png
+
+# api exploration script
+.env

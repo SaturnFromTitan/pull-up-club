@@ -41,3 +41,7 @@ update-privacy-date:
   tools/update-privacy-date.sh || true
 
 all: clean generate update-privacy-date lint test test-integration
+
+# run supabase exploration script
+supabase-explore:
+  uv run tools/supabase/explore.py
