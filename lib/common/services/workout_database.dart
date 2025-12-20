@@ -145,14 +145,20 @@ class WorkoutDatabase extends _$WorkoutDatabase {
 
   Future<List<Workout>> getAllWorkouts() async {
     _logger.info("Loading all workouts from database");
+    // sorting by "end" instead of "start" because
+    //  - we assume there are no overlapping/concurrent workouts -> it doesn't really matter
+    //  - there's an index on "end", but not on "start"
     final workoutRows = await (select(
       workouts,
-    )..orderBy([(final t) => OrderingTerm.asc(t.id)])).get();
+    )..orderBy([(final t) => OrderingTerm.asc(t.end)])).get();
     _logger.info("Loaded ${workoutRows.length} workout rows");
 
-    final setRows = await (select(
-      workoutSets,
-    )..orderBy([(final t) => OrderingTerm.asc(t.id)])).get();
+    final setRows =
+        await (select(workoutSets)..orderBy([
+              (final t) => OrderingTerm.asc(t.workoutId),
+              (final t) => OrderingTerm.asc(t.number),
+            ]))
+            .get();
     _logger.info("Loaded ${setRows.length} set rows");
 
     // Group sets by workout_id for quick lookup
