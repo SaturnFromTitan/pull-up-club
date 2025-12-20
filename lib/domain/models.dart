@@ -29,6 +29,8 @@ class Workout {
     required this.maxGroups,
     this.id,
     final DateTime? start,
+    this.end,
+    this.sets = const <WorkoutSet>[],
   }) : start = start ?? clock.now().toUtc();
   final int? id;
   final WorkoutType workoutType;
