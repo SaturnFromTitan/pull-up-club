@@ -12,7 +12,7 @@ class Workouts extends Table {
   TextColumn get workoutType => text()();
   IntColumn get maxGroups => integer()();
   DateTimeColumn get start => dateTime()();
-  DateTimeColumn get end => dateTime().nullable()();
+  DateTimeColumn get end => dateTime()();
 }
 
 @DataClassName("DBWorkoutSet")
@@ -33,7 +33,7 @@ class WorkoutDatabase extends _$WorkoutDatabase {
   static final Logger _logger = Logger("WorkoutDatabase");
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -100,18 +100,52 @@ class WorkoutDatabase extends _$WorkoutDatabase {
 
         _logger.info("Migrated number column to non-nullable");
       }
+      if (from < 3) {
+        // Make end column non-nullable by recreating the workouts table
+        // Step 1: Create new table with non-nullable end
+        await customStatement("""
+          CREATE TABLE workouts_new (
+            id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+            workout_type TEXT NOT NULL,
+            max_groups INTEGER NOT NULL,
+            start INTEGER NOT NULL,
+            end INTEGER NOT NULL
+          )
+        """);
+
+        // Step 2: Copy data from old table to new table, setting end to start for null values
+        // this is just a precaution for absolute safety - in reality end will always be set
+        await customStatement("""
+          INSERT INTO workouts_new (
+            id, workout_type, max_groups, start, end
+          )
+          SELECT
+            id, workout_type, max_groups, start, COALESCE(end, start) as end
+          FROM workouts
+        """);
+
+        // Step 3: Drop old table and rename new table
+        await customStatement("DROP TABLE workouts");
+        await customStatement("ALTER TABLE workouts_new RENAME TO workouts");
+
+        _logger.info("Migrated end column to non-nullable");
+      }
       _logger.info("Database schema upgraded successfully");
     },
   );
 
   Future<Workout> insertWorkout(final Workout workout) async {
+    if (workout.end == null) {
+      throw ArgumentError("Can only insert finished workouts");
+    }
+
     _logger.info("Inserting workout: $workout");
     final workoutId = await into(workouts).insert(
       WorkoutsCompanion.insert(
         workoutType: workout.workoutType.name,
         maxGroups: workout.maxGroups,
         start: workout.start,
-        end: workout.end == null ? const Value.absent() : Value(workout.end),
+        end: workout.end!,
       ),
     );
     _logger.info("Workout inserted with ID: $workoutId");
@@ -187,13 +221,9 @@ class WorkoutDatabase extends _$WorkoutDatabase {
         workoutType: workoutType,
         maxGroups: workoutRow.maxGroups,
         start: workoutRow.start,
+        end: workoutRow.end,
+        sets: setsByWorkoutId[workoutRow.id] ?? <WorkoutSet>[],
       );
-
-      if (workoutRow.end != null) {
-        workout.end = workoutRow.end;
-      }
-
-      workout.sets = setsByWorkoutId[workoutRow.id] ?? <WorkoutSet>[];
 
       workoutList.add(workout);
     }
