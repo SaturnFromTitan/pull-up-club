@@ -18,7 +18,6 @@ import pathlib
 import sys
 import time
 from datetime import datetime, timezone
-from urllib.parse import urlparse, parse_qs
 
 from dotenv import dotenv_values
 from supabase import create_client, Client as SupabaseClient
