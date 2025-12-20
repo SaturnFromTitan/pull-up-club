@@ -81,7 +81,7 @@ class WorkoutHistoryProvider extends ChangeNotifier {
       // Check if all sets completed the target reps
       final targetReps = mostRecentSubmax.sets.first.targetReps!;
       final allCompleted = mostRecentSubmax.sets.every(
-        (final set) => set.completedReps >= targetReps,
+        (final set_) => set_.completedReps >= targetReps,
       );
 
       if (allCompleted) {
@@ -102,7 +102,7 @@ class WorkoutHistoryProvider extends ChangeNotifier {
     if (maxSetsWorkouts.isNotEmpty) {
       // Find the highest rep count
       final highestReps = maxSetsWorkouts.last.sets
-          .map((final set) => set.completedReps)
+          .map((final set_) => set_.completedReps)
           .reduce(max);
       final suggestedReps = (highestReps / 2).floor();
 

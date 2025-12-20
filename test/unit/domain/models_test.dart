@@ -77,9 +77,9 @@ void main() {
     test("totalReps calculates sum of all completed reps", () {
       final workout = Workout(workoutType: WorkoutType.maxSets, maxGroups: 3)
         ..sets = [
-          WorkoutSet(group: 1, targetReps: 10, completedReps: 8),
-          WorkoutSet(group: 1, targetReps: 10, completedReps: 7),
-          WorkoutSet(group: 2, targetReps: 10, completedReps: 9),
+          WorkoutSet(number: 1, group: 1, targetReps: 10, completedReps: 8),
+          WorkoutSet(number: 2, group: 1, targetReps: 10, completedReps: 7),
+          WorkoutSet(number: 3, group: 2, targetReps: 10, completedReps: 9),
         ];
 
       expect(workout.totalReps(), 24); // 8 + 7 + 9
@@ -87,7 +87,7 @@ void main() {
 
     test("toString includes all relevant information", () {
       final workout = Workout(id: 1, workoutType: WorkoutType.maxSets, maxGroups: 3)
-        ..sets = [WorkoutSet(group: 1, targetReps: 10, completedReps: 8)];
+        ..sets = [WorkoutSet(number: 1, group: 1, targetReps: 10, completedReps: 8)];
 
       final str = workout.toString();
 
