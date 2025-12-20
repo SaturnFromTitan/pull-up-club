@@ -8,7 +8,7 @@ class ServerWorkoutSet {
     required this.groupNumber,
     required this.completedReps,
     required this.number,
-    this.targetReps,
+    required this.targetReps,
   });
 
   factory ServerWorkoutSet.fromJson(final Map<String, dynamic> json) {
@@ -48,7 +48,7 @@ class ServerWorkout {
     required this.maxGroups,
     required this.start,
     required this.end,
-    required this.updatedAt,
+    required this.deletedAt,
     required this.sets,
   });
 
@@ -66,7 +66,9 @@ class ServerWorkout {
       maxGroups: json["max_groups"] as int,
       start: DateTime.parse(json["start"] as String).toUtc(),
       end: DateTime.parse(json["end"] as String).toUtc(),
-      updatedAt: DateTime.parse(json["updated_at"] as String).toUtc(),
+      deletedAt: json["deleted_at"] != null
+          ? DateTime.parse(json["deleted_at"] as String).toUtc()
+          : null,
       sets: sets,
     );
   }
@@ -83,7 +85,7 @@ class ServerWorkout {
   final int maxGroups;
   final DateTime start;
   final DateTime end;
-  final DateTime updatedAt;
+  final DateTime? deletedAt;
   final List<ServerWorkoutSet> sets;
 
   /// Converts to local Workout model.

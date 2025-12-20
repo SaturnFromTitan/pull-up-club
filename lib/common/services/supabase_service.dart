@@ -120,10 +120,10 @@ class SupabaseService {
     }
   }
 
-  /// Fetches active workouts from Supabase with optional delta sync.
-  /// If [updatedSince] is provided, only returns workouts updated since that time.
+  /// Fetches workouts from Supabase with optional delta sync.
+  /// If [since] is provided, filters by end >= since OR deleted_at >= since.
   /// Returns empty list if not authenticated or on error.
-  Future<List<ServerWorkout>> fetchWorkouts({final DateTime? updatedSince}) async {
+  Future<List<ServerWorkout>> fetchWorkouts({final DateTime? since}) async {
     if (!isAuthenticated) {
       _logger.warning("Cannot fetch workouts: not authenticated");
       return [];
@@ -131,63 +131,24 @@ class SupabaseService {
 
     try {
       _logger.info(
-        "Fetching workouts from Supabase${updatedSince != null ? " (delta sync since $updatedSince)" : ""}",
+        "Fetching workouts from Supabase${since != null ? " (delta sync since $since)" : ""}",
       );
-      var query = _client!
-          .from("workouts")
-          .select("*, workout_sets(*)")
-          .isFilter("deleted_at", null);
+      var query = _client!.from("workouts").select("*, workout_sets(*)");
 
-      if (updatedSince != null) {
-        query = query.gt("updated_at", updatedSince.toIso8601String());
+      if (since != null) {
+        // Filter: end >= since OR deleted_at >= since
+        final sinceStr = since.toIso8601String();
+        query = query.or("end.gte.$sinceStr,deleted_at.gte.$sinceStr");
       }
 
       final response = await query.order("start", ascending: false);
-      _logger.info("Fetched ${response.length} active workouts from Supabase");
+      _logger.info("Fetched ${response.length} workouts from Supabase");
 
       return (response as List<dynamic>)
           .map((final json) => ServerWorkout.fromJson(json as Map<String, dynamic>))
           .toList();
     } on Exception catch (error, stackTrace) {
       _logger.severe("Failed to fetch workouts from Supabase", error, stackTrace);
-      return [];
-    }
-  }
-
-  /// Fetches deleted workout IDs from Supabase with optional delta sync.
-  /// If [updatedSince] is provided, only returns deletions updated since that time.
-  /// Returns empty list if not authenticated or on error.
-  Future<List<int>> fetchDeletedWorkoutIds({final DateTime? updatedSince}) async {
-    if (!isAuthenticated) {
-      _logger.warning("Cannot fetch deleted workouts: not authenticated");
-      return [];
-    }
-
-    try {
-      _logger.info(
-        "Fetching deleted workout IDs from Supabase${updatedSince != null ? " (delta sync since $updatedSince)" : ""}",
-      );
-      var query = _client!
-          .from("workouts")
-          .select("id")
-          .not("deleted_at", "is", null); // deleted_at IS NOT NULL
-
-      if (updatedSince != null) {
-        query = query.gt("updated_at", updatedSince.toIso8601String());
-      }
-
-      final response = await query;
-      final deletedIds = (response as List<dynamic>)
-          .map((final json) => json["id"] as int)
-          .toList();
-      _logger.info("Fetched ${deletedIds.length} deleted workout IDs from Supabase");
-      return deletedIds;
-    } on Exception catch (error, stackTrace) {
-      _logger.severe(
-        "Failed to fetch deleted workouts from Supabase",
-        error,
-        stackTrace,
-      );
       return [];
     }
   }

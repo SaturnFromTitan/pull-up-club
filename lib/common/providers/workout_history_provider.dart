@@ -45,6 +45,7 @@ class WorkoutHistoryProvider extends ChangeNotifier {
   /// Performs a sync operation.
   Future<void> performSync({required final bool isDeltaSync}) async {
     await _repository.performSync(isDeltaSync: isDeltaSync);
+    await refresh();
   }
 
   Future<void> addWorkout(final Workout workout) async {

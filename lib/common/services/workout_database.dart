@@ -15,7 +15,6 @@ class Workouts extends Table {
   DateTimeColumn get start => dateTime()();
   DateTimeColumn get end => dateTime()();
   DateTimeColumn get deletedAt => dateTime().nullable()();
-  DateTimeColumn get updatedAt => dateTime()();
 }
 
 @DataClassName("DBWorkoutSet")
@@ -62,58 +61,6 @@ class WorkoutDatabase extends _$WorkoutDatabase {
         // Add deleted_at column for soft deletes
         await m.addColumn(workouts, workouts.deletedAt);
         _logger.info("Added deleted_at column to workouts table");
-        // Add updated_at column as nullable first (for migration safety)
-        await customStatement("ALTER TABLE workouts ADD COLUMN updated_at INTEGER");
-        // Set updated_at to start time for existing workouts (best approximation)
-        await customStatement(
-          "UPDATE workouts SET updated_at = end WHERE updated_at IS NULL",
-        );
-        _logger.info("Added updated_at column to workouts table (nullable)");
-
-        // Now make updated_at non-nullable by recreating the table
-        // Step 1: Create new table with non-nullable updated_at
-        await customStatement("""
-          CREATE TABLE workouts_new (
-            id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-            server_id INTEGER,
-            workout_type TEXT NOT NULL,
-            max_groups INTEGER NOT NULL,
-            start INTEGER NOT NULL,
-            end INTEGER NOT NULL,
-            deleted_at INTEGER,
-            updated_at INTEGER NOT NULL
-          )
-        """);
-
-        // Step 2: Copy data from old table to new table
-        await customStatement("""
-          INSERT INTO workouts_new (
-            id, server_id, workout_type, max_groups, start, end, deleted_at, updated_at
-          )
-          SELECT
-            id, server_id, workout_type, max_groups, start, end, deleted_at,
-            COALESCE(COALESCE(updated_at, end), start) as updated_at
-          FROM workouts
-        """);
-
-        // Step 3: Copy workout_sets foreign key references
-        await customStatement("""
-          UPDATE workout_sets
-          SET workout_id = (
-            SELECT workouts_new.id
-            FROM workouts_new
-            WHERE workouts_new.id = workout_sets.workout_id
-          )
-        """);
-
-        // Step 4: Drop old table and rename new table
-        await customStatement("DROP TABLE workouts");
-        await customStatement("ALTER TABLE workouts_new RENAME TO workouts");
-
-        // Step 5: Recreate indexes (if any were defined)
-        // Note: Drift will handle foreign keys automatically
-
-        _logger.info("Migrated updated_at column to non-nullable");
 
         // Add number column to workout_sets table as nullable first (for migration safety)
         await customStatement("ALTER TABLE workout_sets ADD COLUMN number INTEGER");
@@ -180,7 +127,6 @@ class WorkoutDatabase extends _$WorkoutDatabase {
         maxGroups: workout.maxGroups,
         start: workout.start,
         end: workout.end!,
-        updatedAt: workout.updatedAt ?? workout.start,
       ),
     );
     _logger.info("Workout inserted with ID: $workoutId");
@@ -214,63 +160,51 @@ class WorkoutDatabase extends _$WorkoutDatabase {
       ..sets = workout.sets;
   }
 
-  /// Updates the server_id and updated_at for a workout.
-  Future<void> updateWorkoutServerId(
-    final int workoutId,
-    final int serverId, {
-    required final DateTime updatedAt,
-  }) async {
+  /// Updates the server_id for a workout.
+  Future<void> updateWorkoutServerId(final int workoutId, final int serverId) async {
     _logger.info("Updating workout server_id: localId=$workoutId, serverId=$serverId");
     await (update(workouts)..where((final t) => t.id.equals(workoutId))).write(
-      WorkoutsCompanion(serverId: Value(serverId), updatedAt: Value(updatedAt)),
+      WorkoutsCompanion(serverId: Value(serverId)),
     );
     _logger.info("Workout server_id updated successfully");
   }
 
-  /// Updates a workout with server data (used during sync when server version is newer).
-  Future<void> updateWorkoutFromServer(
+  /// Updates a workout's deleted_at status from server data.
+  Future<void> updateWorkoutDeletedAt(
     final int workoutId,
-    final Workout serverWorkout,
-    final DateTime serverUpdatedAt,
+    final DateTime? deletedAt,
   ) async {
     _logger.info(
-      "Updating workout from server: localId=$workoutId, serverId=${serverWorkout.serverId}",
+      "Updating workout deleted_at: localId=$workoutId, deletedAt=$deletedAt",
     );
-    if (serverWorkout.end == null) {
-      throw ArgumentError("Cannot update workout from server: workout.end is null");
-    }
-    final endValue = serverWorkout.end!;
-    // Delete existing sets
-    await (delete(workoutSets)..where((final t) => t.workoutId.equals(workoutId))).go();
-
-    // Update workout
     await (update(workouts)..where((final t) => t.id.equals(workoutId))).write(
       WorkoutsCompanion(
-        serverId: Value(serverWorkout.serverId),
-        workoutType: Value(serverWorkout.workoutType.name),
-        maxGroups: Value(serverWorkout.maxGroups),
-        start: Value(serverWorkout.start),
-        end: Value(endValue),
-        updatedAt: Value(serverUpdatedAt),
+        deletedAt: deletedAt == null ? const Value.absent() : Value(deletedAt),
       ),
     );
+    _logger.info("Workout deleted_at updated successfully");
+  }
 
-    // Insert new sets
-    for (final set_ in serverWorkout.sets) {
-      await into(workoutSets).insert(
-        WorkoutSetsCompanion.insert(
-          workoutId: workoutId,
-          groupNumber: set_.group,
-          targetReps: set_.targetReps == null
-              ? const Value.absent()
-              : Value(set_.targetReps),
-          completedReps: set_.completedReps,
-          number: set_.number,
-        ),
-      );
+  /// Gets all workouts filtered by sync time (end >= since OR deleted_at >= since).
+  /// If [since] is null, returns all workouts.
+  /// Used for sync operations.
+  Future<List<DBWorkout>> getAllWorkoutsForSync({final DateTime? since}) async {
+    _logger.info("Loading workouts for sync${since != null ? " (since $since)" : ""}");
+    var query = select(workouts);
+
+    if (since != null) {
+      // Filter: end >= since OR deleted_at >= since
+      query = query
+        ..where(
+          (final t) =>
+              t.end.isBiggerOrEqualValue(since) |
+              (t.deletedAt.isNotNull() & t.deletedAt.isBiggerOrEqualValue(since)),
+        );
     }
 
-    _logger.info("Workout updated from server successfully");
+    final workoutRows = await (query..orderBy([(final t) => OrderingTerm.asc(t.start)]))
+        .get();
+    return workoutRows;
   }
 
   Future<List<Workout>> getAllWorkouts() async {
@@ -317,7 +251,6 @@ class WorkoutDatabase extends _$WorkoutDatabase {
               start: workoutRow.start,
             )
             ..end = workoutRow.end
-            ..updatedAt = workoutRow.updatedAt
             ..sets = setsByWorkoutId[workoutRow.id] ?? <WorkoutSet>[];
 
       workoutList.add(workout);
@@ -329,7 +262,7 @@ class WorkoutDatabase extends _$WorkoutDatabase {
 
   /// Gets a workout by its server_id (including deleted workouts).
   /// Returns null if not found.
-  Future<Workout?> getWorkoutByServerId(final int serverId) async {
+  Future<DBWorkout?> getWorkoutByServerId(final int serverId) async {
     _logger.info("Getting workout by server_id: $serverId");
     final workoutRow =
         await (select(workouts)
@@ -337,10 +270,12 @@ class WorkoutDatabase extends _$WorkoutDatabase {
               ..limit(1))
             .getSingleOrNull();
 
-    if (workoutRow == null) {
-      return null;
-    }
+    return workoutRow;
+  }
 
+  /// Converts a DBWorkout row to a Workout domain object.
+  /// This is a public method used by the repository for sync operations.
+  Future<Workout> dbWorkoutToWorkout(final DBWorkout workoutRow) async {
     // Load sets for this workout
     final setRows = await (select(
       workoutSets,
@@ -359,20 +294,14 @@ class WorkoutDatabase extends _$WorkoutDatabase {
             start: workoutRow.start,
           )
           ..end = workoutRow.end
-          ..updatedAt = workoutRow.updatedAt;
-
-    if (workoutRow.deletedAt != null) {
-      workout.deletedAt = workoutRow.deletedAt;
-    }
-
-    workout.sets = setRows.map((final setRow) {
-      return WorkoutSet(
-        group: setRow.groupNumber,
-        targetReps: setRow.targetReps,
-        completedReps: setRow.completedReps,
-        number: setRow.number,
-      );
-    }).toList();
+          ..sets = setRows.map((final setRow) {
+            return WorkoutSet(
+              group: setRow.groupNumber,
+              targetReps: setRow.targetReps,
+              completedReps: setRow.completedReps,
+              number: setRow.number,
+            );
+          }).toList();
 
     return workout;
   }
@@ -386,85 +315,81 @@ class WorkoutDatabase extends _$WorkoutDatabase {
     _logger.info("Successfully soft deleted workout: id=$workoutId");
   }
 
-  /// Gets the updated_at time of the most recent workout, ordered by updated_at descending.
+  /// Gets the end time or deleted_at time (whichever is later) across all workouts.
+  /// Used for delta sync filtering.
   /// Returns null if no workouts exist.
-  Future<DateTime?> getLatestWorkoutUpdatedAt() async {
-    _logger.info("Getting latest workout updated_at");
-    final workoutRow =
+  Future<DateTime?> getLatestWorkoutSyncTime() async {
+    _logger.info("Getting latest workout sync time (end or deleted_at)");
+
+    // Get the maximum end time
+    final maxEndRow =
         await (select(workouts)
-              ..where((final t) => t.deletedAt.isNull())
-              ..orderBy([(final t) => OrderingTerm.desc(t.updatedAt)])
+              ..orderBy([(final t) => OrderingTerm.desc(t.end)])
               ..limit(1))
             .getSingleOrNull();
-    if (workoutRow == null) {
+
+    // Get the maximum deleted_at time
+    final maxDeletedAtRow =
+        await (select(workouts)
+              ..where((final t) => t.deletedAt.isNotNull())
+              ..orderBy([(final t) => OrderingTerm.desc(t.deletedAt)])
+              ..limit(1))
+            .getSingleOrNull();
+
+    if (maxEndRow == null || maxDeletedAtRow == null) {
       _logger.info("No workouts found");
       return null;
     }
-    _logger.info("Latest workout updated_at: ${workoutRow.updatedAt}");
-    return workoutRow.updatedAt;
+
+    // Compare the maximum end and maximum deleted_at, return the later one
+    final maxEnd = maxEndRow.end;
+    final maxDeletedAt = maxDeletedAtRow.deletedAt;
+
+    DateTime? syncTime;
+    if (maxDeletedAt == null) {
+      syncTime = maxEnd;
+    } else {
+      syncTime = maxDeletedAt.isAfter(maxEnd) ? maxDeletedAt : maxEnd;
+    }
+
+    _logger.info(
+      "Latest workout sync time: $syncTime (maxEnd=$maxEnd, maxDeletedAt=$maxDeletedAt)",
+    );
+    return syncTime;
   }
 
-  /// Gets all workouts including deleted ones (for sync operations).
-  Future<List<Workout>> getAllWorkoutsIncludingDeleted() async {
-    _logger.info("Loading all workouts from database (including deleted)");
-    final workoutRows = await (select(
-      workouts,
-    )..orderBy([(final t) => OrderingTerm.asc(t.start)])).get();
-    _logger.info("Loaded ${workoutRows.length} workout rows");
+  /// Gets workouts for sync operations.
+  /// Returns:
+  /// - All workouts with empty serverId (unsynced local workouts)
+  /// - All workouts with serverId matching any of the provided [serverIds]
+  /// Includes deleted workouts as they need to be synced.
+  /// Returns DB rows for sync operations (to access deletedAt field).
+  Future<List<DBWorkout>> getWorkoutsForSync(final List<int> serverIds) async {
+    _logger.info(
+      "Loading workouts for sync (serverIds=${serverIds.length}, including unsynced)",
+    );
 
-    final setRows = await (select(
-      workoutSets,
-    )..orderBy([(final t) => OrderingTerm.asc(t.id)])).get();
-    _logger.info("Loaded ${setRows.length} set rows");
+    var query = select(workouts);
 
-    // Group sets by workout_id for quick lookup
-    final setsByWorkoutId = <int, List<WorkoutSet>>{};
-    for (final setRow in setRows) {
-      final workoutSet = WorkoutSet(
-        group: setRow.groupNumber,
-        targetReps: setRow.targetReps,
-        completedReps: setRow.completedReps,
-        number: setRow.number,
-      );
-      setsByWorkoutId
-          .putIfAbsent(setRow.workoutId, () => <WorkoutSet>[])
-          .add(workoutSet);
+    if (serverIds.isEmpty) {
+      // Only return workouts with empty serverId
+      query = query..where((final t) => t.serverId.isNull());
+    } else {
+      // Return workouts with empty serverId OR serverId in the provided list
+      query = query
+        ..where((final t) => t.serverId.isNull() | t.serverId.isIn(serverIds));
     }
 
-    // Build workout objects with their associated sets
-    final workoutList = <Workout>[];
-    for (final workoutRow in workoutRows) {
-      final workoutType = WorkoutType.values.firstWhere(
-        (final type) => type.name == workoutRow.workoutType,
-      );
-
-      final workout =
-          Workout(
-              id: workoutRow.id,
-              serverId: workoutRow.serverId,
-              workoutType: workoutType,
-              maxGroups: workoutRow.maxGroups,
-              start: workoutRow.start,
-            )
-            ..end = workoutRow.end
-            ..updatedAt = workoutRow.updatedAt;
-
-      if (workoutRow.deletedAt != null) {
-        workout.deletedAt = workoutRow.deletedAt;
-      }
-
-      workout.sets = setsByWorkoutId[workoutRow.id] ?? <WorkoutSet>[];
-
-      workoutList.add(workout);
-    }
-
-    _logger.info("Successfully loaded ${workoutList.length} workouts from database");
-    return workoutList;
+    final workoutRows = await (query..orderBy([(final t) => OrderingTerm.asc(t.start)]))
+        .get();
+    _logger.info("Loaded ${workoutRows.length} workout rows for sync");
+    return workoutRows;
   }
 
   /// Gets all workouts that don't have a server_id yet (unsynced workouts).
   /// Only returns non-deleted workouts.
-  Future<List<Workout>> getUnsyncedWorkouts() async {
+  /// If [since] is provided, filters by end >= since OR deleted_at >= since.
+  Future<List<Workout>> getUnsyncedWorkouts({final DateTime? since}) async {
     _logger.info("Getting unsynced workouts");
     final workoutRows =
         await (select(workouts)
@@ -502,13 +427,7 @@ class WorkoutDatabase extends _$WorkoutDatabase {
               start: workoutRow.start,
             )
             ..end = workoutRow.end
-            ..updatedAt = workoutRow.updatedAt;
-
-      if (workoutRow.deletedAt != null) {
-        workout.deletedAt = workoutRow.deletedAt;
-      }
-
-      workout.sets = setsByWorkoutId[workoutRow.id] ?? <WorkoutSet>[];
+            ..sets = setsByWorkoutId[workoutRow.id] ?? <WorkoutSet>[];
       workoutList.add(workout);
     }
 
@@ -516,13 +435,26 @@ class WorkoutDatabase extends _$WorkoutDatabase {
   }
 
   /// Gets all locally deleted workouts that have a server_id (need to be synced to server).
-  Future<List<Workout>> getLocallyDeletedWorkouts() async {
-    _logger.info("Getting locally deleted workouts");
-    final workoutRows =
-        await (select(workouts)
-              ..where((final t) => t.deletedAt.isNotNull() & t.serverId.isNotNull())
-              ..orderBy([(final t) => OrderingTerm.asc(t.start)]))
-            .get();
+  /// If [since] is provided, filters by deleted_at >= since.
+  Future<List<Workout>> getLocallyDeletedWorkouts({final DateTime? since}) async {
+    _logger.info(
+      "Getting locally deleted workouts${since != null ? " (since $since)" : ""}",
+    );
+    var query = select(workouts)
+      ..where((final t) => t.deletedAt.isNotNull() & t.serverId.isNotNull());
+
+    if (since != null) {
+      query = query
+        ..where(
+          (final t) =>
+              t.deletedAt.isNotNull() &
+              t.serverId.isNotNull() &
+              t.deletedAt.isBiggerOrEqualValue(since),
+        );
+    }
+
+    final workoutRows = await (query..orderBy([(final t) => OrderingTerm.asc(t.start)]))
+        .get();
     _logger.info("Found ${workoutRows.length} locally deleted workouts");
 
     final setRows = await select(workoutSets).get();
@@ -554,13 +486,7 @@ class WorkoutDatabase extends _$WorkoutDatabase {
               start: workoutRow.start,
             )
             ..end = workoutRow.end
-            ..updatedAt = workoutRow.updatedAt;
-
-      if (workoutRow.deletedAt != null) {
-        workout.deletedAt = workoutRow.deletedAt;
-      }
-
-      workout.sets = setsByWorkoutId[workoutRow.id] ?? <WorkoutSet>[];
+            ..sets = setsByWorkoutId[workoutRow.id] ?? <WorkoutSet>[];
       workoutList.add(workout);
     }
 
