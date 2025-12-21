@@ -28,11 +28,13 @@ class Workout {
     required this.workoutType,
     required this.maxGroups,
     this.id,
+    this.serverId,
     final DateTime? start,
     this.end,
     this.sets = const <WorkoutSet>[],
   }) : start = start ?? clock.now().toUtc();
-  final int? id;
+  int? id;
+  int? serverId; // TODO: don't expose serverId in the domain model
   final WorkoutType workoutType;
   final int maxGroups;
   final DateTime start;

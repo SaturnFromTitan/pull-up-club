@@ -1,3 +1,4 @@
+// TODO: this service shouldn't return things in the domain model, it should use the DB models...
 import "package:drift/drift.dart";
 import "package:drift_flutter/drift_flutter.dart";
 import "package:logging/logging.dart";
@@ -9,10 +10,12 @@ part "workout_database.g.dart";
 @DataClassName("DBWorkout")
 class Workouts extends Table {
   IntColumn get id => integer().autoIncrement()();
+  IntColumn get serverId => integer().nullable()();
   TextColumn get workoutType => text()();
   IntColumn get maxGroups => integer()();
   DateTimeColumn get start => dateTime()();
   DateTimeColumn get end => dateTime()();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
 }
 
 @DataClassName("DBWorkoutSet")
@@ -33,7 +36,7 @@ class WorkoutDatabase extends _$WorkoutDatabase {
   static final Logger _logger = Logger("WorkoutDatabase");
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -130,6 +133,15 @@ class WorkoutDatabase extends _$WorkoutDatabase {
 
         _logger.info("Migrated end column to non-nullable");
       }
+      if (from < 4) {
+        // Add columns which are needed for the cloud sync
+        // Add server_id column
+        await m.addColumn(workouts, workouts.serverId);
+        _logger.info("Added server_id column to workouts table");
+        // Add deleted_at column for soft deletes
+        await m.addColumn(workouts, workouts.deletedAt);
+        _logger.info("Added deleted_at column to workouts table");
+      }
       _logger.info("Database schema upgraded successfully");
     },
   );
@@ -142,6 +154,9 @@ class WorkoutDatabase extends _$WorkoutDatabase {
     _logger.info("Inserting workout: $workout");
     final workoutId = await into(workouts).insert(
       WorkoutsCompanion.insert(
+        serverId: workout.serverId == null
+            ? const Value.absent()
+            : Value(workout.serverId),
         workoutType: workout.workoutType.name,
         maxGroups: workout.maxGroups,
         start: workout.start,
@@ -167,14 +182,8 @@ class WorkoutDatabase extends _$WorkoutDatabase {
     _logger.fine("Inserted ${workout.sets.length} sets for workout $workoutId");
 
     // Return workout with the generated ID
-    return Workout(
-        id: workoutId,
-        workoutType: workout.workoutType,
-        maxGroups: workout.maxGroups,
-        start: workout.start,
-      )
-      ..end = workout.end
-      ..sets = workout.sets;
+    workout.id = workoutId;
+    return workout;
   }
 
   Future<List<Workout>> getAllWorkouts() async {
@@ -218,6 +227,7 @@ class WorkoutDatabase extends _$WorkoutDatabase {
 
       final workout = Workout(
         id: workoutRow.id,
+        serverId: workoutRow.serverId,
         workoutType: workoutType,
         maxGroups: workoutRow.maxGroups,
         start: workoutRow.start,
