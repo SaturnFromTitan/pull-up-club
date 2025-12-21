@@ -100,11 +100,14 @@ void main() {
       final str = workout.toString();
 
       expect(str, contains("id=1"));
+      expect(str, contains("serverId=null"));
       expect(str, contains("type=Max Sets"));
       expect(str, contains("maxGroups=3"));
-      expect(str, contains("sets=1"));
+      expect(str, contains("start=${workout.start}"));
+      expect(str, contains("end=null"));
+      expect(str, contains("deletedAt=null"));
+      expect(str, contains("numSets=1"));
       expect(str, contains("totalReps=8"));
-      expect(str, contains("inProgress=true"));
     });
   });
 }
