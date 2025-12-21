@@ -159,6 +159,9 @@ class BackendService {
       _logger.warning("Cannot create workout: not authenticated");
       return null;
     }
+    if (workout.end == null) {
+      throw ArgumentError("Can only upload finished workouts");
+    }
 
     try {
       _logger.info("Creating workout on Supabase: $workout");
@@ -166,7 +169,7 @@ class BackendService {
         "workout_type": workout.workoutType.name,
         "max_groups": workout.maxGroups,
         "start": workout.start.toIso8601String(),
-        "end": workout.end?.toIso8601String(),
+        "end": workout.end!.toIso8601String(),
       };
 
       // Insert workout and get the ID

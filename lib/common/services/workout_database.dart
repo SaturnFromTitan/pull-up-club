@@ -263,9 +263,9 @@ class WorkoutDatabase extends _$WorkoutDatabase {
         serverId: workoutRow.serverId,
         workoutType: workoutType,
         maxGroups: workoutRow.maxGroups,
-        start: workoutRow.start,
-        end: workoutRow.end,
-        deletedAt: workoutRow.deletedAt,
+        start: workoutRow.start.toUtc(),
+        end: workoutRow.end.toUtc(),
+        deletedAt: workoutRow.deletedAt?.toUtc(),
         sets: setsByWorkoutId[workoutRow.id] ?? <WorkoutSet>[],
       );
 
