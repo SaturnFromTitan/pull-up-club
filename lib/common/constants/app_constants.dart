@@ -2,6 +2,7 @@ class AppConstants {
   static const String appTitle = "Pull-Up Club";
   static const String appStoreUrl =
       "https://apps.apple.com/app/pull-up-club/id6754757771";
+  static const String defaultPackageName = "com.saturnfromtitan.pullupclub";
 
   // Remote config
   // even though we use a custom URL for github pages, we still refernce the original github

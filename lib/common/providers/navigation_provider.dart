@@ -2,7 +2,7 @@ import "package:flutter/material.dart";
 import "package:logging/logging.dart";
 
 /// Enum representing the available tabs in the app.
-enum AppTab { workout, programInfo, history }
+enum AppTab { workout, programInfo, history, account }
 
 /// Provider that manages navigation state (tab selection).
 class NavigationProvider extends ChangeNotifier {
