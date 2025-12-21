@@ -160,10 +160,16 @@ class WorkoutDatabase extends _$WorkoutDatabase {
     _logger.info("Inserting workout: $workout");
     final workoutId = await into(workouts).insert(
       WorkoutsCompanion.insert(
+        serverId: workout.serverId == null
+            ? const Value.absent()
+            : Value(workout.serverId),
         workoutType: workout.workoutType.name,
         maxGroups: workout.maxGroups,
         start: workout.start,
         end: workout.end!,
+        deletedAt: workout.deletedAt == null
+            ? const Value.absent()
+            : Value(workout.deletedAt),
       ),
     );
     _logger.info("Workout inserted with ID: $workoutId");
