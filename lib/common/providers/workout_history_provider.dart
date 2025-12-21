@@ -3,16 +3,20 @@ import "dart:math";
 
 import "package:flutter/material.dart";
 import "package:logging/logging.dart";
-import "package:pull_up_club/data/repositories/workout_repository.dart";
+import "package:pull_up_club/common/services/sync_service.dart";
+import "package:pull_up_club/common/services/workout_database.dart";
 import "package:pull_up_club/domain/models.dart";
 
 class WorkoutHistoryProvider extends ChangeNotifier {
-  WorkoutHistoryProvider(this._repository) {
-    unawaited(_loadWorkouts());
+  WorkoutHistoryProvider() {
+    // on app start we only do a delta sync
+    // full sync only happens when signing in
+    unawaited(loadWorkouts(isDeltaSync: true));
   }
   static final Logger _logger = Logger("WorkoutHistoryProvider");
 
-  final WorkoutRepository _repository;
+  final WorkoutDatabase _database = WorkoutDatabase.instance;
+  final SyncService _syncService = SyncService.instance;
 
   bool _isLoading = true;
   List<Workout> _completedWorkouts = <Workout>[];
@@ -20,42 +24,30 @@ class WorkoutHistoryProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   List<Workout> get completedWorkouts => _completedWorkouts;
 
-  Future<void> _loadWorkouts() async {
+  Future<void> loadWorkouts({required final bool isDeltaSync}) async {
     _logger.info("Loading workout history");
     _isLoading = true;
     notifyListeners();
 
     try {
-      // Perform delta sync before loading local workouts
-      // This happens during app start (splash screen)
-      await _repository.performSync(isDeltaSync: true);
+      // Perform sync before loading local workouts
+      await _syncService.performSync(isDeltaSync: isDeltaSync);
 
-      _completedWorkouts = await _repository.getAllWorkouts();
+      _completedWorkouts = await _database.getAllWorkouts();
     } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
 
-  /// Refreshes the workout history by reloading from the database.
-  Future<void> refresh() async {
-    await _loadWorkouts();
-  }
-
-  /// Performs a sync operation.
-  Future<void> performSync({required final bool isDeltaSync}) async {
-    await _repository.performSync(isDeltaSync: isDeltaSync);
-    await refresh();
-  }
-
   Future<void> addWorkout(final Workout workout) async {
     _logger.info("Adding workout to history: $workout");
-    final savedWorkout = await _repository.saveWorkout(workout);
+    final savedWorkout = await _database.insertWorkout(workout);
     _completedWorkouts.add(savedWorkout);
     _logger.info("Workout added to history: id=${savedWorkout.id}");
 
     // Perform delta sync after workout completion (includes uploading the new workout)
-    unawaited(_repository.performSync(isDeltaSync: true));
+    unawaited(_syncService.performSync(isDeltaSync: true));
 
     notifyListeners();
   }
@@ -66,13 +58,13 @@ class WorkoutHistoryProvider extends ChangeNotifier {
     }
     _logger.info("Deleting workout from history: $workout");
 
-    // Soft delete locally (offline-first: deletion happens immediately)
-    await _repository.deleteWorkout(workout.id!);
+    // Soft delete locally
+    await _database.deleteWorkout(workout.id!);
     _completedWorkouts.remove(workout);
     _logger.info("Workout deleted from history: $workout");
 
-    // Attempt to sync deletion to server (will retry on next sync if it fails)
-    unawaited(_repository.performSync(isDeltaSync: true));
+    // Attempt to sync deletion to server
+    unawaited(_syncService.performSync(isDeltaSync: true));
 
     notifyListeners();
   }

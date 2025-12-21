@@ -1,27 +1,16 @@
 import "package:logging/logging.dart";
 import "package:pull_up_club/common/services/supabase_service.dart";
 import "package:pull_up_club/common/services/workout_database.dart";
-import "package:pull_up_club/domain/models.dart";
 import "package:pull_up_club/domain/server_models.dart";
 
-/// Repository for managing workouts with local database and cloud sync.
-/// Coordinates between local storage and Supabase backend.
-class WorkoutRepository {
-  WorkoutRepository(this._database);
+/// Service for syncing the local database with the remote BE.
+class SyncService {
+  SyncService._();
+  static final SyncService instance = SyncService._();
 
-  final WorkoutDatabase _database;
+  final WorkoutDatabase _database = WorkoutDatabase.instance;
   final SupabaseService _supabase = SupabaseService.instance;
-  static final Logger _logger = Logger("WorkoutRepository");
-
-  /// Gets all active (non-deleted) workouts from local database.
-  Future<List<Workout>> getAllWorkouts() => _database.getAllWorkouts();
-
-  /// Saves a workout to the local database.
-  Future<Workout> saveWorkout(final Workout workout) =>
-      _database.insertWorkout(workout);
-
-  /// Soft deletes a workout locally.
-  Future<void> deleteWorkout(final int workoutId) => _database.deleteWorkout(workoutId);
+  static final Logger _logger = Logger("SyncService");
 
   /// Performs a sync: merges server and local workouts.
   ///
@@ -38,11 +27,9 @@ class WorkoutRepository {
   ///   - All workouts with empty serverId (unsynced local workouts)
   ///   - All workouts with serverId matching any server workout we retrieved
   /// - 3 groups:
-  ///   - Workout that exists locally, but not on server (-> empty server_id): Upload to server
-  ///   - Workout that exists on server, but not locally (-> no matching local workout with that server id): Download to local
-  ///   - Workout that exists both on the server and locally:
-  ///     - If deleted_at is set for one but not the other: perform soft-delete locally or on the server
-  ///     - Otherwise no change
+  ///   - Workout exists locally, but not on server (-> empty server_id): Upload to server
+  ///   - Workout exists on server, but not locally (-> no matching local workout with that server id): Download to local
+  ///   - Workout exists both on the server and locally and is only soft-deleted for one of them: perform soft-delete for the other
   /// If [isDeltaSync] is true, only fetches workouts after the latest local workout sync time.
   /// Silently handles errors to maintain offline-first behavior.
   Future<void> performSync({required final bool isDeltaSync}) async {
