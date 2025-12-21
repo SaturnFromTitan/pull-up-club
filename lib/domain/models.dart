@@ -28,18 +28,18 @@ class Workout {
     required this.workoutType,
     required this.maxGroups,
     this.id,
-    this.serverId,
     final DateTime? start,
     this.end,
-    this.sets = const <WorkoutSet>[],
-  }) : start = start ?? clock.now().toUtc();
+    final List<WorkoutSet>? sets,
+  }) : start = start ?? clock.now().toUtc(),
+       sets = sets ?? <WorkoutSet>[];
+
   int? id;
-  int? serverId;
   final WorkoutType workoutType;
   final int maxGroups;
   final DateTime start;
   DateTime? end;
-  List<WorkoutSet> sets = <WorkoutSet>[];
+  List<WorkoutSet> sets;
 
   void finish() {
     end ??= clock.now().toUtc();
@@ -58,7 +58,6 @@ class Workout {
   String toString() {
     final buffer = StringBuffer("Workout(")
       ..write("id=$id, ")
-      ..write("serverId=$serverId, ")
       ..write("type=${workoutType.name}, ")
       ..write("maxGroups=$maxGroups, ")
       ..write("sets=${sets.length}")

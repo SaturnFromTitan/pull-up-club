@@ -62,7 +62,6 @@ class WorkoutHistoryProvider extends ChangeNotifier {
 
   Future<void> deleteWorkout(final Workout workout) async {
     if (workout.id == null) {
-      _logger.warning("Attempted to delete workout without ID: $workout");
       throw Exception("Cannot delete workout without ID");
     }
     _logger.info("Deleting workout from history: $workout");
@@ -73,9 +72,7 @@ class WorkoutHistoryProvider extends ChangeNotifier {
     _logger.info("Workout deleted from history: $workout");
 
     // Attempt to sync deletion to server (will retry on next sync if it fails)
-    if (workout.serverId != null) {
-      unawaited(_repository.performSync(isDeltaSync: true));
-    }
+    unawaited(_repository.performSync(isDeltaSync: true));
 
     notifyListeners();
   }

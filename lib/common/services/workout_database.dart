@@ -133,6 +133,7 @@ class WorkoutDatabase extends _$WorkoutDatabase {
         _logger.info("Migrated end column to non-nullable");
       }
       if (from < 4) {
+        // Add columns which are needed for the cloud sync
         // Add server_id column
         await m.addColumn(workouts, workouts.serverId);
         _logger.info("Added server_id column to workouts table");
@@ -140,7 +141,6 @@ class WorkoutDatabase extends _$WorkoutDatabase {
         await m.addColumn(workouts, workouts.deletedAt);
         _logger.info("Added deleted_at column to workouts table");
       }
-
       _logger.info("Database schema upgraded successfully");
     },
   );
@@ -153,9 +153,6 @@ class WorkoutDatabase extends _$WorkoutDatabase {
     _logger.info("Inserting workout: $workout");
     final workoutId = await into(workouts).insert(
       WorkoutsCompanion.insert(
-        serverId: workout.serverId == null
-            ? const Value.absent()
-            : Value(workout.serverId),
         workoutType: workout.workoutType.name,
         maxGroups: workout.maxGroups,
         start: workout.start,
@@ -181,15 +178,8 @@ class WorkoutDatabase extends _$WorkoutDatabase {
     _logger.fine("Inserted ${workout.sets.length} sets for workout $workoutId");
 
     // Return workout with the generated ID
-    return Workout(
-        id: workoutId,
-        serverId: workout.serverId,
-        workoutType: workout.workoutType,
-        maxGroups: workout.maxGroups,
-        start: workout.start,
-      )
-      ..end = workout.end
-      ..sets = workout.sets;
+    workout.id = workoutId;
+    return workout;
   }
 
   /// Updates the server_id for a workout.
@@ -239,18 +229,21 @@ class WorkoutDatabase extends _$WorkoutDatabase {
     return workoutRows;
   }
 
-  Future<List<Workout>> getAllWorkouts() async {
-    _logger.info("Loading all workouts from database");
+  Future<List<Workout>> getAllWorkouts({final bool excludeDeleted = true}) async {
+    _logger.info("Loading all workouts from database (excludeDeleted=$excludeDeleted)");
     // sorting by "end" instead of "start" because
     //  - we assume there are no overlapping/concurrent workouts -> it doesn't really matter
     //  - there's an index on "end", but not on "start"
-    final workoutRows =
-        await (select(workouts)
-              ..where((final t) => t.deletedAt.isNull())
-              ..orderBy([(final t) => OrderingTerm.asc(t.end)]))
-            .get();
+    final workoutQuery = select(workouts)
+      ..orderBy([(final t) => OrderingTerm.asc(t.end)]);
+    if (excludeDeleted) {
+      workoutQuery.where((final t) => t.deletedAt.isNull());
+    }
+    final workoutRows = await workoutQuery.get();
     _logger.info("Loaded ${workoutRows.length} workout rows");
 
+    // ⚠️ this also contains soft-deleted workout sets
+    // loading a bit more data doesn't do harm, but keeps the logic simpler
     final setRows =
         await (select(workoutSets)..orderBy([
               (final t) => OrderingTerm.asc(t.workoutId),
@@ -282,7 +275,6 @@ class WorkoutDatabase extends _$WorkoutDatabase {
 
       final workout = Workout(
         id: workoutRow.id,
-        serverId: workoutRow.serverId,
         workoutType: workoutType,
         maxGroups: workoutRow.maxGroups,
         start: workoutRow.start,
@@ -324,7 +316,7 @@ class WorkoutDatabase extends _$WorkoutDatabase {
 
     final workout = Workout(
       id: workoutRow.id,
-      serverId: workoutRow.serverId,
+      // serverId: workoutRow.serverId,
       workoutType: workoutType,
       maxGroups: workoutRow.maxGroups,
       start: workoutRow.start,
@@ -420,111 +412,6 @@ class WorkoutDatabase extends _$WorkoutDatabase {
         .get();
     _logger.info("Loaded ${workoutRows.length} workout rows for sync");
     return workoutRows;
-  }
-
-  /// Gets all workouts that don't have a server_id yet (unsynced workouts).
-  /// Only returns non-deleted workouts.
-  /// If [since] is provided, filters by end >= since OR deleted_at >= since.
-  Future<List<Workout>> getUnsyncedWorkouts({final DateTime? since}) async {
-    _logger.info("Getting unsynced workouts");
-    final workoutRows =
-        await (select(workouts)
-              ..where((final t) => t.serverId.isNull() & t.deletedAt.isNull())
-              ..orderBy([(final t) => OrderingTerm.asc(t.start)]))
-            .get();
-    _logger.info("Found ${workoutRows.length} unsynced workouts");
-
-    final setRows = await select(workoutSets).get();
-    final setsByWorkoutId = <int, List<WorkoutSet>>{};
-    for (final setRow in setRows) {
-      final workoutSet = WorkoutSet(
-        group: setRow.groupNumber,
-        targetReps: setRow.targetReps,
-        completedReps: setRow.completedReps,
-        number: setRow.number,
-      );
-      setsByWorkoutId
-          .putIfAbsent(setRow.workoutId, () => <WorkoutSet>[])
-          .add(workoutSet);
-    }
-
-    final workoutList = <Workout>[];
-    for (final workoutRow in workoutRows) {
-      final workoutType = WorkoutType.values.firstWhere(
-        (final type) => type.name == workoutRow.workoutType,
-      );
-
-      final workout = Workout(
-        id: workoutRow.id,
-        serverId: workoutRow.serverId,
-        workoutType: workoutType,
-        maxGroups: workoutRow.maxGroups,
-        start: workoutRow.start,
-        end: workoutRow.end,
-        sets: setsByWorkoutId[workoutRow.id] ?? <WorkoutSet>[],
-      );
-      workoutList.add(workout);
-    }
-
-    return workoutList;
-  }
-
-  /// Gets all locally deleted workouts that have a server_id (need to be synced to server).
-  /// If [since] is provided, filters by deleted_at >= since.
-  Future<List<Workout>> getLocallyDeletedWorkouts({final DateTime? since}) async {
-    _logger.info(
-      "Getting locally deleted workouts${since != null ? " (since $since)" : ""}",
-    );
-    var query = select(workouts)
-      ..where((final t) => t.deletedAt.isNotNull() & t.serverId.isNotNull());
-
-    if (since != null) {
-      query = query
-        ..where(
-          (final t) =>
-              t.deletedAt.isNotNull() &
-              t.serverId.isNotNull() &
-              t.deletedAt.isBiggerOrEqualValue(since),
-        );
-    }
-
-    final workoutRows = await (query..orderBy([(final t) => OrderingTerm.asc(t.start)]))
-        .get();
-    _logger.info("Found ${workoutRows.length} locally deleted workouts");
-
-    final setRows = await select(workoutSets).get();
-    final setsByWorkoutId = <int, List<WorkoutSet>>{};
-    for (final setRow in setRows) {
-      final workoutSet = WorkoutSet(
-        group: setRow.groupNumber,
-        targetReps: setRow.targetReps,
-        completedReps: setRow.completedReps,
-        number: setRow.number,
-      );
-      setsByWorkoutId
-          .putIfAbsent(setRow.workoutId, () => <WorkoutSet>[])
-          .add(workoutSet);
-    }
-
-    final workoutList = <Workout>[];
-    for (final workoutRow in workoutRows) {
-      final workoutType = WorkoutType.values.firstWhere(
-        (final type) => type.name == workoutRow.workoutType,
-      );
-
-      final workout = Workout(
-        id: workoutRow.id,
-        serverId: workoutRow.serverId,
-        workoutType: workoutType,
-        maxGroups: workoutRow.maxGroups,
-        start: workoutRow.start,
-        end: workoutRow.end,
-        sets: setsByWorkoutId[workoutRow.id] ?? <WorkoutSet>[],
-      );
-      workoutList.add(workout);
-    }
-
-    return workoutList;
   }
 }
 

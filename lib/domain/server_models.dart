@@ -93,8 +93,7 @@ class ServerWorkout {
     final workout =
         Workout(workoutType: workoutType, maxGroups: maxGroups, start: start)
           ..end = end
-          ..sets = sets.map((final set) => set.toLocal()).toList()
-          ..serverId = id;
+          ..sets = sets.map((final set) => set.toLocal()).toList();
 
     return workout;
   }
