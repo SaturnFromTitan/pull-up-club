@@ -16,8 +16,6 @@ class AppConstants {
   static const String defaultMinAppVersion = "1.1.0";
   static const String defaultSentryDsn =
       "https://e8445aeb8a976bca9c47de2073137e70@o4510399352012800.ingest.de.sentry.io/4510399355289680";
-
-  // Supabase configuration defaults
   static const String defaultBackendUrl = "https://kifrblptoxfyefexpega.supabase.co";
   static const String defaultBackendPublishableKey =
       "sb_publishable_UQQXGFFXnawExrEkjFWKrA_ay_l8E8J";

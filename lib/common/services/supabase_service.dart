@@ -43,19 +43,19 @@ class SupabaseService {
   /// Returns null if not initialized.
   SupabaseClient? get client => _client;
 
-  /// Checks if the user is currently authenticated.
-  bool get isAuthenticated => _client?.auth.currentUser != null;
-
   /// Gets the current user's ID.
   /// Returns null if not authenticated.
   String? get currentUserId => _client?.auth.currentUser?.id;
+
+  /// Checks if the user is currently authenticated.
+  bool get isAuthenticated => currentUserId != null;
 
   /// Signs in with Apple using native iOS Sign In with Apple.
   /// Returns true on success, false on cancellation.
   /// This will show the native Apple Sign In dialog on iOS.
   /// Based on: https://supabase.com/docs/guides/auth/social-login/auth-apple?queryGroups=platform&platform=flutter
   Future<bool> signInWithApple() async {
-    if (_client == null) {
+    if (!_initialized) {
       throw Exception("Supabase not initialized");
     }
 
@@ -105,7 +105,7 @@ class SupabaseService {
 
   /// Signs out the current user.
   Future<void> signOut() async {
-    if (_client == null) {
+    if (!_initialized) {
       _logger.warning("Cannot sign out: Supabase not initialized");
       return;
     }

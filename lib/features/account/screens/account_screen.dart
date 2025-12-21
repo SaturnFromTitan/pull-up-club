@@ -33,33 +33,16 @@ class _AccountScreenState extends State<AccountScreen> {
 
     try {
       final success = await SupabaseService.instance.signInWithApple();
-
-      if (!success) {
-        // User canceled
-        setState(() {
-          _isLoading = false;
-        });
-        return;
+      if (success && mounted) {
+        // Perform full sync after successful authentication
+        final workoutHistoryProvider = context.read<WorkoutHistoryProvider>();
+        await workoutHistoryProvider.performSync(isDeltaSync: false);
       }
-
-      if (!mounted) {
-        return;
-      }
-
-      // Perform full sync after successful authentication
-      final workoutHistoryProvider = context.read<WorkoutHistoryProvider>();
-      await workoutHistoryProvider.performSync(isDeltaSync: false);
-
-      setState(() {
-        _isLoading = false;
-      });
     } on Exception catch (error, stackTrace) {
       _logger.severe("Apple Sign In failed", error, stackTrace);
-      setState(() {
-        _isLoading = false;
-        _errorMessage = error.toString().replaceAll("Exception: ", "");
-      });
+      setState(() => _errorMessage = error.toString().replaceAll("Exception: ", ""));
     }
+    setState(() => _isLoading = false);
   }
 
   Future<void> _handleSignOut() async {
@@ -70,16 +53,11 @@ class _AccountScreenState extends State<AccountScreen> {
 
     try {
       await SupabaseService.instance.signOut();
-      setState(() {
-        _isLoading = false;
-      });
     } on Exception catch (error, stackTrace) {
       _logger.severe("Sign out failed", error, stackTrace);
-      setState(() {
-        _isLoading = false;
-        _errorMessage = "Failed to sign out";
-      });
+      setState(() => _errorMessage = "Failed to sign out");
     }
+    setState(() => _isLoading = false);
   }
 
   @override

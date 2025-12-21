@@ -4,7 +4,7 @@
 
 UI / UX:
 
-- Added account screen to sign in with Apple and back up the workout data
+- Added account screen to sign in with Apple and back up your workout data in the cloud
 
 Fixes:
 
