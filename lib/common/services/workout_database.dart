@@ -9,10 +9,12 @@ part "workout_database.g.dart";
 @DataClassName("DBWorkout")
 class Workouts extends Table {
   IntColumn get id => integer().autoIncrement()();
+  IntColumn get serverId => integer().nullable()();
   TextColumn get workoutType => text()();
   IntColumn get maxGroups => integer()();
   DateTimeColumn get start => dateTime()();
   DateTimeColumn get end => dateTime()();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
 }
 
 @DataClassName("DBWorkoutSet")
@@ -33,7 +35,7 @@ class WorkoutDatabase extends _$WorkoutDatabase {
   static final Logger _logger = Logger("WorkoutDatabase");
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -130,6 +132,15 @@ class WorkoutDatabase extends _$WorkoutDatabase {
 
         _logger.info("Migrated end column to non-nullable");
       }
+      if (from < 4) {
+        // Add columns which are needed for the cloud sync
+        // Add server_id column
+        await m.addColumn(workouts, workouts.serverId);
+        _logger.info("Added server_id column to workouts table");
+        // Add deleted_at column for soft deletes
+        await m.addColumn(workouts, workouts.deletedAt);
+        _logger.info("Added deleted_at column to workouts table");
+      }
       _logger.info("Database schema upgraded successfully");
     },
   );
@@ -167,26 +178,25 @@ class WorkoutDatabase extends _$WorkoutDatabase {
     _logger.fine("Inserted ${workout.sets.length} sets for workout $workoutId");
 
     // Return workout with the generated ID
-    return Workout(
-        id: workoutId,
-        workoutType: workout.workoutType,
-        maxGroups: workout.maxGroups,
-        start: workout.start,
-      )
-      ..end = workout.end
-      ..sets = workout.sets;
+    workout.id = workoutId;
+    return workout;
   }
 
-  Future<List<Workout>> getAllWorkouts() async {
-    _logger.info("Loading all workouts from database");
+  Future<List<Workout>> getAllWorkouts({final bool excludeDeleted = true}) async {
+    _logger.info("Loading all workouts from database (excludeDeleted=$excludeDeleted)");
     // sorting by "end" instead of "start" because
     //  - we assume there are no overlapping/concurrent workouts -> it doesn't really matter
     //  - there's an index on "end", but not on "start"
-    final workoutRows = await (select(
-      workouts,
-    )..orderBy([(final t) => OrderingTerm.asc(t.end)])).get();
+    final workoutQuery = select(workouts)
+      ..orderBy([(final t) => OrderingTerm.asc(t.end)]);
+    if (excludeDeleted) {
+      workoutQuery.where((final t) => t.deletedAt.isNull());
+    }
+    final workoutRows = await workoutQuery.get();
     _logger.info("Loaded ${workoutRows.length} workout rows");
 
+    // ⚠️ this also contains soft-deleted workout sets
+    // loading a bit more data doesn't do harm, but keeps the logic simpler
     final setRows =
         await (select(workoutSets)..orderBy([
               (final t) => OrderingTerm.asc(t.workoutId),
@@ -232,11 +242,13 @@ class WorkoutDatabase extends _$WorkoutDatabase {
     return workoutList;
   }
 
+  /// Soft deletes a workout by setting deleted_at timestamp.
   Future<void> deleteWorkout(final int workoutId) async {
-    _logger.info("Deleting workout: id=$workoutId");
-    await (delete(workouts)..where((final t) => t.id.equals(workoutId))).go();
-    // Sets will be deleted automatically due to CASCADE
-    _logger.info("Successfully deleted workout: id=$workoutId");
+    _logger.info("Soft deleting workout: id=$workoutId");
+    await (update(workouts)..where((final t) => t.id.equals(workoutId))).write(
+      WorkoutsCompanion(deletedAt: Value(DateTime.now().toUtc())),
+    );
+    _logger.info("Successfully soft deleted workout: id=$workoutId");
   }
 }
 
