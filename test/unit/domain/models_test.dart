@@ -40,12 +40,12 @@ void main() {
     });
 
     test("finish does not overwrite existing end time", () {
-      final workout = Workout(workoutType: WorkoutType.maxSets, maxGroups: 3);
-
       final firstEnd = DateTime(2024, 1, 1, 12).toUtc();
-      workout
-        ..end = firstEnd
-        ..finish();
+      final workout = Workout(
+        workoutType: WorkoutType.maxSets,
+        maxGroups: 3,
+        end: firstEnd,
+      )..finish();
 
       expect(workout.end, firstEnd);
     });
@@ -63,7 +63,8 @@ void main() {
         workoutType: WorkoutType.maxSets,
         maxGroups: 3,
         start: start,
-      )..end = end;
+        end: end,
+      );
 
       expect(workout.durationMillis(), 330_000); // 5 * 60 * 1000 + 30 * 1000
     });
@@ -75,19 +76,26 @@ void main() {
     });
 
     test("totalReps calculates sum of all completed reps", () {
-      final workout = Workout(workoutType: WorkoutType.maxSets, maxGroups: 3)
-        ..sets = [
+      final workout = Workout(
+        workoutType: WorkoutType.maxSets,
+        maxGroups: 3,
+        sets: [
           WorkoutSet(number: 1, group: 1, targetReps: 10, completedReps: 8),
           WorkoutSet(number: 2, group: 1, targetReps: 10, completedReps: 7),
           WorkoutSet(number: 3, group: 2, targetReps: 10, completedReps: 9),
-        ];
+        ],
+      );
 
       expect(workout.totalReps(), 24); // 8 + 7 + 9
     });
 
     test("toString includes all relevant information", () {
-      final workout = Workout(id: 1, workoutType: WorkoutType.maxSets, maxGroups: 3)
-        ..sets = [WorkoutSet(number: 1, group: 1, targetReps: 10, completedReps: 8)];
+      final workout = Workout(
+        id: 1,
+        workoutType: WorkoutType.maxSets,
+        maxGroups: 3,
+        sets: [WorkoutSet(number: 1, group: 1, targetReps: 10, completedReps: 8)],
+      );
 
       final str = workout.toString();
 

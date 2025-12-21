@@ -55,14 +55,17 @@ void main() {
     });
 
     test("sums reps per group correctly", () {
-      final workout = Workout(workoutType: WorkoutType.maxSets, maxGroups: 3)
-        ..sets = [
+      final workout = Workout(
+        workoutType: WorkoutType.maxSets,
+        maxGroups: 3,
+        sets: [
           // intentionally using non-sequential group numbers
           WorkoutSet(number: 1, group: 1, targetReps: 10, completedReps: 8),
           WorkoutSet(number: 2, group: 3, targetReps: 10, completedReps: 6),
           WorkoutSet(number: 3, group: 2, targetReps: 10, completedReps: 9),
           WorkoutSet(number: 4, group: 1, targetReps: 10, completedReps: 7),
-        ];
+        ],
+      );
 
       final values = getSetCardValues(workout);
       expect(values, ["15", "9", "6"]); // Group 1: 8+7=15, Group 2: 9, Group 3: 6

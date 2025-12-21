@@ -1,4 +1,6 @@
 {
   "minAppVersion": "1.1.0",
-  "sentryDsn": "https://e8445aeb8a976bca9c47de2073137e70@o4510399352012800.ingest.de.sentry.io/4510399355289680"
+  "sentryDsn": "https://e8445aeb8a976bca9c47de2073137e70@o4510399352012800.ingest.de.sentry.io/4510399355289680",
+  "defaultBackendUrl": "https://kifrblptoxfyefexpega.supabase.co",
+  "defaultBackendPublishableKey": "sb_publishable_UQQXGFFXnawExrEkjFWKrA_ay_l8E8J"
 }
