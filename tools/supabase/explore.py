@@ -132,6 +132,10 @@ if __name__ == "__main__":
     # 0) Initialize Supabase client
     _supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
+    # ⚠️⚠️⚠️ email sign was disabled in the Supabase UI ⚠️⚠️⚠️
+    # if you need the functionality to create dummy data, please activate it again
+    # but please disable it again when you're finished exploring
+
     # # 1) register (may require email confirmation depending on project setting)
     # print("--- Registering user ---")
     # user, session, needs_confirmation = register(_supabase, USER_EMAIL, USER_PASSWORD)
