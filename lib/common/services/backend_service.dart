@@ -64,7 +64,7 @@ class BackendService {
       // Request Apple ID credential with hashed nonce
       // No scopes requested - only basic authentication, no email/name permissions
       final appleCredential = await SignInWithApple.getAppleIDCredential(
-        scopes: [],
+        scopes: [AppleIDAuthorizationScopes.email],
         nonce: hashedNonce,
       );
 

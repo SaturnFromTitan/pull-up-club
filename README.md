@@ -22,7 +22,7 @@ You can download it in the [Apple App Store](https://apps.apple.com/app/pull-up-
 
 The certificates that fastlane uses to sign the app for releasing it are stored in a separate, [private github repo](https://github.com/SaturnFromTitan/pull-up-club-certificates).
 
-#### Initial Certificate setup
+#### Certificates
 
 Please run the following locally: Firstly, install the Ruby dependencies:
 
