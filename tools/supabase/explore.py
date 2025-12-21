@@ -66,7 +66,7 @@ def create_workout_with_sets(supabase: SupabaseClient):
         supabase.table("workouts")
         .insert(
             {
-                "workout_type": "maxSets",
+                "workout_type": "Max Sets",
                 "max_groups": 5,
                 "start": iso(datetime.now(timezone.utc)),
                 "end": iso(datetime.now(timezone.utc)),

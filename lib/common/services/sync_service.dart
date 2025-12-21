@@ -73,7 +73,7 @@ class SyncService {
   /// - Both exist -> sync deleted_at status only
   Future<void> _performThreeWayMerge(
     final List<Workout> serverWorkouts,
-    final List<Workout> localWorkoutRows,
+    final List<Workout> localWorkouts,
   ) async {
     _logger.info("Performing three-way merge");
 
@@ -81,11 +81,11 @@ class SyncService {
     final localByServerId = <int, Workout>{};
     final localWithoutServerId = <Workout>[];
 
-    for (final localRow in localWorkoutRows) {
-      if (localRow.serverId != null) {
-        localByServerId[localRow.serverId!] = localRow;
+    for (final localWorkout in localWorkouts) {
+      if (localWorkout.serverId != null) {
+        localByServerId[localWorkout.serverId!] = localWorkout;
       } else {
-        localWithoutServerId.add(localRow);
+        localWithoutServerId.add(localWorkout);
       }
     }
 
@@ -127,7 +127,7 @@ class SyncService {
 
     // Process server workouts
     for (final serverWorkout in serverWorkouts) {
-      final localWorkout = localByServerId[serverWorkout.id];
+      final localWorkout = localByServerId[serverWorkout.serverId];
 
       if (localWorkout == null) {
         // Group 2: Server but not locally -> download
