@@ -37,7 +37,7 @@ class Workout {
        sets = sets ?? <WorkoutSet>[];
 
   int? id;
-  final int? serverId;
+  int? serverId;
   final WorkoutType workoutType;
   final int maxGroups;
   final DateTime start;

@@ -67,8 +67,14 @@ class WorkoutHistoryProvider extends ChangeNotifier {
     _completedWorkouts.remove(workout);
     _logger.info("Workout deleted from history: $workout");
 
-    // push to supabase - if this fails, it will be covered by the next full sync
-    unawaited(_backend.deleteWorkout(localWorkout: workout));
+    // because the workout is pushed to the backend asyncronously, this instance might
+    // not contain the serverId yet. Therefore we look it up in the local database as
+    // a fallback.
+    workout.serverId ??= await _database.getServerIdForWorkout(workout.id!);
+    if (workout.serverId != null) {
+      // push to supabase - if this fails, it will be covered by the next full sync
+      unawaited(_backend.deleteWorkout(localWorkout: workout));
+    }
 
     notifyListeners();
   }

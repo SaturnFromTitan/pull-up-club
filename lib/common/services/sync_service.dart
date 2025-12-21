@@ -160,44 +160,35 @@ class SyncService {
         final localDeletedAt = localWorkout.deletedAt;
         final serverDeletedAt = serverWorkout.deletedAt;
 
-        // If deleted_at is both null or both set: no change
-        if ((localDeletedAt == null && serverDeletedAt == null) ||
-            (localDeletedAt != null && serverDeletedAt != null)) {
+        if (serverDeletedAt != null && localDeletedAt == null) {
+          // soft-delete locally
+          try {
+            _logger.fine(
+              "Server workout is deleted, soft-deleting locally: serverId=${serverWorkout.serverId}",
+            );
+            // localWorkout was loaded from local DB, so id must be set
+            localWorkout.deletedAt = serverDeletedAt;
+            await _database.deleteWorkout(localWorkout);
+            deletedSyncedCount++;
+          } on Exception catch (error, stackTrace) {
+            _logger.warning("Failed to soft-delete local workout", error, stackTrace);
+          }
+        } else if (localDeletedAt != null && serverDeletedAt == null) {
+          // soft-delete on server
+          try {
+            _logger.fine(
+              "Local workout is deleted, soft-deleting on server: serverId=${serverWorkout.serverId}",
+            );
+            await _backend.deleteWorkout(localWorkout: localWorkout);
+            deletedSyncedCount++;
+          } on Exception catch (error, stackTrace) {
+            _logger.warning("Failed to soft-delete server workout", error, stackTrace);
+          }
+        } else {
           _logger.fine(
             "Workout deleted_at status matches, skipping: serverId=${serverWorkout.serverId}",
           );
           skippedCount++;
-        } else {
-          // One is deleted and the other isn't -> sync
-          if (serverDeletedAt != null && localDeletedAt == null) {
-            // Server is deleted, local is not -> soft-delete locally
-            try {
-              _logger.fine(
-                "Server workout is deleted, soft-deleting locally: serverId=${serverWorkout.serverId}",
-              );
-              // localWorkout was loaded from local DB, so id must be set
-              localWorkout.deletedAt = serverDeletedAt;
-              await _database.deleteWorkout(localWorkout);
-              deletedSyncedCount++;
-            } on Exception catch (error, stackTrace) {
-              _logger.warning("Failed to soft-delete local workout", error, stackTrace);
-            }
-          } else if (localDeletedAt != null && serverDeletedAt == null) {
-            // Local is deleted, server is not -> soft-delete on server
-            try {
-              _logger.fine(
-                "Local workout is deleted, soft-deleting on server: serverId=${serverWorkout.serverId}",
-              );
-              await _backend.deleteWorkout(localWorkout: localWorkout);
-              deletedSyncedCount++;
-            } on Exception catch (error, stackTrace) {
-              _logger.warning(
-                "Failed to soft-delete server workout",
-                error,
-                stackTrace,
-              );
-            }
-          }
         }
       }
     }

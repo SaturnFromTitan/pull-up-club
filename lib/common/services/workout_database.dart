@@ -303,6 +303,12 @@ class WorkoutDatabase extends _$WorkoutDatabase {
     return _convertToDomainModel(workoutRows, setRows);
   }
 
+  Future<int?> getServerIdForWorkout(final int workoutId) async {
+    final query = select(workouts)..where((final t) => t.id.equals(workoutId));
+    final workoutRow = await query.getSingleOrNull();
+    return workoutRow?.serverId;
+  }
+
   /// Soft deletes a workout by setting deleted_at timestamp.
   Future<bool> deleteWorkout(final Workout workout) async {
     if (workout.deletedAt == null) {
