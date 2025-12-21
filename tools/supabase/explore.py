@@ -114,7 +114,7 @@ def list_workouts_with_sets(
     if since:
         # Filter for workouts where either 'end' or 'deleted_at' is >= since
         selected = selected.or_(f"end.gte.{iso(since)},deleted_at.gte.{iso(since)}")
-    workouts = selected.order("start", desc=True).execute().data
+    workouts = selected.order("end", desc=True).execute().data
     print(f"Found {len(workouts)} workout(s):", workouts)
 
 
@@ -131,6 +131,10 @@ def soft_delete_workout(supabase: SupabaseClient, workout_id: int) -> None:
 if __name__ == "__main__":
     # 0) Initialize Supabase client
     _supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+    # ⚠️⚠️⚠️ email sign was disabled in the Supabase UI ⚠️⚠️⚠️
+    # if you need the functionality to create dummy data, please activate it again
+    # but please disable it again when you're finished exploring
 
     # # 1) register (may require email confirmation depending on project setting)
     # print("--- Registering user ---")

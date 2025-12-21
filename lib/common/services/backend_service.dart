@@ -128,7 +128,7 @@ class BackendService {
       final response = await _client!
           .from("workouts")
           .select("*, workout_sets(*)")
-          .order("start", ascending: false);
+          .order("end", ascending: false);
       _logger.info("Fetched ${response.length} workouts from Supabase");
 
       return (response as List<dynamic>)
