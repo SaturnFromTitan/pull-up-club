@@ -10,7 +10,7 @@ import "package:pull_up_club/domain/models.dart";
 class WorkoutHistoryProvider extends ChangeNotifier {
   WorkoutHistoryProvider() {
     // on app start we only do a delta sync
-    // full sync only happens when signing in
+    // full sync only happens when the user signs in
     unawaited(loadWorkouts(isDeltaSync: true));
   }
   static final Logger _logger = Logger("WorkoutHistoryProvider");
@@ -33,7 +33,7 @@ class WorkoutHistoryProvider extends ChangeNotifier {
       // Perform sync before loading local workouts
       await _syncService.performSync(isDeltaSync: isDeltaSync);
 
-      _completedWorkouts = await _database.getAllWorkouts();
+      _completedWorkouts = await _database.getAllNonDeletedWorkouts();
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -59,7 +59,7 @@ class WorkoutHistoryProvider extends ChangeNotifier {
     _logger.info("Deleting workout from history: $workout");
 
     // Soft delete locally
-    await _database.deleteWorkout(workout.id!);
+    await _database.deleteWorkout(workoutId: workout.id!);
     _completedWorkouts.remove(workout);
     _logger.info("Workout deleted from history: $workout");
 

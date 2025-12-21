@@ -91,13 +91,14 @@ class ServerWorkout {
   /// Converts to local Workout model.
   Workout toLocal() {
     final workout = Workout(
+      serverId: id,
       workoutType: workoutType,
       maxGroups: maxGroups,
       start: start,
       end: end,
+      deletedAt: deletedAt,
       sets: sets.map((final set) => set.toLocal()).toList(),
     );
-
     return workout;
   }
 }

@@ -1,5 +1,6 @@
 import "dart:convert";
 
+import "package:clock/clock.dart";
 import "package:crypto/crypto.dart";
 import "package:logging/logging.dart";
 import "package:pull_up_club/domain/models.dart";
@@ -123,7 +124,7 @@ class SupabaseService {
   /// Fetches workouts from Supabase with optional delta sync.
   /// If [since] is provided, filters by end >= since OR deleted_at >= since.
   /// Returns empty list if not authenticated or on error.
-  Future<List<ServerWorkout>> fetchWorkouts({final DateTime? since}) async {
+  Future<List<Workout>> fetchWorkouts({final DateTime? since}) async {
     if (!isAuthenticated) {
       _logger.warning("Cannot fetch workouts: not authenticated");
       return [];
@@ -144,7 +145,10 @@ class SupabaseService {
       _logger.info("Fetched ${response.length} workouts from Supabase");
 
       return (response as List<dynamic>)
-          .map((final json) => ServerWorkout.fromJson(json as Map<String, dynamic>))
+          .map(
+            (final json) =>
+                ServerWorkout.fromJson(json as Map<String, dynamic>).toLocal(),
+          )
           .toList();
     } on Exception catch (error, stackTrace) {
       _logger.severe("Failed to fetch workouts from Supabase", error, stackTrace);
@@ -205,17 +209,21 @@ class SupabaseService {
 
   /// Soft deletes a workout on Supabase by setting deleted_at field.
   /// Returns true on success, false on error.
-  Future<bool> deleteWorkout(final int workoutId) async {
+  Future<bool> deleteWorkout({
+    required final int workoutId,
+    final DateTime? deletedAt,
+  }) async {
     if (!isAuthenticated) {
       _logger.warning("Cannot delete workout: not authenticated");
       return false;
     }
 
+    final targetDeletedAt = deletedAt ?? clock.now().toUtc();
     try {
       _logger.info("Soft deleting workout on Supabase: id=$workoutId");
       await _client!
           .from("workouts")
-          .update({"deleted_at": DateTime.now().toIso8601String()})
+          .update({"deleted_at": targetDeletedAt.toIso8601String()})
           .eq("id", workoutId);
       _logger.info("Workout soft deleted successfully on Supabase: id=$workoutId");
       return true;

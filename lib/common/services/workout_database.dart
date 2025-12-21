@@ -1,3 +1,4 @@
+import "package:clock/clock.dart";
 import "package:drift/drift.dart";
 import "package:drift_flutter/drift_flutter.dart";
 import "package:logging/logging.dart";
@@ -5,6 +6,13 @@ import "package:path_provider/path_provider.dart";
 import "package:pull_up_club/domain/models.dart";
 
 part "workout_database.g.dart";
+
+LazyDatabase _openConnection() => LazyDatabase(() async {
+  final dbFolder = await getApplicationDocumentsDirectory();
+  const dbFileName = "workouts.db";
+  WorkoutDatabase._logger.fine("Database location: ${dbFolder.path}/$dbFileName");
+  return driftDatabase(name: dbFileName);
+});
 
 @DataClassName("DBWorkout")
 class Workouts extends Table {
@@ -191,45 +199,44 @@ class WorkoutDatabase extends _$WorkoutDatabase {
     _logger.info("Workout server_id updated successfully");
   }
 
-  /// Updates a workout's deleted_at status from server data.
-  Future<void> updateWorkoutDeletedAt(
-    final int workoutId,
-    final DateTime? deletedAt,
-  ) async {
-    _logger.info(
-      "Updating workout deleted_at: localId=$workoutId, deletedAt=$deletedAt",
-    );
-    await (update(workouts)..where((final t) => t.id.equals(workoutId))).write(
-      WorkoutsCompanion(
-        deletedAt: deletedAt == null ? const Value.absent() : Value(deletedAt),
-      ),
-    );
-    _logger.info("Workout deleted_at updated successfully");
-  }
-
-  Future<List<Workout>> getAllWorkouts({final bool excludeDeleted = true}) async {
-    _logger.info("Loading all workouts from database (excludeDeleted=$excludeDeleted)");
-    // sorting by "end" instead of "start" because
-    //  - we assume there are no overlapping/concurrent workouts -> it doesn't really matter
-    //  - there's an index on "end", but not on "start"
-    final workoutQuery = select(workouts)
-      ..orderBy([(final t) => OrderingTerm.asc(t.end)]);
-    if (excludeDeleted) {
-      workoutQuery.where((final t) => t.deletedAt.isNull());
-    }
-    final workoutRows = await workoutQuery.get();
+  Future<List<Workout>> getAllNonDeletedWorkouts() async {
+    _logger.info("Loading all non-deleted workouts from database");
+    final workoutRows =
+        await (select(workouts)
+              ..where((final t) => t.deletedAt.isNull())
+              // sorting by "end" instead of "start" because
+              //  - we assume there are no overlapping/concurrent workouts -> it doesn't really matter
+              //  - there's an index on "end", but not on "start"
+              ..orderBy([(final t) => OrderingTerm.asc(t.end)]))
+            .get();
     _logger.info("Loaded ${workoutRows.length} workout rows");
 
-    // ⚠️ this also contains soft-deleted workout sets
-    // loading a bit more data doesn't do harm, but keeps the logic simpler
-    final setRows =
-        await (select(workoutSets)..orderBy([
-              (final t) => OrderingTerm.asc(t.workoutId),
-              (final t) => OrderingTerm.asc(t.number),
-            ]))
-            .get();
-    _logger.info("Loaded ${setRows.length} set rows");
+    final setRows = await loadRelatedWorkoutSets(workoutRows);
+    return _convertToDomainModel(workoutRows, setRows);
+  }
 
+  Future<List<DBWorkoutSet>> loadRelatedWorkoutSets(
+    final List<DBWorkout> workoutRows,
+  ) async {
+    // Only load sets of the relevant workouts
+    final workoutIds = workoutRows.map((final row) => row.id).toList();
+    final setRows = workoutIds.isEmpty
+        ? <DBWorkoutSet>[]
+        : await (select(workoutSets)
+                ..where((final t) => t.workoutId.isIn(workoutIds))
+                ..orderBy([
+                  (final t) => OrderingTerm.asc(t.workoutId),
+                  (final t) => OrderingTerm.asc(t.number),
+                ]))
+              .get();
+    _logger.info("Loaded ${setRows.length} set rows");
+    return setRows;
+  }
+
+  List<Workout> _convertToDomainModel(
+    final List<DBWorkout> workoutRows,
+    final List<DBWorkoutSet> setRows,
+  ) {
     // Group sets by workout_id for quick lookup
     final setsByWorkoutId = <int, List<WorkoutSet>>{};
     for (final setRow in setRows) {
@@ -253,57 +260,61 @@ class WorkoutDatabase extends _$WorkoutDatabase {
 
       final workout = Workout(
         id: workoutRow.id,
+        serverId: workoutRow.serverId,
         workoutType: workoutType,
         maxGroups: workoutRow.maxGroups,
         start: workoutRow.start,
         end: workoutRow.end,
+        deletedAt: workoutRow.deletedAt,
         sets: setsByWorkoutId[workoutRow.id] ?? <WorkoutSet>[],
       );
 
       workoutList.add(workout);
     }
-
-    _logger.info("Successfully loaded ${workoutList.length} workouts from database");
     return workoutList;
   }
 
-  /// Converts a DBWorkout row to a Workout domain object.
-  /// This is a public method used by the repository for sync operations.
-  Future<Workout> dbWorkoutToWorkout(final DBWorkout workoutRow) async {
-    // Load sets for this workout
-    final setRows = await (select(
-      workoutSets,
-    )..where((final t) => t.workoutId.equals(workoutRow.id))).get();
-
-    final workoutType = WorkoutType.values.firstWhere(
-      (final type) => type.name == workoutRow.workoutType,
+  /// Gets workouts for cloud sync.
+  /// Returns:
+  /// - All workouts with empty serverId (unsynced local workouts)
+  /// - All workouts with serverId matching any of the provided [serverIds]
+  /// Includes deleted workouts as they need to be synced.
+  /// Returns DB rows for sync operations (to access deletedAt field).
+  Future<List<Workout>> getWorkoutsForSync(final List<int> serverIds) async {
+    _logger.info(
+      "Loading workouts for sync (serverIds=${serverIds.length}, including unsynced)",
     );
 
-    final workout = Workout(
-      id: workoutRow.id,
-      // serverId: workoutRow.serverId,
-      workoutType: workoutType,
-      maxGroups: workoutRow.maxGroups,
-      start: workoutRow.start,
-      end: workoutRow.end,
-      sets: setRows.map((final setRow) {
-        return WorkoutSet(
-          number: setRow.number,
-          group: setRow.groupNumber,
-          targetReps: setRow.targetReps,
-          completedReps: setRow.completedReps,
-        );
-      }).toList(),
-    );
+    var query = select(workouts);
 
-    return workout;
+    if (serverIds.isEmpty) {
+      // Only return workouts with empty serverId
+      query = query..where((final t) => t.serverId.isNull());
+    } else {
+      // Return workouts with empty serverId OR serverId in the provided list
+      query = query
+        ..where((final t) => t.serverId.isNull() | t.serverId.isIn(serverIds));
+    }
+
+    final workoutRows = await (query..orderBy([(final t) => OrderingTerm.asc(t.end)]))
+        .get();
+    _logger.info("Loaded ${workoutRows.length} workout rows for sync");
+
+    final setRows = await loadRelatedWorkoutSets(workoutRows);
+    return _convertToDomainModel(workoutRows, setRows);
   }
 
   /// Soft deletes a workout by setting deleted_at timestamp.
-  Future<void> deleteWorkout(final int workoutId) async {
-    _logger.info("Soft deleting workout: id=$workoutId");
+  Future<void> deleteWorkout({
+    required final int workoutId,
+    final DateTime? deletedAt,
+  }) async {
+    final targetDeletedAt = deletedAt ?? clock.now().toUtc();
+    _logger.info(
+      "Soft deleting workout: id=$workoutId, targetDeletedAt=$targetDeletedAt",
+    );
     await (update(workouts)..where((final t) => t.id.equals(workoutId))).write(
-      WorkoutsCompanion(deletedAt: Value(DateTime.now().toUtc())),
+      WorkoutsCompanion(deletedAt: Value(targetDeletedAt)),
     );
     _logger.info("Successfully soft deleted workout: id=$workoutId");
   }
@@ -311,8 +322,8 @@ class WorkoutDatabase extends _$WorkoutDatabase {
   /// Gets the end time or deleted_at time (whichever is later) across all workouts.
   /// Used for delta sync filtering.
   /// Returns null if no workouts exist.
-  Future<DateTime?> getLatestWorkoutSyncTime() async {
-    _logger.info("Getting latest workout sync time (end or deleted_at)");
+  Future<DateTime?> getLatestLocalWorkoutDatetime() async {
+    _logger.info("Getting latest workout datetime (end or deleted_at)");
 
     // Get the maximum end time
     final maxEndRow =
@@ -351,39 +362,4 @@ class WorkoutDatabase extends _$WorkoutDatabase {
     );
     return syncTime;
   }
-
-  /// Gets workouts for sync operations.
-  /// Returns:
-  /// - All workouts with empty serverId (unsynced local workouts)
-  /// - All workouts with serverId matching any of the provided [serverIds]
-  /// Includes deleted workouts as they need to be synced.
-  /// Returns DB rows for sync operations (to access deletedAt field).
-  Future<List<DBWorkout>> getWorkoutsForSync(final List<int> serverIds) async {
-    _logger.info(
-      "Loading workouts for sync (serverIds=${serverIds.length}, including unsynced)",
-    );
-
-    var query = select(workouts);
-
-    if (serverIds.isEmpty) {
-      // Only return workouts with empty serverId
-      query = query..where((final t) => t.serverId.isNull());
-    } else {
-      // Return workouts with empty serverId OR serverId in the provided list
-      query = query
-        ..where((final t) => t.serverId.isNull() | t.serverId.isIn(serverIds));
-    }
-
-    final workoutRows = await (query..orderBy([(final t) => OrderingTerm.asc(t.start)]))
-        .get();
-    _logger.info("Loaded ${workoutRows.length} workout rows for sync");
-    return workoutRows;
-  }
 }
-
-LazyDatabase _openConnection() => LazyDatabase(() async {
-  final dbFolder = await getApplicationDocumentsDirectory();
-  const dbFileName = "workouts.db";
-  WorkoutDatabase._logger.fine("Database location: ${dbFolder.path}/$dbFileName");
-  return driftDatabase(name: dbFileName);
-});
