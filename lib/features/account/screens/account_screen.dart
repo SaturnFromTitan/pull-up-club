@@ -38,6 +38,9 @@ class _AccountScreenState extends State<AccountScreen> {
         final workoutHistoryProvider = context.read<WorkoutHistoryProvider>();
         await workoutHistoryProvider.loadWorkouts(isDeltaSync: false);
       }
+      if (!mounted) {
+        return;
+      }
     } on Exception catch (error, stackTrace) {
       _logger.severe("Apple Sign In failed", error, stackTrace);
       setState(() => _errorMessage = error.toString().replaceAll("Exception: ", ""));
