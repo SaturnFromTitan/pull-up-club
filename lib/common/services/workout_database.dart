@@ -22,6 +22,7 @@ class Workouts extends Table {
   DateTimeColumn get start => dateTime()();
   DateTimeColumn get end => dateTime()();
   DateTimeColumn get deletedAt => dateTime().nullable()();
+  // Indexes are created in migration v5
 }
 
 @DataClassName("DBWorkoutSet")
@@ -33,6 +34,7 @@ class WorkoutSets extends Table {
   IntColumn get groupNumber => integer()();
   IntColumn get targetReps => integer().nullable()();
   IntColumn get completedReps => integer()();
+  // Index is created in migration v5:
 }
 
 @DriftDatabase(tables: [Workouts, WorkoutSets])
@@ -42,7 +44,7 @@ class WorkoutDatabase extends _$WorkoutDatabase {
   static final Logger _logger = Logger("WorkoutDatabase");
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -148,6 +150,26 @@ class WorkoutDatabase extends _$WorkoutDatabase {
         await m.addColumn(workouts, workouts.deletedAt);
         _logger.info("Added deleted_at column to workouts table");
       }
+      if (from < 5) {
+        // Add indexes for common query patterns
+        // Index for getAllNonDeletedWorkouts: WHERE deletedAt IS NULL ORDER BY end
+        await customStatement(
+          "CREATE INDEX IF NOT EXISTS idx_workouts_deleted_at_end ON workouts(deleted_at, end)",
+        );
+        _logger.info("Created index idx_workouts_deleted_at_end");
+
+        // Index for getWorkoutsForSync: WHERE serverId IS NULL OR serverId IN (...) ORDER BY end
+        await customStatement(
+          "CREATE INDEX IF NOT EXISTS idx_workouts_server_id_end ON workouts(server_id, end)",
+        );
+        _logger.info("Created index idx_workouts_server_id_end");
+
+        // Index for loadRelatedWorkoutSets: WHERE workoutId IN (...) ORDER BY workoutId, number
+        await customStatement(
+          "CREATE INDEX IF NOT EXISTS idx_workout_sets_workout_id_number ON workout_sets(workout_id, number)",
+        );
+        _logger.info("Created index idx_workout_sets_workout_id_number");
+      }
       _logger.info("Database schema upgraded successfully");
     },
   );
@@ -211,7 +233,7 @@ class WorkoutDatabase extends _$WorkoutDatabase {
               ..where((final t) => t.deletedAt.isNull())
               // sorting by "end" instead of "start" because
               //  - we assume there are no overlapping/concurrent workouts -> it doesn't really matter
-              //  - there's an index on "end", but not on "start"
+              //  - there's an index covering "end", but none covering "start"
               ..orderBy([(final t) => OrderingTerm.asc(t.end)]))
             .get();
     _logger.info("Loaded ${workoutRows.length} workout rows");
