@@ -10,6 +10,7 @@ environment:
 dependencies:
   audioplayers: ">=6.1.0"
   clock: ^1.1.2
+  crypto: ^3.0.7
   drift: ">=2.29.0"
   drift_flutter: ">=0.2.7"
   flutter:
@@ -22,6 +23,8 @@ dependencies:
   provider: ">=6.1.5"
   pub_semver: ">=2.2.0"
   sentry_flutter: ">=9.8.0"
+  sign_in_with_apple: ^7.0.1
+  supabase_flutter: ^2.12.0
   url_launcher: ">=6.3.1"
 
 dev_dependencies:

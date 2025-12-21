@@ -8,19 +8,36 @@ import "package:pull_up_club/common/constants/app_constants.dart";
 
 /// Configuration model for remote app configuration
 class AppConfig {
-  const AppConfig({required this.minAppVersion, required this.sentryDsn});
+  const AppConfig({
+    required this.minAppVersion,
+    required this.sentryDsn,
+    required this.backendUrl,
+    required this.backendPublishableKey,
+  });
 
   factory AppConfig.fromJson(final Map<String, dynamic> json) {
     return AppConfig(
-      minAppVersion: json["minAppVersion"] as String,
-      sentryDsn: json["sentryDsn"] as String,
+      minAppVersion:
+          json["minAppVersion"] as String? ?? AppConstants.defaultMinAppVersion,
+      sentryDsn: json["sentryDsn"] as String? ?? AppConstants.defaultSentryDsn,
+      backendUrl: json["backendUrl"] as String? ?? AppConstants.defaultBackendUrl,
+      backendPublishableKey:
+          json["backendPublishableKey"] as String? ??
+          AppConstants.defaultBackendPublishableKey,
     );
   }
   final String minAppVersion;
   final String sentryDsn;
+  final String backendUrl;
+  final String backendPublishableKey;
 
   Map<String, dynamic> toJson() {
-    return {"minAppVersion": minAppVersion, "sentryDsn": sentryDsn};
+    return {
+      "minAppVersion": minAppVersion,
+      "sentryDsn": sentryDsn,
+      "backendUrl": backendUrl,
+      "backendPublishableKey": backendPublishableKey,
+    };
   }
 
   @override
@@ -32,6 +49,8 @@ class AppConfig {
   static const AppConfig defaultConfig = AppConfig(
     minAppVersion: AppConstants.defaultMinAppVersion,
     sentryDsn: AppConstants.defaultSentryDsn,
+    backendUrl: AppConstants.defaultBackendUrl,
+    backendPublishableKey: AppConstants.defaultBackendPublishableKey,
   );
 }
 

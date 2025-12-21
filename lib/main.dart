@@ -13,6 +13,7 @@ import "package:pull_up_club/common/screens/shell_screen.dart";
 import "package:pull_up_club/common/services/logging_service.dart";
 import "package:pull_up_club/common/services/package_info_service.dart";
 import "package:pull_up_club/common/services/remote_config_service.dart";
+import "package:pull_up_club/common/services/supabase_service.dart";
 import "package:pull_up_club/common/services/workout_database.dart";
 import "package:pull_up_club/common/themes/app_theme.dart";
 import "package:pull_up_club/data/repositories/workout_repository.dart";
@@ -44,6 +45,12 @@ Future<void> main() async {
     final requiresUpdate = checkIfUpdateRequired(
       currentVersion: PackageInfoService.instance.packageInfo.version,
       minAppVersion: appConfig.minAppVersion,
+    );
+
+    // Initialize Supabase with config from remote config (or defaults)
+    await SupabaseService.instance.initialize(
+      backendUrl: appConfig.backendUrl,
+      backendPublishableKey: appConfig.backendPublishableKey,
     );
 
     // Initialize Sentry and run app

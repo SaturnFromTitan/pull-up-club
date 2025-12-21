@@ -1,9 +1,15 @@
+import "dart:async";
+
 import "package:flutter/material.dart";
+import "package:logging/logging.dart";
 import "package:pull_up_club/common/constants/app_constants.dart";
 import "package:pull_up_club/common/services/package_info_service.dart";
+import "package:pull_up_club/common/services/supabase_service.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
 import "package:pull_up_club/common/themes/app_typography.dart";
+import "package:pull_up_club/common/widgets/core/gradient_button.dart";
+import "package:sign_in_with_apple/sign_in_with_apple.dart";
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});
@@ -13,8 +19,45 @@ class AccountScreen extends StatefulWidget {
 }
 
 class _AccountScreenState extends State<AccountScreen> {
+  static final Logger _logger = Logger("AccountScreen");
+  bool _isLoading = false;
+  String? _errorMessage;
+
+  Future<void> _handleAppleSignIn() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      await SupabaseService.instance.signInWithApple();
+    } on Exception catch (error, stackTrace) {
+      _logger.severe("Apple Sign In failed", error, stackTrace);
+      setState(() => _errorMessage = error.toString().replaceAll("Exception: ", ""));
+    }
+    setState(() => _isLoading = false);
+  }
+
+  Future<void> _handleSignOut() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      await SupabaseService.instance.signOut();
+    } on Exception catch (error, stackTrace) {
+      _logger.severe("Sign out failed", error, stackTrace);
+      setState(() => _errorMessage = "Failed to sign out");
+    }
+    setState(() => _isLoading = false);
+  }
+
   @override
   Widget build(final BuildContext context) {
+    final supabase = SupabaseService.instance;
+    final isAuthenticated = supabase.isAuthenticated;
+
     return LayoutBuilder(
       builder: (final context, final constraints) {
         return SingleChildScrollView(
@@ -35,7 +78,67 @@ class _AccountScreenState extends State<AccountScreen> {
                   style: AppTypography.bodyLarge,
                 ),
                 const SizedBox(height: AppSpacing.xl),
-
+                if (isAuthenticated) ...[
+                  Card(
+                    color: Colors.white,
+                    child: Padding(
+                      padding: const EdgeInsets.all(AppSpacing.paddingMd),
+                      child: Column(
+                        children: [
+                          const Icon(
+                            Icons.cloud_done,
+                            size: 48,
+                            color: AppColors.onLight,
+                          ),
+                          const SizedBox(height: AppSpacing.lg),
+                          GradientButton(
+                            onPressed: _isLoading ? null : _handleSignOut,
+                            text: "Sign Out",
+                            icon: Icons.logout,
+                            gradient: AppGradients.light,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ] else ...[
+                  Card(
+                    color: Colors.white,
+                    child: Padding(
+                      padding: const EdgeInsets.all(AppSpacing.paddingMd),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          if (_errorMessage != null) ...[
+                            Container(
+                              padding: const EdgeInsets.all(AppSpacing.md),
+                              decoration: BoxDecoration(
+                                color: Colors.red.shade50,
+                                borderRadius: BorderRadius.circular(
+                                  AppSpacing.radiusMd,
+                                ),
+                              ),
+                              child: Text(
+                                _errorMessage!,
+                                style: AppTypography.bodySmall.copyWith(
+                                  color: Colors.red.shade700,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            const SizedBox(height: AppSpacing.lg),
+                          ],
+                          SignInWithAppleButton(
+                            onPressed: _isLoading ? null : _handleAppleSignIn,
+                            height: AppSpacing.buttonHeight,
+                            borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+                const SizedBox(height: AppSpacing.xxxl),
                 Text(
                   "${AppConstants.appTitle} @ ${PackageInfoService.instance.versionWithBuildNumber}",
                   textAlign: TextAlign.center,
