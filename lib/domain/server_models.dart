@@ -53,12 +53,14 @@ class ServerWorkout {
   });
 
   factory ServerWorkout.fromJson(final Map<String, dynamic> json) {
-    final setsData = json["workout_sets"] as List<dynamic>? ?? [];
-    final sets = setsData
-        .map(
-          (final setJson) => ServerWorkoutSet.fromJson(setJson as Map<String, dynamic>),
-        )
-        .toList();
+    final sets =
+        (json["workout_sets"] as List<dynamic>? ?? [])
+            .map(
+              (final setJson) =>
+                  ServerWorkoutSet.fromJson(setJson as Map<String, dynamic>),
+            )
+            .toList()
+          ..sort((final a, final b) => a.number.compareTo(b.number));
 
     return ServerWorkout(
       id: json["id"] as int,

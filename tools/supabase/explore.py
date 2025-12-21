@@ -114,7 +114,7 @@ def list_workouts_with_sets(
     if since:
         # Filter for workouts where either 'end' or 'deleted_at' is >= since
         selected = selected.or_(f"end.gte.{iso(since)},deleted_at.gte.{iso(since)}")
-    workouts = selected.order("start", desc=True).execute().data
+    workouts = selected.order("end", desc=True).execute().data
     print(f"Found {len(workouts)} workout(s):", workouts)
 
 
