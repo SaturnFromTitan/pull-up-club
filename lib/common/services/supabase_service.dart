@@ -136,7 +136,6 @@ class SupabaseService {
       var query = _client!.from("workouts").select("*, workout_sets(*)");
 
       if (since != null) {
-        // Filter: end >= since OR deleted_at >= since
         final sinceStr = since.toIso8601String();
         query = query.or("end.gte.$sinceStr,deleted_at.gte.$sinceStr");
       }
@@ -200,30 +199,6 @@ class SupabaseService {
       return workoutId;
     } on Exception catch (error, stackTrace) {
       _logger.severe("Failed to create workout on Supabase", error, stackTrace);
-      return null;
-    }
-  }
-
-  /// Fetches a single workout by its server ID.
-  /// Returns null if not found or on error.
-  Future<ServerWorkout?> fetchWorkoutById(final int serverId) async {
-    if (!isAuthenticated) {
-      _logger.warning("Cannot fetch workout: not authenticated");
-      return null;
-    }
-
-    try {
-      _logger.info("Fetching workout from Supabase: serverId=$serverId");
-      final response = await _client!
-          .from("workouts")
-          .select("*, workout_sets(*)")
-          .eq("id", serverId)
-          .isFilter("deleted_at", null)
-          .single();
-
-      return ServerWorkout.fromJson(response);
-    } on Exception catch (error, stackTrace) {
-      _logger.severe("Failed to fetch workout from Supabase", error, stackTrace);
       return null;
     }
   }

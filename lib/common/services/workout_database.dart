@@ -207,28 +207,6 @@ class WorkoutDatabase extends _$WorkoutDatabase {
     _logger.info("Workout deleted_at updated successfully");
   }
 
-  /// Gets all workouts filtered by sync time (end >= since OR deleted_at >= since).
-  /// If [since] is null, returns all workouts.
-  /// Used for sync operations.
-  Future<List<DBWorkout>> getAllWorkoutsForSync({final DateTime? since}) async {
-    _logger.info("Loading workouts for sync${since != null ? " (since $since)" : ""}");
-    var query = select(workouts);
-
-    if (since != null) {
-      // Filter: end >= since OR deleted_at >= since
-      query = query
-        ..where(
-          (final t) =>
-              t.end.isBiggerOrEqualValue(since) |
-              (t.deletedAt.isNotNull() & t.deletedAt.isBiggerOrEqualValue(since)),
-        );
-    }
-
-    final workoutRows = await (query..orderBy([(final t) => OrderingTerm.asc(t.start)]))
-        .get();
-    return workoutRows;
-  }
-
   Future<List<Workout>> getAllWorkouts({final bool excludeDeleted = true}) async {
     _logger.info("Loading all workouts from database (excludeDeleted=$excludeDeleted)");
     // sorting by "end" instead of "start" because
@@ -287,19 +265,6 @@ class WorkoutDatabase extends _$WorkoutDatabase {
 
     _logger.info("Successfully loaded ${workoutList.length} workouts from database");
     return workoutList;
-  }
-
-  /// Gets a workout by its server_id (including deleted workouts).
-  /// Returns null if not found.
-  Future<DBWorkout?> getWorkoutByServerId(final int serverId) async {
-    _logger.info("Getting workout by server_id: $serverId");
-    final workoutRow =
-        await (select(workouts)
-              ..where((final t) => t.serverId.equals(serverId))
-              ..limit(1))
-            .getSingleOrNull();
-
-    return workoutRow;
   }
 
   /// Converts a DBWorkout row to a Workout domain object.
@@ -364,6 +329,7 @@ class WorkoutDatabase extends _$WorkoutDatabase {
               ..limit(1))
             .getSingleOrNull();
 
+    // even if no workout is deleted, maxDeletedAtRow can only be null if there are no rows
     if (maxEndRow == null || maxDeletedAtRow == null) {
       _logger.info("No workouts found");
       return null;
