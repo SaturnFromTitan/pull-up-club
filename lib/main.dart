@@ -10,10 +10,10 @@ import "package:pull_up_club/common/providers/navigation_provider.dart";
 import "package:pull_up_club/common/providers/workout_history_provider.dart";
 import "package:pull_up_club/common/screens/forced_update_screen.dart";
 import "package:pull_up_club/common/screens/shell_screen.dart";
+import "package:pull_up_club/common/services/backend_service.dart";
 import "package:pull_up_club/common/services/logging_service.dart";
 import "package:pull_up_club/common/services/package_info_service.dart";
 import "package:pull_up_club/common/services/remote_config_service.dart";
-import "package:pull_up_club/common/services/supabase_service.dart";
 import "package:pull_up_club/common/themes/app_theme.dart";
 import "package:pull_up_club/errors_reporting.dart";
 import "package:sentry_flutter/sentry_flutter.dart";
@@ -46,7 +46,7 @@ Future<void> main() async {
     );
 
     // Initialize Supabase with config from remote config (or defaults)
-    await SupabaseService.instance.initialize(
+    await BackendService.instance.initialize(
       backendUrl: appConfig.backendUrl,
       backendPublishableKey: appConfig.backendPublishableKey,
     );

@@ -8,24 +8,23 @@ import "package:pull_up_club/domain/server_models.dart";
 import "package:sign_in_with_apple/sign_in_with_apple.dart";
 import "package:supabase_flutter/supabase_flutter.dart";
 
-/// Service for managing Supabase authentication and API calls.
-/// Handles user authentication and workout data synchronization.
-class SupabaseService {
-  SupabaseService._();
-  static final SupabaseService instance = SupabaseService._();
-  static final Logger _logger = Logger("SupabaseService");
+/// Service to interact with a remote BE for user auth and to persist workout data remotely.
+class BackendService {
+  BackendService._();
+  static final BackendService instance = BackendService._();
+  static final Logger _logger = Logger("BackendService");
 
   SupabaseClient? _client;
   bool _initialized = false;
 
-  /// Initializes Supabase with the provided URL and publishable key.
+  /// Initializes the BE client with the provided URL and publishable key.
   /// Should be called during app startup.
   Future<void> initialize({
     required final String backendUrl,
     required final String backendPublishableKey,
   }) async {
     if (_initialized) {
-      _logger.warning("Supabase already initialized");
+      _logger.warning("Backend already initialized");
       return;
     }
 
@@ -33,16 +32,12 @@ class SupabaseService {
       await Supabase.initialize(url: backendUrl, anonKey: backendPublishableKey);
       _client = Supabase.instance.client;
       _initialized = true;
-      _logger.info("Supabase initialized successfully");
+      _logger.info("Backend initialized successfully");
     } catch (error, stackTrace) {
-      _logger.severe("Failed to initialize Supabase", error, stackTrace);
+      _logger.severe("Failed to initialize backend", error, stackTrace);
       rethrow;
     }
   }
-
-  /// Gets the Supabase client instance.
-  /// Returns null if not initialized.
-  SupabaseClient? get client => _client;
 
   /// Gets the current user's ID.
   /// Returns null if not authenticated.
@@ -57,7 +52,7 @@ class SupabaseService {
   /// Based on: https://supabase.com/docs/guides/auth/social-login/auth-apple?queryGroups=platform&platform=flutter
   Future<bool> signInWithApple() async {
     if (!_initialized) {
-      throw Exception("Supabase not initialized");
+      throw Exception("Backend not initialized");
     }
 
     try {
@@ -107,7 +102,7 @@ class SupabaseService {
   /// Signs out the current user.
   Future<void> signOut() async {
     if (!_initialized) {
-      _logger.warning("Cannot sign out: Supabase not initialized");
+      _logger.warning("Cannot sign out: Backend not initialized");
       return;
     }
 
@@ -121,7 +116,7 @@ class SupabaseService {
     }
   }
 
-  /// Fetches workouts from Supabase with optional delta sync.
+  /// Fetches workouts from the backend with optional delta sync.
   /// If [since] is provided, filters by end >= since OR deleted_at >= since.
   /// Returns empty list if not authenticated or on error.
   Future<List<Workout>> fetchWorkouts({final DateTime? since}) async {
@@ -156,7 +151,7 @@ class SupabaseService {
     }
   }
 
-  /// Creates a new workout on Supabase.
+  /// Creates a new workout on the backend.
   /// Note: Supabase/PostgREST does not support nested inserts, so we make two separate calls.
   /// Returns the created workout ID on success, null on error.
   Future<int?> createWorkout(final Workout workout) async {
@@ -207,7 +202,7 @@ class SupabaseService {
     }
   }
 
-  /// Soft deletes a workout on Supabase by setting deleted_at field.
+  /// Soft deletes a workout on the backend by setting deleted_at field.
   /// Returns true on success, false on error.
   Future<bool> deleteWorkout({
     required final int workoutId,

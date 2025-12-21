@@ -5,8 +5,8 @@ import "package:logging/logging.dart";
 import "package:provider/provider.dart";
 import "package:pull_up_club/common/constants/app_constants.dart";
 import "package:pull_up_club/common/providers/workout_history_provider.dart";
+import "package:pull_up_club/common/services/backend_service.dart";
 import "package:pull_up_club/common/services/package_info_service.dart";
-import "package:pull_up_club/common/services/supabase_service.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
 import "package:pull_up_club/common/themes/app_typography.dart";
@@ -32,7 +32,7 @@ class _AccountScreenState extends State<AccountScreen> {
     });
 
     try {
-      final success = await SupabaseService.instance.signInWithApple();
+      final success = await BackendService.instance.signInWithApple();
       if (success && mounted) {
         // Perform full sync after successful authentication
         final workoutHistoryProvider = context.read<WorkoutHistoryProvider>();
@@ -52,7 +52,7 @@ class _AccountScreenState extends State<AccountScreen> {
     });
 
     try {
-      await SupabaseService.instance.signOut();
+      await BackendService.instance.signOut();
     } on Exception catch (error, stackTrace) {
       _logger.severe("Sign out failed", error, stackTrace);
       setState(() => _errorMessage = "Failed to sign out");
@@ -62,7 +62,7 @@ class _AccountScreenState extends State<AccountScreen> {
 
   @override
   Widget build(final BuildContext context) {
-    final supabase = SupabaseService.instance;
+    final supabase = BackendService.instance;
     final isAuthenticated = supabase.isAuthenticated;
 
     return LayoutBuilder(

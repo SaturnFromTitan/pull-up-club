@@ -1,5 +1,5 @@
 import "package:logging/logging.dart";
-import "package:pull_up_club/common/services/supabase_service.dart";
+import "package:pull_up_club/common/services/backend_service.dart";
 import "package:pull_up_club/common/services/workout_database.dart";
 import "package:pull_up_club/domain/models.dart";
 
@@ -9,7 +9,7 @@ class SyncService {
   static final SyncService instance = SyncService._();
 
   final WorkoutDatabase _database = WorkoutDatabase.instance;
-  final SupabaseService _supabase = SupabaseService.instance;
+  final BackendService _supabase = BackendService.instance;
   static final Logger _logger = Logger("SyncService");
 
   /// Performs a sync: merges server and local workouts.
