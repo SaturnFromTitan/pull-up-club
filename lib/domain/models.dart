@@ -30,14 +30,16 @@ class Workout {
     this.id,
     final DateTime? start,
     this.end,
-    this.sets = const <WorkoutSet>[],
-  }) : start = start ?? clock.now().toUtc();
+    final List<WorkoutSet>? sets,
+  }) : start = start ?? clock.now().toUtc(),
+       sets = sets ?? <WorkoutSet>[];
+
   int? id;
   final WorkoutType workoutType;
   final int maxGroups;
   final DateTime start;
   DateTime? end;
-  List<WorkoutSet> sets = <WorkoutSet>[];
+  List<WorkoutSet> sets;
 
   void finish() {
     end ??= clock.now().toUtc();
