@@ -2,6 +2,10 @@
 
 ## 1.2.0
 
+UI / UX:
+
+- Added account screen to sign in with Apple and back up the workout data
+
 Fixes:
 
 - Fix day of week in Workout History
