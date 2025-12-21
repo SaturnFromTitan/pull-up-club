@@ -1,6 +1,5 @@
 import "dart:convert";
 
-import "package:clock/clock.dart";
 import "package:crypto/crypto.dart";
 import "package:logging/logging.dart";
 import "package:pull_up_club/domain/models.dart";
@@ -116,27 +115,20 @@ class BackendService {
     }
   }
 
-  /// Fetches workouts from the backend with optional delta sync.
-  /// If [since] is provided, filters by end >= since OR deleted_at >= since.
+  /// Fetches all workouts from the backend.
   /// Returns empty list if not authenticated or on error.
-  Future<List<Workout>> fetchWorkouts({final DateTime? since}) async {
+  Future<List<Workout>> fetchWorkouts() async {
     if (!isAuthenticated) {
       _logger.warning("Cannot fetch workouts: not authenticated");
       return [];
     }
 
     try {
-      _logger.info(
-        "Fetching workouts from Supabase${since != null ? " (delta sync since $since)" : ""}",
-      );
-      var query = _client!.from("workouts").select("*, workout_sets(*)");
-
-      if (since != null) {
-        final sinceStr = since.toIso8601String();
-        query = query.or("end.gte.$sinceStr,deleted_at.gte.$sinceStr");
-      }
-
-      final response = await query.order("start", ascending: false);
+      _logger.info("Fetching workouts from Supabase");
+      final response = await _client!
+          .from("workouts")
+          .select("*, workout_sets(*)")
+          .order("start", ascending: false);
       _logger.info("Fetched ${response.length} workouts from Supabase");
 
       return (response as List<dynamic>)
@@ -207,23 +199,30 @@ class BackendService {
 
   /// Soft deletes a workout on the backend by setting deleted_at field.
   /// Returns true on success, false on error.
-  Future<bool> deleteWorkout({
-    required final int workoutId,
-    final DateTime? deletedAt,
-  }) async {
+  Future<bool> deleteWorkout({required final Workout localWorkout}) async {
     if (!isAuthenticated) {
       _logger.warning("Cannot delete workout: not authenticated");
       return false;
     }
+    if (localWorkout.deletedAt == null) {
+      throw ArgumentError("The local workout isn't deleted yet");
+    }
+    if (localWorkout.serverId == null) {
+      _logger.warning(
+        "Can't push the deletion as the workout doesn't have a serverId yet",
+      );
+      return false;
+    }
 
-    final targetDeletedAt = deletedAt ?? clock.now().toUtc();
     try {
-      _logger.info("Soft deleting workout on Supabase: id=$workoutId");
+      _logger.info("Soft deleting workout on Supabase: id=${localWorkout.serverId}");
       await _client!
           .from("workouts")
-          .update({"deleted_at": targetDeletedAt.toIso8601String()})
-          .eq("id", workoutId);
-      _logger.info("Workout soft deleted successfully on Supabase: id=$workoutId");
+          .update({"deleted_at": localWorkout.deletedAt!.toIso8601String()})
+          .eq("id", localWorkout.serverId!);
+      _logger.info(
+        "Workout soft deleted successfully on Supabase: id=${localWorkout.serverId}",
+      );
       return true;
     } on Exception catch (error, stackTrace) {
       _logger.severe("Failed to soft delete workout on Supabase", error, stackTrace);

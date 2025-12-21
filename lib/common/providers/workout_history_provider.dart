@@ -1,8 +1,10 @@
 import "dart:async";
 import "dart:math";
 
+import "package:clock/clock.dart";
 import "package:flutter/material.dart";
 import "package:logging/logging.dart";
+import "package:pull_up_club/common/services/backend_service.dart";
 import "package:pull_up_club/common/services/sync_service.dart";
 import "package:pull_up_club/common/services/workout_database.dart";
 import "package:pull_up_club/domain/models.dart";
@@ -11,11 +13,12 @@ class WorkoutHistoryProvider extends ChangeNotifier {
   WorkoutHistoryProvider() {
     // on app start we only do a delta sync
     // full sync only happens when the user signs in
-    unawaited(loadWorkouts(isDeltaSync: true));
+    unawaited(loadWorkouts());
   }
   static final Logger _logger = Logger("WorkoutHistoryProvider");
 
   final WorkoutDatabase _database = WorkoutDatabase.instance;
+  final BackendService _backend = BackendService.instance;
   final SyncService _syncService = SyncService.instance;
 
   bool _isLoading = true;
@@ -24,14 +27,14 @@ class WorkoutHistoryProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   List<Workout> get completedWorkouts => _completedWorkouts;
 
-  Future<void> loadWorkouts({required final bool isDeltaSync}) async {
+  Future<void> loadWorkouts() async {
     _logger.info("Loading workout history");
     _isLoading = true;
     notifyListeners();
 
     try {
       // Perform sync before loading local workouts
-      await _syncService.performSync(isDeltaSync: isDeltaSync);
+      await _syncService.performSync();
 
       _completedWorkouts = await _database.getAllNonDeletedWorkouts();
     } finally {
@@ -46,8 +49,8 @@ class WorkoutHistoryProvider extends ChangeNotifier {
     _completedWorkouts.add(savedWorkout);
     _logger.info("Workout added to history: id=${savedWorkout.id}");
 
-    // Perform delta sync after workout completion (includes uploading the new workout)
-    unawaited(_syncService.performSync(isDeltaSync: true));
+    // push to supabase - if this fails, it will be covered by the next full sync
+    unawaited(_syncService.pushWorkoutToBackend(savedWorkout));
 
     notifyListeners();
   }
@@ -59,12 +62,13 @@ class WorkoutHistoryProvider extends ChangeNotifier {
     _logger.info("Deleting workout from history: $workout");
 
     // Soft delete locally
-    await _database.deleteWorkout(workoutId: workout.id!);
+    workout.deletedAt = clock.now().toUtc();
+    await _database.deleteWorkout(workout);
     _completedWorkouts.remove(workout);
     _logger.info("Workout deleted from history: $workout");
 
-    // Attempt to sync deletion to server
-    unawaited(_syncService.performSync(isDeltaSync: true));
+    // push to supabase - if this fails, it will be covered by the next full sync
+    unawaited(_backend.deleteWorkout(localWorkout: workout));
 
     notifyListeners();
   }

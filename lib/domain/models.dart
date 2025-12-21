@@ -42,7 +42,7 @@ class Workout {
   final int maxGroups;
   final DateTime start;
   DateTime? end;
-  final DateTime? deletedAt;
+  DateTime? deletedAt;
   List<WorkoutSet> sets;
 
   void finish() {

@@ -9,8 +9,22 @@ class SyncService {
   static final SyncService instance = SyncService._();
 
   final WorkoutDatabase _database = WorkoutDatabase.instance;
-  final BackendService _supabase = BackendService.instance;
+  final BackendService _backend = BackendService.instance;
   static final Logger _logger = Logger("SyncService");
+
+  /// Push a workout from the local DB to the remote backend and store the serverId
+  Future<void> pushWorkoutToBackend(final Workout localWorkout) async {
+    if (localWorkout.id == null) {
+      throw ArgumentError(
+        "Requires a workout which is already persisted in the local DB",
+      );
+    }
+    final serverId = await _backend.createWorkout(localWorkout);
+    if (serverId != null) {
+      // the workout was loaded from the local DB, so .id must be set
+      await _database.updateWorkoutServerId(localWorkout.id!, serverId);
+    }
+  }
 
   /// Performs a sync: merges server and local workouts.
   ///
@@ -30,35 +44,28 @@ class SyncService {
   ///   - Workout exists locally, but not on server (-> empty server_id): Upload to server
   ///   - Workout exists on server, but not locally (-> no matching local workout with that server id): Download to local
   ///   - Workout exists both on the server and locally and is only soft-deleted for one of them: perform soft-delete for the other
-  /// If [isDeltaSync] is true, only fetches workouts after the latest local workout sync time.
   /// Silently handles errors to maintain offline-first behavior.
-  Future<void> performSync({required final bool isDeltaSync}) async {
-    if (!_supabase.isAuthenticated) {
+  Future<void> performSync() async {
+    if (!_backend.isAuthenticated) {
       _logger.info("Skipping sync: user not authenticated");
       return;
     }
 
     try {
-      _logger.info("Starting sync (isDeltaSync=$isDeltaSync)");
+      _logger.info("Starting sync");
 
-      // Step 1: Determine sync time filter
-      DateTime? since;
-      if (isDeltaSync) {
-        since = await _database.getLatestLocalWorkoutDatetime();
-      }
-
-      // Step 2: Download workouts from server (filter by end >= since OR deleted_at >= since)
-      final serverWorkouts = await _supabase.fetchWorkouts(since: since);
+      // Step 1: Download workouts from server (filter by end >= since OR deleted_at >= since)
+      final serverWorkouts = await _backend.fetchWorkouts();
       _logger.info("Found ${serverWorkouts.length} workouts from server");
 
-      // Step 3: Load local workouts for sync:
+      // Step 2: Load local workouts for sync:
       // - All workouts with empty serverId (unsynced local workouts)
       // - All workouts with serverId matching any server workout we retrieved
       final serverIds = serverWorkouts.map((final w) => w.serverId!).toList();
       final localWorkouts = await _database.getWorkoutsForSync(serverIds);
       _logger.info("Found ${localWorkouts.length} local workouts for sync");
 
-      // Step 4: Perform three-way merge
+      // Step 3: Perform three-way merge
       await _performThreeWayMerge(serverWorkouts, localWorkouts);
 
       _logger.info("Sync completed successfully");
@@ -114,7 +121,7 @@ class SyncService {
           "Uploading local workout without server_id: localId=${localWorkout.id}",
         );
         // Convert DB row to Workout domain model for upload
-        final serverId = await _supabase.createWorkout(localWorkout);
+        final serverId = await _backend.createWorkout(localWorkout);
         if (serverId != null) {
           // the workout was loaded from the local DB, so .id must be set
           await _database.updateWorkoutServerId(localWorkout.id!, serverId);
@@ -169,10 +176,8 @@ class SyncService {
                 "Server workout is deleted, soft-deleting locally: serverId=${serverWorkout.serverId}",
               );
               // localWorkout was loaded from local DB, so id must be set
-              await _database.deleteWorkout(
-                workoutId: localWorkout.id!,
-                deletedAt: serverDeletedAt,
-              );
+              localWorkout.deletedAt = serverDeletedAt;
+              await _database.deleteWorkout(localWorkout);
               deletedSyncedCount++;
             } on Exception catch (error, stackTrace) {
               _logger.warning("Failed to soft-delete local workout", error, stackTrace);
@@ -183,10 +188,7 @@ class SyncService {
               _logger.fine(
                 "Local workout is deleted, soft-deleting on server: serverId=${serverWorkout.serverId}",
               );
-              await _supabase.deleteWorkout(
-                workoutId: serverWorkout.serverId!,
-                deletedAt: localDeletedAt,
-              );
+              await _backend.deleteWorkout(localWorkout: localWorkout);
               deletedSyncedCount++;
             } on Exception catch (error, stackTrace) {
               _logger.warning(

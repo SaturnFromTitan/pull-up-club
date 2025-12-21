@@ -36,7 +36,7 @@ class _AccountScreenState extends State<AccountScreen> {
       if (success && mounted) {
         // Perform full sync after successful authentication
         final workoutHistoryProvider = context.read<WorkoutHistoryProvider>();
-        await workoutHistoryProvider.loadWorkouts(isDeltaSync: false);
+        await workoutHistoryProvider.loadWorkouts();
       }
       if (!mounted) {
         return;

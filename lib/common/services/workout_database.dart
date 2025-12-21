@@ -1,4 +1,3 @@
-import "package:clock/clock.dart";
 import "package:drift/drift.dart";
 import "package:drift_flutter/drift_flutter.dart";
 import "package:logging/logging.dart";
@@ -305,61 +304,22 @@ class WorkoutDatabase extends _$WorkoutDatabase {
   }
 
   /// Soft deletes a workout by setting deleted_at timestamp.
-  Future<void> deleteWorkout({
-    required final int workoutId,
-    final DateTime? deletedAt,
-  }) async {
-    final targetDeletedAt = deletedAt ?? clock.now().toUtc();
-    _logger.info(
-      "Soft deleting workout: id=$workoutId, targetDeletedAt=$targetDeletedAt",
-    );
-    await (update(workouts)..where((final t) => t.id.equals(workoutId))).write(
-      WorkoutsCompanion(deletedAt: Value(targetDeletedAt)),
-    );
-    _logger.info("Successfully soft deleted workout: id=$workoutId");
-  }
-
-  /// Gets the end time or deleted_at time (whichever is later) across all workouts.
-  /// Used for delta sync filtering.
-  /// Returns null if no workouts exist.
-  Future<DateTime?> getLatestLocalWorkoutDatetime() async {
-    _logger.info("Getting latest workout datetime (end or deleted_at)");
-
-    // Get the maximum end time
-    final maxEndRow =
-        await (select(workouts)
-              ..orderBy([(final t) => OrderingTerm.desc(t.end)])
-              ..limit(1))
-            .getSingleOrNull();
-
-    // Get the maximum deleted_at time
-    final maxDeletedAtRow =
-        await (select(workouts)
-              ..where((final t) => t.deletedAt.isNotNull())
-              ..orderBy([(final t) => OrderingTerm.desc(t.deletedAt)])
-              ..limit(1))
-            .getSingleOrNull();
-
-    // even if no workout is deleted, maxDeletedAtRow can only be null if there are no rows
-    if (maxEndRow == null || maxDeletedAtRow == null) {
-      _logger.info("No workouts found");
-      return null;
+  Future<bool> deleteWorkout(final Workout workout) async {
+    if (workout.deletedAt == null) {
+      throw ArgumentError("The local workout isn't deleted yet");
     }
-
-    // Compare the maximum end and maximum deleted_at, return the later one
-    final maxEnd = maxEndRow.end;
-    final maxDeletedAt = maxDeletedAtRow.deletedAt;
-
-    DateTime? syncTime;
-    if (maxDeletedAt == null) {
-      syncTime = maxEnd;
-    } else {
-      syncTime = maxDeletedAt.isAfter(maxEnd) ? maxDeletedAt : maxEnd;
+    if (workout.id == null) {
+      _logger.warning("Can't delete a workout that's not persisted yet");
+      return false;
     }
 
     _logger.info(
-      "Latest workout sync time: $syncTime (maxEnd=$maxEnd, maxDeletedAt=$maxDeletedAt)",
+      "Soft deleting workout: id=${workout.id}, deletedAt=${workout.deletedAt}",
     );
-    return syncTime;
+    await (update(workouts)..where((final t) => t.id.equals(workout.id!))).write(
+      WorkoutsCompanion(deletedAt: Value(workout.deletedAt)),
+    );
+    _logger.info("Successfully soft deleted workout: id=${workout.id}");
+    return true;
   }
 }
