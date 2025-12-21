@@ -186,16 +186,21 @@ class WorkoutDatabase extends _$WorkoutDatabase {
     return workout;
   }
 
-  Future<List<Workout>> getAllWorkouts() async {
-    _logger.info("Loading all workouts from database");
+  Future<List<Workout>> getAllWorkouts({final bool excludeDeleted = true}) async {
+    _logger.info("Loading all workouts from database (excludeDeleted=$excludeDeleted)");
     // sorting by "end" instead of "start" because
     //  - we assume there are no overlapping/concurrent workouts -> it doesn't really matter
     //  - there's an index on "end", but not on "start"
-    final workoutRows = await (select(
-      workouts,
-    )..orderBy([(final t) => OrderingTerm.asc(t.end)])).get();
+    final workoutQuery = select(workouts)
+      ..orderBy([(final t) => OrderingTerm.asc(t.end)]);
+    if (excludeDeleted) {
+      workoutQuery.where((final t) => t.deletedAt.isNull());
+    }
+    final workoutRows = await workoutQuery.get();
     _logger.info("Loaded ${workoutRows.length} workout rows");
 
+    // ⚠️ this also contains soft-deleted workout sets
+    // loading a bit more data doesn't do harm, but keeps the logic simpler
     final setRows =
         await (select(workoutSets)..orderBy([
               (final t) => OrderingTerm.asc(t.workoutId),
@@ -242,11 +247,13 @@ class WorkoutDatabase extends _$WorkoutDatabase {
     return workoutList;
   }
 
+  /// Soft deletes a workout by setting deleted_at timestamp.
   Future<void> deleteWorkout(final int workoutId) async {
-    _logger.info("Deleting workout: id=$workoutId");
-    await (delete(workouts)..where((final t) => t.id.equals(workoutId))).go();
-    // Sets will be deleted automatically due to CASCADE
-    _logger.info("Successfully deleted workout: id=$workoutId");
+    _logger.info("Soft deleting workout: id=$workoutId");
+    await (update(workouts)..where((final t) => t.id.equals(workoutId))).write(
+      WorkoutsCompanion(deletedAt: Value(DateTime.now().toUtc())),
+    );
+    _logger.info("Successfully soft deleted workout: id=$workoutId");
   }
 }
 
