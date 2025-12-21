@@ -7,7 +7,6 @@ UI / UX:
 - Cloud Sync
   - You can now back up your workout data to the cloud
   - All you need to do is sign in with your Apple ID
-  - None of your personal data is shared, i.e. not even your name or email address
 - Workouts are automatically synced both ways with the cloud
 - -> If you use a new phone or reinstall the app, all your workout data will be available again
 
