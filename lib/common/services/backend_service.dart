@@ -160,8 +160,11 @@ class BackendService {
       final workoutData = {
         "workout_type": workout.workoutType.name,
         "max_groups": workout.maxGroups,
-        "start": workout.start.toIso8601String(),
-        "end": workout.end!.toIso8601String(),
+        // sqlite only supports seconds precision, so for consistency we drop higher precisions here as well
+        "start": workout.start
+            .copyWith(microsecond: 0, millisecond: 0)
+            .toIso8601String(),
+        "end": workout.end!.copyWith(microsecond: 0, millisecond: 0).toIso8601String(),
       };
 
       // Insert workout and get the ID
@@ -218,7 +221,12 @@ class BackendService {
       _logger.info("Soft deleting workout on Supabase: id=${localWorkout.serverId}");
       await _client!
           .from("workouts")
-          .update({"deleted_at": localWorkout.deletedAt!.toIso8601String()})
+          // sqlite only supports seconds precision, so for consistency we drop higher precisions here as well
+          .update({
+            "deleted_at": localWorkout.deletedAt!
+                .copyWith(microsecond: 0, millisecond: 0)
+                .toIso8601String(),
+          })
           .eq("id", localWorkout.serverId!);
       _logger.info(
         "Workout soft deleted successfully on Supabase: id=${localWorkout.serverId}",
