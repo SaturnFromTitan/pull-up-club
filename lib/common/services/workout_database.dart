@@ -1,4 +1,3 @@
-// TODO: this service shouldn't return things in the domain model, it should use the DB models...
 import "package:drift/drift.dart";
 import "package:drift_flutter/drift_flutter.dart";
 import "package:logging/logging.dart";
@@ -154,9 +153,6 @@ class WorkoutDatabase extends _$WorkoutDatabase {
     _logger.info("Inserting workout: $workout");
     final workoutId = await into(workouts).insert(
       WorkoutsCompanion.insert(
-        serverId: workout.serverId == null
-            ? const Value.absent()
-            : Value(workout.serverId),
         workoutType: workout.workoutType.name,
         maxGroups: workout.maxGroups,
         start: workout.start,
@@ -232,7 +228,6 @@ class WorkoutDatabase extends _$WorkoutDatabase {
 
       final workout = Workout(
         id: workoutRow.id,
-        serverId: workoutRow.serverId,
         workoutType: workoutType,
         maxGroups: workoutRow.maxGroups,
         start: workoutRow.start,
