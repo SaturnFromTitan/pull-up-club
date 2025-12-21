@@ -28,17 +28,21 @@ class Workout {
     required this.workoutType,
     required this.maxGroups,
     this.id,
+    this.serverId,
     final DateTime? start,
     this.end,
+    this.deletedAt,
     final List<WorkoutSet>? sets,
   }) : start = start ?? clock.now().toUtc(),
        sets = sets ?? <WorkoutSet>[];
 
   int? id;
+  int? serverId;
   final WorkoutType workoutType;
   final int maxGroups;
   final DateTime start;
   DateTime? end;
+  DateTime? deletedAt;
   List<WorkoutSet> sets;
 
   void finish() {
@@ -57,12 +61,15 @@ class Workout {
   @override
   String toString() {
     final buffer = StringBuffer("Workout(")
-      ..write("id=$id, ")
-      ..write("type=${workoutType.name}, ")
-      ..write("maxGroups=$maxGroups, ")
-      ..write("sets=${sets.length}")
+      ..write("id=$id")
+      ..write(", serverId=$serverId")
+      ..write(", type=${workoutType.name}")
+      ..write(", maxGroups=$maxGroups")
+      ..write(", start=$start")
+      ..write(", end=$end")
+      ..write(", deletedAt=$deletedAt")
+      ..write(", numSets=${sets.length}")
       ..write(", totalReps=${totalReps()}")
-      ..write(", inProgress=${end == null}")
       ..write(")");
     return buffer.toString();
   }

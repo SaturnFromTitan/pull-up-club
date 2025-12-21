@@ -1,18 +1,25 @@
 import "dart:async";
 import "dart:math";
 
+import "package:clock/clock.dart";
 import "package:flutter/material.dart";
 import "package:logging/logging.dart";
-import "package:pull_up_club/data/repositories/workout_repository.dart";
+import "package:pull_up_club/common/services/backend_service.dart";
+import "package:pull_up_club/common/services/sync_service.dart";
+import "package:pull_up_club/common/services/workout_database.dart";
 import "package:pull_up_club/domain/models.dart";
 
 class WorkoutHistoryProvider extends ChangeNotifier {
-  WorkoutHistoryProvider(this._repository) {
-    unawaited(_loadWorkouts());
+  WorkoutHistoryProvider() {
+    // on app start we only do a delta sync
+    // full sync only happens when the user signs in
+    unawaited(loadWorkouts());
   }
   static final Logger _logger = Logger("WorkoutHistoryProvider");
 
-  final WorkoutRepository _repository;
+  final WorkoutDatabase _database = WorkoutDatabase.instance;
+  final BackendService _backend = BackendService.instance;
+  final SyncService _syncService = SyncService.instance;
 
   bool _isLoading = true;
   List<Workout> _completedWorkouts = <Workout>[];
@@ -20,13 +27,16 @@ class WorkoutHistoryProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   List<Workout> get completedWorkouts => _completedWorkouts;
 
-  Future<void> _loadWorkouts() async {
+  Future<void> loadWorkouts() async {
     _logger.info("Loading workout history");
     _isLoading = true;
     notifyListeners();
 
     try {
-      _completedWorkouts = await _repository.getAllWorkouts();
+      // Perform sync before loading local workouts
+      await _syncService.performSync();
+
+      _completedWorkouts = await _database.getAllNonDeletedWorkouts();
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -35,9 +45,13 @@ class WorkoutHistoryProvider extends ChangeNotifier {
 
   Future<void> addWorkout(final Workout workout) async {
     _logger.info("Adding workout to history: $workout");
-    final savedWorkout = await _repository.saveWorkout(workout);
+    final savedWorkout = await _database.insertWorkout(workout);
     _completedWorkouts.add(savedWorkout);
     _logger.info("Workout added to history: id=${savedWorkout.id}");
+
+    // push to supabase - if this fails, it will be covered by the next full sync
+    unawaited(_syncService.pushWorkoutToBackend(savedWorkout));
+
     notifyListeners();
   }
 
@@ -46,9 +60,22 @@ class WorkoutHistoryProvider extends ChangeNotifier {
       throw Exception("Cannot delete workout without ID");
     }
     _logger.info("Deleting workout from history: $workout");
-    await _repository.deleteWorkout(workout.id!);
+
+    // Soft delete locally
+    workout.deletedAt = clock.now().toUtc();
+    await _database.deleteWorkout(workout);
     _completedWorkouts.remove(workout);
     _logger.info("Workout deleted from history: $workout");
+
+    // because the workout is pushed to the backend asyncronously, this instance might
+    // not contain the serverId yet. Therefore we look it up in the local database as
+    // a fallback.
+    workout.serverId ??= await _database.getServerIdForWorkout(workout.id!);
+    if (workout.serverId != null) {
+      // push to supabase - if this fails, it will be covered by the next full sync
+      unawaited(_backend.deleteWorkout(localWorkout: workout));
+    }
+
     notifyListeners();
   }
 

@@ -10,13 +10,11 @@ import "package:pull_up_club/common/providers/navigation_provider.dart";
 import "package:pull_up_club/common/providers/workout_history_provider.dart";
 import "package:pull_up_club/common/screens/forced_update_screen.dart";
 import "package:pull_up_club/common/screens/shell_screen.dart";
+import "package:pull_up_club/common/services/backend_service.dart";
 import "package:pull_up_club/common/services/logging_service.dart";
 import "package:pull_up_club/common/services/package_info_service.dart";
 import "package:pull_up_club/common/services/remote_config_service.dart";
-import "package:pull_up_club/common/services/supabase_service.dart";
-import "package:pull_up_club/common/services/workout_database.dart";
 import "package:pull_up_club/common/themes/app_theme.dart";
-import "package:pull_up_club/data/repositories/workout_repository.dart";
 import "package:pull_up_club/errors_reporting.dart";
 import "package:sentry_flutter/sentry_flutter.dart";
 
@@ -48,7 +46,7 @@ Future<void> main() async {
     );
 
     // Initialize Supabase with config from remote config (or defaults)
-    await SupabaseService.instance.initialize(
+    await BackendService.instance.initialize(
       backendUrl: appConfig.backendUrl,
       backendPublishableKey: appConfig.backendPublishableKey,
     );
@@ -123,9 +121,6 @@ class App extends StatelessWidget {
   // setting ErorWidget.builder is not compatible with the integration test framework
   final bool setErrorWidgetBuilder;
 
-  // Create repository as a static instance to ensure it's only created once
-  static final _workoutRepository = WorkoutRepository(WorkoutDatabase.instance);
-
   @override
   Widget build(final BuildContext context) {
     // Show forced update screen if update is required
@@ -141,9 +136,7 @@ class App extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (final context) => NavigationProvider()),
-        ChangeNotifierProvider(
-          create: (final context) => WorkoutHistoryProvider(_workoutRepository),
-        ),
+        ChangeNotifierProvider(create: (final context) => WorkoutHistoryProvider()),
       ],
       child: buildMaterialApp(context, setErrorWidgetBuilder: setErrorWidgetBuilder),
     );

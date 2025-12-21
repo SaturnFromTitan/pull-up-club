@@ -82,3 +82,29 @@ The app uses a multi-layered logging and error reporting system:
 1. **File-based logging**: All logs are written to a file on the device
 2. **Sentry integration**: Errors and warnings are automatically sent to Sentry (if configured)
 3. **Console logging**: Development logs are printed to console (debug mode only)
+
+## Cloud Sync
+
+When signing in with an Apple ID, the workout data can be synced to a remote backend (Supabase).
+The sync assumes that workouts are immutable, i.e. updating workouts or workout sets is not allowed locally OR on the server
+(setting `deleted_at` is the single exception to this rule).
+In the app itself, this won't be possible in the forseeable future anyway.
+On the server, it is in principle possible via the admin interface.
+But instead of altering an existing resource, a new resource with the same attributes should be added and the old one soft-deleted.
+
+Syncs are performed:
+
+| When                                       | scope |
+|--------------------------------------------|-------|
+| After signing in (e.g. with Apple)         | full  |
+| On app start                               | full  |
+| After completing a workout locally         | push  |
+| After deleting a workout locally           | push  |
+
+If the sync in its current form proves to be too inefficient, we should introduce
+
+- a queue for workout completion / deletion that can be processed asyncroniously
+  -> local changes are pushed to the server reliably and targeted
+- delta sync (required modifiedAt field on the server and locally)
+  -> latest server changes are pulled efficiently
+- a full sync would then only be required upon sign-in
