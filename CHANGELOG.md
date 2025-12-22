@@ -14,6 +14,10 @@ Fixes:
 
 - Fix day of week in Workout History
 
+Privacy:
+
+- Updated the privacy policy to detail how the (optional) Cloud Sync affects the data collection and usage
+
 ## 1.1.0
 
 UI / UX:
