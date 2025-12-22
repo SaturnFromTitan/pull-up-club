@@ -5,6 +5,7 @@ import "package:path_provider/path_provider.dart";
 import "package:pull_up_club/domain/models.dart";
 
 part "workout_database.g.dart";
+part "workout_migrations.dart";
 
 LazyDatabase _openConnection() => LazyDatabase(() async {
   final dbFolder = await getApplicationDocumentsDirectory();
@@ -63,113 +64,22 @@ class WorkoutDatabase extends _$WorkoutDatabase {
     },
     onUpgrade: (final m, final from, final to) async {
       _logger.info("Upgrading database schema from version $from to version $to");
-      if (from < 2) {
-        // Add number column to workout_sets table as nullable first (for migration safety)
-        await customStatement("ALTER TABLE workout_sets ADD COLUMN number INTEGER");
-        _logger.info("Added number column to workout_sets table (nullable)");
 
-        // Set number values: for each workout, order sets by id and assign numbers starting from 1
-        // We'll use a subquery to assign sequential numbers based on id ordering
-        await customStatement("""
-          UPDATE workout_sets
-          SET number = (
-            SELECT COUNT(*) + 1
-            FROM workout_sets ws2
-            WHERE ws2.workout_id = workout_sets.workout_id
-              AND ws2.id < workout_sets.id
-          )
-        """);
-        _logger.info("Populated number values for workout sets");
-
-        // Now make number non-nullable by recreating the table
-        // Step 1: Create new table with non-nullable number
-        await customStatement("""
-          CREATE TABLE workout_sets_new (
-            id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-            workout_id INTEGER NOT NULL,
-            number INTEGER NOT NULL,
-            group_number INTEGER NOT NULL,
-            target_reps INTEGER,
-            completed_reps INTEGER NOT NULL,
-            FOREIGN KEY (workout_id) REFERENCES workouts(id) ON DELETE CASCADE
-          )
-        """);
-
-        // Step 2: Copy data from old table to new table
-        await customStatement("""
-          INSERT INTO workout_sets_new (
-            id, workout_id, number, group_number, target_reps, completed_reps
-          )
-          SELECT
-            id, workout_id, COALESCE(number, 1) as number, group_number, target_reps, completed_reps
-          FROM workout_sets
-        """);
-
-        // Step 3: Drop old table and rename new table
-        await customStatement("DROP TABLE workout_sets");
-        await customStatement("ALTER TABLE workout_sets_new RENAME TO workout_sets");
-
-        _logger.info("Migrated number column to non-nullable");
+      for (var version = from + 1; version <= to; version++) {
+        switch (version) {
+          case 2:
+            await migrateToVersion2(m);
+          case 3:
+            await migrateToVersion3(m);
+          case 4:
+            await migrateToVersion4(m);
+          case 5:
+            await migrateToVersion5(m);
+          default:
+            _logger.warning("No explicit migration defined for version $version");
+        }
       }
-      if (from < 3) {
-        // Make end column non-nullable by recreating the workouts table
-        // Step 1: Create new table with non-nullable end
-        await customStatement("""
-          CREATE TABLE workouts_new (
-            id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-            workout_type TEXT NOT NULL,
-            max_groups INTEGER NOT NULL,
-            start INTEGER NOT NULL,
-            end INTEGER NOT NULL
-          )
-        """);
 
-        // Step 2: Copy data from old table to new table, setting end to start for null values
-        // this is just a precaution for absolute safety - in reality end will always be set
-        await customStatement("""
-          INSERT INTO workouts_new (
-            id, workout_type, max_groups, start, end
-          )
-          SELECT
-            id, workout_type, max_groups, start, COALESCE(end, start) as end
-          FROM workouts
-        """);
-
-        // Step 3: Drop old table and rename new table
-        await customStatement("DROP TABLE workouts");
-        await customStatement("ALTER TABLE workouts_new RENAME TO workouts");
-
-        _logger.info("Migrated end column to non-nullable");
-      }
-      if (from < 4) {
-        // Add columns which are needed for the cloud sync
-        // Add server_id column
-        await m.addColumn(workouts, workouts.serverId);
-        _logger.info("Added server_id column to workouts table");
-        // Add deleted_at column for soft deletes
-        await m.addColumn(workouts, workouts.deletedAt);
-        _logger.info("Added deleted_at column to workouts table");
-      }
-      if (from < 5) {
-        // Add indexes for common query patterns
-        // Index for getAllNonDeletedWorkouts: WHERE deletedAt IS NULL ORDER BY end
-        await customStatement(
-          "CREATE INDEX IF NOT EXISTS idx_workouts_deleted_at_end ON workouts(deleted_at, end)",
-        );
-        _logger.info("Created index idx_workouts_deleted_at_end");
-
-        // Index for getWorkoutsForSync: WHERE serverId IS NULL OR serverId IN (...) ORDER BY end
-        await customStatement(
-          "CREATE INDEX IF NOT EXISTS idx_workouts_server_id_end ON workouts(server_id, end)",
-        );
-        _logger.info("Created index idx_workouts_server_id_end");
-
-        // Index for loadRelatedWorkoutSets: WHERE workoutId IN (...) ORDER BY workoutId, number
-        await customStatement(
-          "CREATE INDEX IF NOT EXISTS idx_workout_sets_workout_id_number ON workout_sets(workout_id, number)",
-        );
-        _logger.info("Created index idx_workout_sets_workout_id_number");
-      }
       _logger.info("Database schema upgraded successfully");
     },
   );
