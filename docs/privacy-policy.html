@@ -103,7 +103,7 @@
 
         <h2>1. Information We Collect</h2>
         <p>
-            Pull-Up Club is designed with privacy in mind. The app collects only the information necessary for it to function:
+            Pull-Up Club is designed with privacy in mind. The app collects only the information necessary for it to function. Using cloud sync and creating an account is optional: if you choose not to sign in, your personal data and workout data remains stored only on your device.
         </p>
         <ul>
             <li><strong>Account Information:</strong> When you sign in with Apple, we receive and store:
@@ -170,11 +170,11 @@
 
         <h2>4. Data Storage and Security</h2>
         <p>
-            Your data is stored in two main places:
+            Your data is stored in different places depending on how you use the app:
         </p>
         <ul>
-            <li><strong>On your device:</strong> The app caches workout data locally on your device to improve performance and offline usage.</li>
-            <li><strong>On Supabase servers:</strong> Your account information and workout data are stored in a PostgreSQL database hosted by Supabase. This enables backup, sync between devices, and secure access to your data.
+            <li><strong>On your device (always):</strong> The app caches workout data locally on your device to improve performance and offline usage. If you do not sign in, your workout data stays entirely on your device and is not synced to our backend.</li>
+            <li><strong>On Supabase servers (only if you sign in):</strong> If you choose to sign in with Apple and use cloud sync, your account information and workout data are stored in a PostgreSQL database hosted by Supabase. This enables backup, sync between devices, and secure access to your data.
             </li>
         </ul>
         <p>
