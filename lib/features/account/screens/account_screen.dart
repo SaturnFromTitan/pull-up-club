@@ -82,83 +82,72 @@ class _AccountScreenState extends State<AccountScreen> {
                 ),
                 Column(
                   children: [
-                    SizedBox(
-                      width: Screen.width(context) * 0.7,
-                      child: const Text(
-                        "Sign in to backup your workouts in the cloud:",
-                        textAlign: TextAlign.center,
-                        style: AppTypography.bodyLarge,
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(AppSpacing.paddingMd),
+                        child: Column(
+                          children: isAuthenticated
+                              ? [
+                                  const Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.cloud_done,
+                                        size: 48,
+                                        color: AppColors.onLight,
+                                      ),
+                                      SizedBox(width: AppSpacing.md),
+                                      Text(
+                                        "Signed In",
+                                        style: AppTypography.headlineLarge,
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: AppSpacing.lg),
+                                  GradientButton(
+                                    onPressed: _isLoading ? null : _handleSignOut,
+                                    text: "Sign Out",
+                                    icon: Icons.logout,
+                                    gradient: AppGradients.secondary,
+                                  ),
+                                ]
+                              : [
+                                  SizedBox(
+                                    width: Screen.width(context) * 0.7,
+                                    child: const Text(
+                                      "Sign in to backup your workouts in the cloud:",
+                                      textAlign: TextAlign.center,
+                                      style: AppTypography.bodyLarge,
+                                    ),
+                                  ),
+                                  const SizedBox(height: AppSpacing.md),
+                                  if (_errorMessage != null) ...[
+                                    Container(
+                                      width: double.infinity,
+                                      padding: const EdgeInsets.all(AppSpacing.md),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.errorBackground,
+                                      ),
+                                      child: Text(
+                                        _errorMessage!,
+                                        style: AppTypography.bodySmall.copyWith(
+                                          color: AppColors.errorText,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                    const SizedBox(height: AppSpacing.lg),
+                                  ],
+                                  GradientButton(
+                                    onPressed: _isLoading ? null : _handleAppleSignIn,
+                                    text: "Sign in with Apple",
+                                    icon: Icons.apple,
+                                    gradient: AppGradients.secondary,
+                                  ),
+                                ],
+                        ),
                       ),
                     ),
-                    const SizedBox(height: AppSpacing.md),
-                    if (isAuthenticated) ...[
-                      Card(
-                        color: Colors.white,
-                        child: Padding(
-                          padding: const EdgeInsets.all(AppSpacing.paddingMd),
-                          child: Column(
-                            children: [
-                              const Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.cloud_done,
-                                    size: 48,
-                                    color: AppColors.onLight,
-                                  ),
-                                  SizedBox(width: AppSpacing.md),
-                                  Text("Signed In", style: AppTypography.headlineLarge),
-                                ],
-                              ),
-                              const SizedBox(height: AppSpacing.lg),
-                              GradientButton(
-                                onPressed: _isLoading ? null : _handleSignOut,
-                                text: "Sign Out",
-                                icon: Icons.logout,
-                                gradient: AppGradients.secondary,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ] else ...[
-                      Card(
-                        color: Colors.white,
-                        child: Padding(
-                          padding: const EdgeInsets.all(AppSpacing.paddingMd),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              if (_errorMessage != null) ...[
-                                Container(
-                                  padding: const EdgeInsets.all(AppSpacing.md),
-                                  decoration: BoxDecoration(
-                                    color: Colors.red.shade50,
-                                    borderRadius: BorderRadius.circular(
-                                      AppSpacing.radiusMd,
-                                    ),
-                                  ),
-                                  child: Text(
-                                    _errorMessage!,
-                                    style: AppTypography.bodySmall.copyWith(
-                                      color: Colors.red.shade700,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                                const SizedBox(height: AppSpacing.lg),
-                              ],
-                              GradientButton(
-                                onPressed: _isLoading ? null : _handleAppleSignIn,
-                                text: "Sign in with Apple",
-                                icon: Icons.apple,
-                                gradient: AppGradients.secondary,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
                   ],
                 ),
                 Padding(
