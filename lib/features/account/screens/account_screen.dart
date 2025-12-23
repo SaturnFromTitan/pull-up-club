@@ -76,7 +76,7 @@ class _AccountScreenState extends State<AccountScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text(
-                  "Cloud Sync",
+                  "Account",
                   textAlign: TextAlign.center,
                   style: AppTypography.displayMedium,
                 ),
