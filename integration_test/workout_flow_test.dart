@@ -62,7 +62,7 @@ void main() {
       expect(find.text(reps[2].toString()), findsOneWidget);
 
       // Verify duration is displayed (format: MM:SS)
-      final durationText = find.textContaining(RegExp(r"\d{2}:\d{2}"));
+      final durationText = find.textContaining(r"\d{2}:\d{2}");
       expect(durationText, findsOneWidget);
 
       print("Going back home");
