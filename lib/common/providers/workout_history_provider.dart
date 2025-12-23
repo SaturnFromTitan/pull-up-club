@@ -50,7 +50,11 @@ class WorkoutHistoryProvider extends ChangeNotifier {
     _logger.info("Workout added to history: id=${savedWorkout.id}");
 
     // push to supabase - if this fails, it will be covered by the next full sync
-    unawaited(_syncService.pushWorkoutToBackend(savedWorkout));
+    if (_backend.isAuthenticated) {
+      unawaited(_syncService.pushWorkoutToBackend(savedWorkout));
+    } else {
+      _logger.info("Not pushing workout to backend as the user is not authenticated");
+    }
 
     notifyListeners();
   }
@@ -67,13 +71,23 @@ class WorkoutHistoryProvider extends ChangeNotifier {
     _completedWorkouts.remove(workout);
     _logger.info("Workout deleted from history: $workout");
 
-    // because the workout is pushed to the backend asyncronously, this instance might
-    // not contain the serverId yet. Therefore we look it up in the local database as
-    // a fallback.
-    workout.serverId ??= await _database.getServerIdForWorkout(workout.id!);
-    if (workout.serverId != null) {
-      // push to supabase - if this fails, it will be covered by the next full sync
-      unawaited(_backend.deleteWorkout(localWorkout: workout));
+    if (_backend.isAuthenticated) {
+      // because the workout is pushed to the backend asyncronously, this instance might
+      // not contain the serverId yet. Therefore we look it up in the local database as
+      // a fallback.
+      workout.serverId ??= await _database.getServerIdForWorkout(workout.id!);
+      if (workout.serverId == null) {
+        _logger.info(
+          "Can't push soft-deletion to backend as the serverId is unknown $workout",
+        );
+      } else {
+        // push to supabase - if this fails, it will be covered by the next full sync
+        unawaited(_backend.deleteWorkout(localWorkout: workout));
+      }
+    } else {
+      _logger.info(
+        "Not pushing workout deletion to backend as the user is not authenticated",
+      );
     }
 
     notifyListeners();
