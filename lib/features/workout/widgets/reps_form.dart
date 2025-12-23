@@ -103,7 +103,7 @@ class _RepsFormState extends State<RepsForm> {
                 ),
               ),
               textAlign: TextAlign.center,
-              inputFormatters: [FilteringTextInputFormatter("[0-9]", allow: true)],
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               keyboardType: TextInputType.number,
               onTapOutside: (final event) {
                 FocusScope.of(context).unfocus();
