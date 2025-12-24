@@ -24,15 +24,13 @@ class GradientNavigationBar extends StatelessWidget {
         left: false,
         right: false,
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+          padding: const EdgeInsets.only(top: AppSpacing.md),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: List.generate(destinations.length, (final index) {
               final destination = destinations[index];
               final isSelected = index == selectedIndex;
-              final iconWidget = (isSelected && destination.selectedIcon != null)
-                  ? destination.selectedIcon!
-                  : destination.icon;
+              final iconWidget = destination.icon;
               return _NavItem(
                 isSelected: isSelected,
                 icon: iconWidget,
@@ -73,7 +71,7 @@ class _NavItem extends StatelessWidget {
   final VoidCallback onTap;
 
   static const Color _inactiveColor = AppColors.onLightSecondary;
-  static const double _iconSize = 32;
+  static const double _iconSize = 30;
 
   @override
   Widget build(final BuildContext context) {

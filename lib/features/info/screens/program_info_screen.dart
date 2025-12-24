@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import "package:flutter_markdown_plus/flutter_markdown_plus.dart";
+import "package:lucide_icons_flutter/lucide_icons.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
 import "package:pull_up_club/common/themes/app_typography.dart";
@@ -100,7 +101,7 @@ class _YouTubeLink extends StatelessWidget {
           onTap: _openYouTubeVideo,
           child: const Row(
             children: [
-              Icon(Icons.play_circle_outline, size: 24),
+              Icon(LucideIcons.circlePlay, size: 24),
               SizedBox(width: AppSpacing.xs),
               Text("Watch instructional video", style: AppTypography.bodyLarge),
             ],

@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:lucide_icons_flutter/lucide_icons.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
 import "package:pull_up_club/common/widgets/core/gradient_button.dart";
@@ -35,7 +36,7 @@ class _LaddersState extends BaseWorkoutState<LaddersScreen> {
           _targetReps++;
         },
         text: "Done, continue this ladder",
-        icon: Icons.trending_up,
+        icon: LucideIcons.trendingUp,
         gradient: AppGradients.accentGreen,
       ),
       GradientButton(
@@ -47,7 +48,7 @@ class _LaddersState extends BaseWorkoutState<LaddersScreen> {
           _targetReps = 1;
         },
         text: isLastGroup() ? "Finish Workout" : "Done, start new ladder",
-        icon: isLastGroup() ? Icons.check : Icons.refresh,
+        icon: isLastGroup() ? LucideIcons.check : LucideIcons.rotateCcw,
         gradient: AppGradients.accentPurple,
       ),
       GradientButton(
@@ -56,8 +57,8 @@ class _LaddersState extends BaseWorkoutState<LaddersScreen> {
             _showCustomRepsForm = !_showCustomRepsForm;
           });
         },
-        text: "I did fewer",
-        icon: Icons.close,
+        text: "Custom",
+        icon: Icons.question_mark,
         gradient: AppGradients.light,
       ),
     ];

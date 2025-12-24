@@ -1,5 +1,6 @@
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
+import "package:lucide_icons_flutter/lucide_icons.dart";
 import "package:provider/provider.dart";
 import "package:pull_up_club/common/providers/navigation_provider.dart";
 import "package:pull_up_club/common/screens/shell_screen.dart";
@@ -10,7 +11,7 @@ class HomeButton extends StatelessWidget {
   const HomeButton({
     required this.text,
     super.key,
-    this.icon = Icons.home,
+    this.icon = LucideIcons.house,
     this.gradient = AppGradients.light,
   });
   final String text;

@@ -3,6 +3,7 @@ import "dart:async";
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:logging/logging.dart";
+import "package:lucide_icons_flutter/lucide_icons.dart";
 import "package:provider/provider.dart";
 import "package:pull_up_club/common/providers/workout_history_provider.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
@@ -163,7 +164,7 @@ abstract class BaseWorkoutState<T extends BaseWorkoutScreen> extends State<T> {
           ),
           SizedBox(
             width: Screen.width(context) * 0.5,
-            child: const HomeButton(text: "Exit", icon: Icons.exit_to_app),
+            child: const HomeButton(text: "Abort", icon: LucideIcons.x),
           ),
         ],
       ),

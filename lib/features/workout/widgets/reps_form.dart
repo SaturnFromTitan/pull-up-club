@@ -1,6 +1,7 @@
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
+import "package:lucide_icons_flutter/lucide_icons.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
 import "package:pull_up_club/common/themes/app_typography.dart";
@@ -11,11 +12,11 @@ class RepsForm extends StatefulWidget {
     required this.onValidSubmit,
     super.key,
     this.submitText = "Submit",
-    this.submitIcon = Icons.check,
+    this.submitIcon = LucideIcons.check,
     this.submitGradient = AppGradients.secondary,
     this.minValue = 0,
     this.cancelText = "Back",
-    this.cancelIcon = Icons.arrow_back,
+    this.cancelIcon = LucideIcons.arrowLeft,
     this.onCancel,
     this.initialValue,
     this.infoText,

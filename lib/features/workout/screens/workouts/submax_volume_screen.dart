@@ -1,5 +1,6 @@
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
+import "package:lucide_icons_flutter/lucide_icons.dart";
 import "package:provider/provider.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
@@ -72,7 +73,7 @@ class _SubmaxVolumeScreenState extends BaseWorkoutState<SubmaxVolumeScreen> {
           );
         },
         text: "I did $targetReps",
-        icon: Icons.check,
+        icon: LucideIcons.check,
         gradient: AppGradients.secondary,
       ),
       GradientButton(
@@ -83,7 +84,7 @@ class _SubmaxVolumeScreenState extends BaseWorkoutState<SubmaxVolumeScreen> {
           );
         },
         text: "I did ${targetReps - 1}",
-        icon: Icons.thumb_up_alt_outlined,
+        icon: LucideIcons.thumbsUp,
         gradient: AppGradients.accentGreen,
       ),
     ];
@@ -97,7 +98,7 @@ class _SubmaxVolumeScreenState extends BaseWorkoutState<SubmaxVolumeScreen> {
             );
           },
           text: "I did ${targetReps - 2}",
-          icon: Icons.ssid_chart_outlined,
+          icon: LucideIcons.batteryMedium,
           gradient: AppGradients.accentPurple,
         ),
       );

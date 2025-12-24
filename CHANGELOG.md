@@ -2,13 +2,15 @@
 
 ## 1.2.0
 
-UI / UX:
+Features:
 
 - Cloud Sync
   - You can now back up your workout data to the cloud
   - All you need to do is sign in with your Apple ID
-- Workouts are automatically synced both ways with the cloud
-- -> If you use a new phone or reinstall the app, all your workout data will be available again
+
+UI:
+
+- Updated the icon library (Lucide) throughout the app
 
 Fixes:
 

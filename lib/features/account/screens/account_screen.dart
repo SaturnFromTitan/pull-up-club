@@ -2,6 +2,7 @@ import "dart:async";
 
 import "package:flutter/material.dart";
 import "package:logging/logging.dart";
+import "package:lucide_icons_flutter/lucide_icons.dart";
 import "package:provider/provider.dart";
 import "package:pull_up_club/common/constants/app_constants.dart";
 import "package:pull_up_club/common/providers/workout_history_provider.dart";
@@ -86,14 +87,14 @@ class _AccountScreenState extends State<AccountScreen> {
                       child: Padding(
                         padding: const EdgeInsets.all(AppSpacing.paddingMd),
                         child: Column(
-                          children: isAuthenticated
+                          children: !isAuthenticated
                               ? [
                                   const Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Icon(
                                         Icons.cloud_done,
-                                        size: 48,
+                                        size: 42,
                                         color: AppColors.onLight,
                                       ),
                                       SizedBox(width: AppSpacing.md),
@@ -107,7 +108,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                   GradientButton(
                                     onPressed: _isLoading ? null : _handleSignOut,
                                     text: "Sign Out",
-                                    icon: Icons.logout,
+                                    icon: LucideIcons.logOut,
                                     gradient: AppGradients.secondary,
                                   ),
                                 ]
