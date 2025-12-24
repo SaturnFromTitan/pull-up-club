@@ -87,7 +87,7 @@ class _AccountScreenState extends State<AccountScreen> {
                       child: Padding(
                         padding: const EdgeInsets.all(AppSpacing.paddingMd),
                         child: Column(
-                          children: !isAuthenticated
+                          children: isAuthenticated
                               ? [
                                   const Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
