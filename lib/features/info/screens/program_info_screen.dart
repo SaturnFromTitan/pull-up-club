@@ -1,5 +1,5 @@
+import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
-import "package:flutter_markdown_plus/flutter_markdown_plus.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
 import "package:pull_up_club/common/themes/app_typography.dart";
@@ -27,57 +27,115 @@ class ProgramInfoScreen extends StatelessWidget {
           SizedBox(height: AppSpacing.md),
           Text("... or read the summary:", style: AppTypography.headlineLarge),
           SizedBox(height: AppSpacing.md),
-          _ProgramMarkdown(),
+          _ProgramContent(),
         ],
       ),
     );
   }
 }
 
-class _ProgramMarkdown extends StatelessWidget {
-  const _ProgramMarkdown();
-
-  static const String _markdownContent = """
-This proven program is designed to increase your max pull-ups by around 50-100% in 8-12 weeks. It works best if your current max is between 5 and 12 reps.
-
-This is a three-days-per-week program done on non-consecutive days (e.g. Monday, Wednesday, Friday).
-
-## Workouts
-
-### 1. Max Sets
-
-- Perform 3 max effort sets to technical failure.
-- Rest at least 5 minutes between each set.
-
-### 2. Submax Volume
-
-- Perform 10 sets of 50% of your max reps from day 1.
-- Rest exactly 1 minute between each set.
-- When you complete all 10 sets at the target reps, the target will increase by 1 for the next submax workout.
-
-### 3. Ladders
-
-- Perform 5 ladders.
-  - In each ladder, every set (or rung) increases the number of reps by 1: start with 1 rep, then 2, then 3, and so on.
-  - When you're not confident you can complete the next rung with good form, stop that ladder and start a new one (reset back to 1 rep).
-- Rest exactly 30 seconds between each rung.
-- Avoid failure!
-""";
+class _ProgramContent extends StatelessWidget {
+  const _ProgramContent();
 
   @override
   Widget build(final BuildContext context) {
-    return MarkdownBody(
-      data: _markdownContent,
-      styleSheet: MarkdownStyleSheet(
-        h2: AppTypography.headlineLarge.copyWith(
-          color: AppColors.onColor,
-          fontWeight: FontWeight.w600,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "This proven program is designed to increase your max pull-ups by around 50-100% in 8-12 weeks. It works best if your current max is between 5 and 12 reps.",
+          style: AppTypography.bodyLarge.copyWith(color: AppColors.onColorSecondary),
         ),
-        h3: AppTypography.headlineMedium.copyWith(color: AppColors.onColor),
-        p: AppTypography.bodyLarge.copyWith(color: AppColors.onColorSecondary),
-        listBullet: AppTypography.bodyLarge.copyWith(color: AppColors.onColorSecondary),
-      ),
+        const SizedBox(height: AppSpacing.md),
+        Text(
+          "This is a three-days-per-week program done on non-consecutive days (e.g. Monday, Wednesday, Friday).",
+          style: AppTypography.bodyLarge.copyWith(color: AppColors.onColorSecondary),
+        ),
+        const SizedBox(height: AppSpacing.lg),
+        Text(
+          "Workouts",
+          style: AppTypography.headlineLarge.copyWith(fontWeight: FontWeight.w600),
+        ),
+        const SizedBox(height: AppSpacing.md),
+        const _WorkoutSection(
+          title: "1. Max Sets",
+          items: [
+            "Perform 3 max effort sets to technical failure.",
+            "Rest at least 5 minutes between each set.",
+          ],
+        ),
+        const SizedBox(height: AppSpacing.md),
+        const _WorkoutSection(
+          title: "2. Submax Volume",
+          items: [
+            "Perform 10 sets of 50% of your max reps from day 1.",
+            "Rest exactly 1 minute between each set.",
+            "When you complete all 10 sets at the target reps, the target will increase by 1 for the next submax workout.",
+          ],
+        ),
+        const SizedBox(height: AppSpacing.md),
+        const _WorkoutSection(
+          title: "3. Ladders",
+          items: [
+            "Perform 5 ladders.",
+            "In each ladder, every set (or rung) increases the number of reps by 1: start with 1 rep, then 2, then 3, and so on.",
+            "When you're not confident you can complete the next rung with good form, stop that ladder and start a new one (reset back to 1 rep).",
+            "Rest exactly 30 seconds between each rung.",
+            "Avoid failure!",
+          ],
+        ),
+      ],
     );
+  }
+}
+
+class _WorkoutSection extends StatelessWidget {
+  const _WorkoutSection({required this.title, required this.items});
+
+  final String title;
+  final List<String> items;
+
+  @override
+  Widget build(final BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title, style: AppTypography.headlineMedium),
+        const SizedBox(height: AppSpacing.xs),
+        ...items.map(
+          (final item) => Padding(
+            padding: const EdgeInsets.only(left: AppSpacing.md, bottom: AppSpacing.xs),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "• ",
+                  style: AppTypography.bodyLarge.copyWith(
+                    color: AppColors.onColorSecondary,
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    item,
+                    style: AppTypography.bodyLarge.copyWith(
+                      color: AppColors.onColorSecondary,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  @override
+  void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(StringProperty("title", title))
+      ..add(IterableProperty<String>("items", items));
   }
 }
 
