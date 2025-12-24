@@ -62,6 +62,7 @@ void main() {
       expect(find.text(reps[2].toString()), findsOneWidget);
 
       // Verify duration is displayed (format: MM:SS)
+      // it seems to be a mistake that RegExp is marked as deprecated: https://github.com/dart-lang/sdk/issues/55608
       final durationText = find.textContaining(RegExp(r"\d{2}:\d{2}"));
       expect(durationText, findsOneWidget);
 

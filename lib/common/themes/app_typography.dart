@@ -15,14 +15,14 @@ class AppTypography {
   static const TextStyle displayLarge = TextStyle(
     fontFamily: "Inter",
     fontSize: 35,
-    fontWeight: FontWeight.w500,
+    fontWeight: FontWeight.w600,
     letterSpacing: 1,
   );
 
   static const TextStyle displayMedium = TextStyle(
     fontFamily: "Inter",
     fontSize: 30,
-    fontWeight: FontWeight.w500,
+    fontWeight: FontWeight.w600,
     letterSpacing: 1,
   );
 

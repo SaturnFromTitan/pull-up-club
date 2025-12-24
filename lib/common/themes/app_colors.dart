@@ -1,6 +1,8 @@
 import "package:flutter/material.dart";
 
 class AppColors {
+  const AppColors._();
+
   // surface colors
   static const Color surfaceLight = Color(0xF0FFFFFF); //94% opacity
   // we're using gradients instead of primary and secondary colors
@@ -13,6 +15,10 @@ class AppColors {
 
   // Shadow colors
   static const Color shadow = Color(0x1A000000); // 10% black opacity
+
+  // Errors
+  static final Color errorText = Colors.red.shade700;
+  static final Color errorBackground = Colors.red.shade50;
 
   // Glassmorphism colors - White overlays for dark background
   static const Color glassBackground = Color(0x1AFFFFFF); // 10% white opacity
