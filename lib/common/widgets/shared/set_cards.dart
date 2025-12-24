@@ -36,7 +36,7 @@ class SetCards extends StatelessWidget {
                 _containerPadding * 2 -
                 _cardSpacing * (_maxCardsPerRow - 1)) /
             _maxCardsPerRow;
-        final cardHeight = 2 / 3 * cardWidth;
+        final cardHeight = 0.6 * cardWidth;
 
         final wrap = Wrap(
           alignment: WrapAlignment.center,
