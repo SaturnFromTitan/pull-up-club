@@ -2,6 +2,7 @@
 // ignore_for_file: avoid_print
 import "package:flutter/material.dart";
 import "package:flutter_test/flutter_test.dart";
+import "package:lucide_icons_flutter/lucide_icons.dart";
 import "package:pull_up_club/common/providers/navigation_provider.dart";
 import "package:pull_up_club/domain/models.dart";
 import "package:pull_up_club/features/workout/screens/selection_screen.dart";
@@ -27,13 +28,13 @@ Future<void> navigateTo(final WidgetTester tester, final AppTab tab) async {
   IconData targetIconData;
   switch (tab) {
     case AppTab.workout:
-      targetIconData = Icons.home_outlined;
+      targetIconData = LucideIcons.house;
     case AppTab.programInfo:
-      targetIconData = Icons.info_outline;
+      targetIconData = LucideIcons.notebookText;
     case AppTab.history:
-      targetIconData = Icons.history_outlined;
+      targetIconData = LucideIcons.chartColumn;
     case AppTab.account:
-      targetIconData = Icons.person_outline;
+      targetIconData = LucideIcons.user;
   }
 
   final targetIcon = find.byIcon(targetIconData);

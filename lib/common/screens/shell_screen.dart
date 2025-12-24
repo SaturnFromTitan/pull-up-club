@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import "package:logging/logging.dart";
+import "package:lucide_icons_flutter/lucide_icons.dart";
 import "package:provider/provider.dart";
 import "package:pull_up_club/common/providers/navigation_provider.dart";
 import "package:pull_up_club/common/providers/workout_history_provider.dart";
@@ -31,26 +32,10 @@ class Shell extends StatelessWidget {
         selectedIndex: navigationProvider.currentTab.index,
         onDestinationSelected: navigationProvider.setTabIndex,
         destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home),
-            label: "Workout",
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.info_outline),
-            selectedIcon: Icon(Icons.info),
-            label: "Program",
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.history_outlined),
-            selectedIcon: Icon(Icons.history),
-            label: "History",
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.person_outline),
-            selectedIcon: Icon(Icons.person),
-            label: "Account",
-          ),
+          NavigationDestination(icon: Icon(LucideIcons.house), label: "Workout"),
+          NavigationDestination(icon: Icon(LucideIcons.notebookText), label: "Program"),
+          NavigationDestination(icon: Icon(LucideIcons.chartColumn), label: "History"),
+          NavigationDestination(icon: Icon(LucideIcons.user), label: "Account"),
         ],
       ),
       child: switch (navigationProvider.currentTab) {
