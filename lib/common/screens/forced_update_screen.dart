@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:lucide_icons_flutter/lucide_icons.dart";
 import "package:pull_up_club/common/constants/app_constants.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
@@ -27,7 +28,7 @@ class ForcedUpdateScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.system_update, size: 64, color: AppColors.onColor),
+              const Icon(LucideIcons.fileDown, size: 64, color: AppColors.onColor),
               const SizedBox(height: AppSpacing.xl),
               const Text(
                 "Update Required",
@@ -46,7 +47,7 @@ class ForcedUpdateScreen extends StatelessWidget {
                 child: GradientButton(
                   onPressed: _openAppStore,
                   text: "Update Now",
-                  icon: Icons.open_in_new,
+                  icon: LucideIcons.externalLink,
                   gradient: AppGradients.primary,
                 ),
               ),

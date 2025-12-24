@@ -2,6 +2,7 @@ import "dart:async";
 
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
+import "package:lucide_icons_flutter/lucide_icons.dart";
 import "package:provider/provider.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
@@ -79,7 +80,7 @@ class _RestScreenState extends State<RestScreen> {
             child: GradientButton(
               onPressed: workoutProvider.resume,
               text: "Skip Rest",
-              icon: Icons.skip_next,
+              icon: LucideIcons.skipForward,
               gradient: AppGradients.skipRest,
               border: Border.all(color: AppColors.skipRestBorder),
               textColor: AppColors.skipRestText,
@@ -92,7 +93,7 @@ class _RestScreenState extends State<RestScreen> {
           ),
           SizedBox(
             width: Screen.width(context) * 0.5,
-            child: const HomeButton(text: "Exit", icon: Icons.exit_to_app),
+            child: const HomeButton(text: "Abort", icon: LucideIcons.x),
           ),
         ],
       ),

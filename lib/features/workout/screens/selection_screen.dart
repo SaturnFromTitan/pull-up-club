@@ -3,6 +3,7 @@ import "dart:async";
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:logging/logging.dart";
+import "package:lucide_icons_flutter/lucide_icons.dart";
 import "package:provider/provider.dart";
 import "package:pull_up_club/common/constants/app_constants.dart";
 import "package:pull_up_club/common/providers/workout_history_provider.dart";
@@ -54,12 +55,12 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
               const SizedBox(height: AppSpacing.md),
               RepsForm(
                 submitText: "Start",
-                submitIcon: Icons.play_arrow,
+                submitIcon: LucideIcons.flame,
                 submitGradient: AppGradients.primary,
                 onValidSubmit: (final reps) => Navigator.pop(context, reps),
                 minValue: 1,
                 cancelText: "Cancel",
-                cancelIcon: Icons.close,
+                cancelIcon: LucideIcons.x,
                 onCancel: () => Navigator.pop(context),
                 initialValue: defaultData.defaultValue,
                 infoText: defaultData.infoText,
@@ -143,7 +144,7 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
                     WorkoutCard(
                       title: "Max Sets",
                       description: "3x max reps with 5 minutes rest",
-                      icon: const Icon(Icons.speed, size: _iconSize),
+                      icon: const Icon(LucideIcons.zap, size: _iconSize),
                       gradient: AppGradients.primary,
                       isSelected: _selected == WorkoutType.maxSets,
                       isNext: nextWorkoutType == WorkoutType.maxSets,
@@ -155,7 +156,7 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
                     WorkoutCard(
                       title: "Submax Volume",
                       description: "10 sets at 50% max reps with\n1 minute rest",
-                      icon: const Icon(Icons.center_focus_strong, size: _iconSize),
+                      icon: const Icon(LucideIcons.target, size: _iconSize),
                       gradient: AppGradients.accentPurple,
                       isSelected: _selected == WorkoutType.submaxVolume,
                       isNext: nextWorkoutType == WorkoutType.submaxVolume,
@@ -168,7 +169,7 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
                       title: "Ladders",
                       description:
                           "5 ladders (1, 2, 3, ... reps) with\n30 seconds rest",
-                      icon: const Icon(Icons.trending_up, size: _iconSize),
+                      icon: const Icon(LucideIcons.trendingUp, size: _iconSize),
                       gradient: AppGradients.accentGreen,
                       isSelected: _selected == WorkoutType.ladders,
                       isNext: nextWorkoutType == WorkoutType.ladders,
@@ -184,7 +185,7 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
                     width: 0.8 * Screen.width(context),
                     child: GradientButton(
                       text: "Start Workout",
-                      icon: Icons.play_arrow,
+                      icon: LucideIcons.flame,
                       onPressed: _handleSubmit,
                       gradient: AppGradients.primary,
                     ),

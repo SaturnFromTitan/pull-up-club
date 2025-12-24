@@ -5,6 +5,7 @@ import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:logging/logging.dart";
+import "package:lucide_icons_flutter/lucide_icons.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
 import "package:pull_up_club/common/themes/app_typography.dart";
@@ -90,7 +91,7 @@ Material errorWidget(final FlutterErrorDetails errorDetails) {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.error_outline, size: 48, color: Colors.red),
+            Icon(LucideIcons.circleX, size: 48, color: Colors.red),
             SizedBox(height: AppSpacing.md),
             Text("Something went wrong", style: AppTypography.headlineMedium),
             SizedBox(height: AppSpacing.sm),
@@ -162,29 +163,29 @@ class ErrorSelectionScreen extends StatelessWidget {
                   children: [
                     GradientButton(
                       text: "Test Build Error",
-                      icon: Icons.bug_report,
-                      gradient: AppGradients.accentPurple,
+                      icon: LucideIcons.bug,
+                      gradient: AppGradients.secondary,
                       onPressed: () => _triggerFlutterError(context),
                     ),
                     const SizedBox(height: AppSpacing.md),
                     GradientButton(
                       text: "Test Sync Error",
-                      icon: Icons.error_outline,
+                      icon: LucideIcons.circleX,
                       gradient: AppGradients.accentPurple,
                       onPressed: _triggerSyncError,
                     ),
                     const SizedBox(height: AppSpacing.md),
                     GradientButton(
                       text: "Test Async Error",
-                      icon: Icons.warning,
+                      icon: LucideIcons.triangleAlert,
                       gradient: AppGradients.accentGreen,
                       onPressed: _triggerZoneError,
                     ),
                     const SizedBox(height: AppSpacing.md),
                     GradientButton(
                       text: "Test Platform Error",
-                      icon: Icons.error_outline,
-                      gradient: AppGradients.secondary,
+                      icon: LucideIcons.bomb,
+                      gradient: AppGradients.light,
                       onPressed: _triggerPlatformError,
                     ),
                   ],

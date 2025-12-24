@@ -1,6 +1,7 @@
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:logging/logging.dart";
+import "package:lucide_icons_flutter/lucide_icons.dart";
 import "package:provider/provider.dart";
 import "package:pull_up_club/common/providers/workout_history_provider.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
@@ -132,7 +133,7 @@ class _DismissablePastWorkout extends StatelessWidget {
         ),
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: AppSpacing.md),
-        child: const Icon(Icons.delete_outline, color: Colors.white, size: 32),
+        child: const Icon(LucideIcons.trash, color: Colors.white, size: 32),
       ),
       confirmDismiss: (final direction) => _confirmDismiss(context),
       onDismissed: (final direction) => _onDelete(context),
