@@ -1,10 +1,9 @@
 import "package:flutter/material.dart";
 import "package:flutter_markdown_plus/flutter_markdown_plus.dart";
-import "package:lucide_icons_flutter/lucide_icons.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
 import "package:pull_up_club/common/themes/app_typography.dart";
-import "package:url_launcher/url_launcher.dart";
+import "package:youtube_player_flutter/youtube_player_flutter.dart";
 
 class ProgramInfoScreen extends StatelessWidget {
   const ProgramInfoScreen({super.key});
@@ -24,7 +23,7 @@ class ProgramInfoScreen extends StatelessWidget {
             ),
           ),
           SizedBox(height: AppSpacing.lg),
-          _YouTubeLink(),
+          _YouTubePlayer(),
           SizedBox(height: AppSpacing.md),
           Text("... or read the summary:", style: AppTypography.headlineLarge),
           SizedBox(height: AppSpacing.md),
@@ -82,14 +81,29 @@ This is a three-days-per-week program done on non-consecutive days (e.g. Monday,
   }
 }
 
-class _YouTubeLink extends StatelessWidget {
-  const _YouTubeLink();
+class _YouTubePlayer extends StatefulWidget {
+  const _YouTubePlayer();
 
-  Future<void> _openYouTubeVideo() async {
-    final uri = Uri.parse("https://www.youtube.com/watch?v=w9Mu-azxol8");
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    }
+  @override
+  State<_YouTubePlayer> createState() => _YouTubePlayerState();
+}
+
+class _YouTubePlayerState extends State<_YouTubePlayer> {
+  late final YoutubePlayerController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = YoutubePlayerController(
+      initialVideoId: "w9Mu-azxol8",
+      flags: const YoutubePlayerFlags(autoPlay: false),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -97,19 +111,21 @@ class _YouTubeLink extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        InkWell(
-          onTap: _openYouTubeVideo,
-          child: const Row(
-            children: [
-              Icon(LucideIcons.circlePlay, size: 24),
-              SizedBox(width: AppSpacing.xs),
-              Text("Watch instructional video", style: AppTypography.bodyLarge),
-            ],
+        ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: YoutubePlayer(
+            controller: _controller,
+            showVideoProgressIndicator: true,
+            progressIndicatorColor: AppColors.gradientPrimary.first,
+            progressColors: ProgressBarColors(
+              playedColor: AppColors.gradientPrimary.first,
+              handleColor: AppColors.gradientPrimary.first,
+            ),
           ),
         ),
         const SizedBox(height: AppSpacing.xs),
         Text(
-          "Note: This app is not affiliated with the video creator. This workout program has been selected for its proven effectiveness.",
+          "Note: This app is not affiliated with the video creator. This workout program has simply been selected because it works.",
           style: AppTypography.bodySmall.copyWith(
             color: AppColors.onColorSecondary,
             fontStyle: FontStyle.italic,
