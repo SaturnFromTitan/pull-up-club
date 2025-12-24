@@ -11,6 +11,7 @@ Features:
 UI:
 
 - Updated the icon library (Lucide) throughout the app
+- The program info now contains an embedded instruction video
 
 Fixes:
 
