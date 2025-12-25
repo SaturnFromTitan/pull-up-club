@@ -2,7 +2,11 @@
 
 ## 1.3.0
 
-UI:
+Features:
+
+- "Undo Set" button during workouts to fix data entry errors
+
+Misc:
 
 - Added a proper [landing page](https://pullup-club.com)!
 
