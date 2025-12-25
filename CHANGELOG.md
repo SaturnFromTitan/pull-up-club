@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.0
+
+UI:
+
+- Added a proper [landing page](https://pullup-club.com)!
+
 ## 1.2.0
 
 Features:
