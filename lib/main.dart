@@ -23,11 +23,7 @@ Logger _logger = Logger("Main");
 Future<void> main() async {
   // Wrap everything in a zone to catch unawaited async errors
   await runZonedGuarded(() async {
-    _logger.info("App starting: debugMode=$kDebugMode");
-
-    // Initialize Flutter bindings
     WidgetsFlutterBinding.ensureInitialized();
-    _logger.fine("Flutter bindings initialized");
 
     // Initialize logging
     Logger.root.level = kDebugMode ? Level.ALL : Level.INFO;
