@@ -51,8 +51,8 @@ class LoggingService {
   }
 
   void _handleLogRecord(final LogRecord record) {
-    // Console output (development only)
-    if (kDebugMode) {
+    // Console output (in development mode, only INFO and above are printed to the debug console per default :shrug:)
+    if (kDebugMode && record.level < Level.INFO) {
       debugPrint(
         "${record.time.toUtc().toIso8601String()} ${record.level.name} ${record.loggerName}: ${record.message}",
       );

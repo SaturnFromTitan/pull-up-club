@@ -3,7 +3,6 @@ import "dart:async";
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:logging/logging.dart";
-import "package:lucide_icons_flutter/lucide_icons.dart";
 import "package:provider/provider.dart";
 import "package:pull_up_club/common/providers/workout_history_provider.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
@@ -11,12 +10,12 @@ import "package:pull_up_club/common/themes/app_spacing.dart";
 import "package:pull_up_club/common/themes/app_typography.dart";
 import "package:pull_up_club/common/utils/utils.dart";
 import "package:pull_up_club/common/widgets/core/screen_scaffold.dart";
-import "package:pull_up_club/common/widgets/shared/home_button.dart";
 import "package:pull_up_club/common/widgets/shared/set_cards.dart";
 import "package:pull_up_club/domain/models.dart";
 import "package:pull_up_club/features/workout/providers/workout_provider.dart";
 import "package:pull_up_club/features/workout/screens/rest_screen.dart";
 import "package:pull_up_club/features/workout/screens/success_screen.dart";
+import "package:pull_up_club/features/workout/widgets/destructive_workout_buttons.dart";
 
 abstract class BaseWorkoutScreen extends StatefulWidget {
   const BaseWorkoutScreen({super.key});
@@ -103,9 +102,14 @@ abstract class BaseWorkoutState<T extends BaseWorkoutScreen> extends State<T> {
     }
   }
 
+  void undoLastSet() {
+    context.read<WorkoutProvider>().undoLastSet();
+  }
+
   @override
   Widget build(final BuildContext context) {
     final workoutProvider = context.watch<WorkoutProvider>();
+    final workout = workoutProvider.workout;
     final targetReps = getTargetReps();
     final inputs = getInputs();
     const instructionTextStyle = AppTypography.headlineLarge;
@@ -158,14 +162,11 @@ abstract class BaseWorkoutState<T extends BaseWorkoutScreen> extends State<T> {
             ),
           ),
           SetCards(
-            values: getSetCardValues(workoutProvider.workout),
-            numExpectedCards: workoutProvider.workout.maxGroups,
+            values: getSetCardValues(workout),
+            numExpectedCards: workout.maxGroups,
             highlightedIndex: getNumCompletedGroups(),
           ),
-          SizedBox(
-            width: Screen.width(context) * 0.5,
-            child: const HomeButton(text: "Abort", icon: LucideIcons.x),
-          ),
+          DestructiveWorkoutButtons(workout: workout, onUndoLastSet: undoLastSet),
         ],
       ),
     );

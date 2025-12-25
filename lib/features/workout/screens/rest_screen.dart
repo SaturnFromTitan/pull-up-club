@@ -10,9 +10,9 @@ import "package:pull_up_club/common/themes/app_typography.dart";
 import "package:pull_up_club/common/utils/utils.dart";
 import "package:pull_up_club/common/widgets/core/gradient_button.dart";
 import "package:pull_up_club/common/widgets/core/screen_scaffold.dart";
-import "package:pull_up_club/common/widgets/shared/home_button.dart";
 import "package:pull_up_club/common/widgets/shared/set_cards.dart";
 import "package:pull_up_club/features/workout/providers/workout_provider.dart";
+import "package:pull_up_club/features/workout/widgets/destructive_workout_buttons.dart";
 
 class RestScreen extends StatefulWidget {
   const RestScreen({required this.currentGroupIndex, super.key});
@@ -58,6 +58,13 @@ class _RestScreenState extends State<RestScreen> {
     Navigator.of(context).pop();
   }
 
+  void _undoLastSet() {
+    final removedSet = _workoutProvider.undoLastSet();
+    if (removedSet != null) {
+      _workoutProvider.resume();
+    }
+  }
+
   @override
   void dispose() {
     _workoutProvider.removeListener(_onWorkoutChanged);
@@ -67,6 +74,7 @@ class _RestScreenState extends State<RestScreen> {
   @override
   Widget build(final BuildContext context) {
     final workoutProvider = context.watch<WorkoutProvider>();
+    final workout = workoutProvider.workout;
 
     return ScreenScaffold(
       child: Column(
@@ -87,14 +95,11 @@ class _RestScreenState extends State<RestScreen> {
             ),
           ),
           SetCards(
-            values: getSetCardValues(workoutProvider.workout),
-            numExpectedCards: workoutProvider.workout.maxGroups,
+            values: getSetCardValues(workout),
+            numExpectedCards: workout.maxGroups,
             highlightedIndex: widget.currentGroupIndex,
           ),
-          SizedBox(
-            width: Screen.width(context) * 0.5,
-            child: const HomeButton(text: "Abort", icon: LucideIcons.x),
-          ),
+          DestructiveWorkoutButtons(workout: workout, onUndoLastSet: _undoLastSet),
         ],
       ),
     );

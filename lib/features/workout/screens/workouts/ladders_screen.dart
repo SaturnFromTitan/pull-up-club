@@ -1,8 +1,10 @@
 import "package:flutter/material.dart";
 import "package:lucide_icons_flutter/lucide_icons.dart";
+import "package:provider/provider.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
 import "package:pull_up_club/common/widgets/core/gradient_button.dart";
+import "package:pull_up_club/features/workout/providers/workout_provider.dart";
 import "package:pull_up_club/features/workout/screens/workouts/_base_workout_screen.dart";
 import "package:pull_up_club/features/workout/widgets/reps_form.dart";
 
@@ -26,6 +28,21 @@ class _LaddersState extends BaseWorkoutState<LaddersScreen> {
 
   @override
   int getTargetReps() => _targetReps;
+
+  @override
+  void undoLastSet() {
+    final workoutProvider = context.read<WorkoutProvider>();
+    final removedSet = workoutProvider.undoLastSet();
+    if (removedSet == null) {
+      return;
+    }
+    setState(() {
+      _targetReps = removedSet.targetReps!;
+      if (removedSet.group == _completedGroups) {
+        _completedGroups--;
+      }
+    });
+  }
 
   @override
   Widget getInputs() {

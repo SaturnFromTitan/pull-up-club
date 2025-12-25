@@ -142,7 +142,7 @@ class _SuccessScreenState extends State<SuccessScreen>
             SetCards(values: getSetCardValues(widget.workout)),
             SizedBox(
               width: Screen.width(context) * 0.5,
-              child: const HomeButton(text: "Home", gradient: AppGradients.primary),
+              child: const HomeButton(gradient: AppGradients.primary),
             ),
           ],
         ),
