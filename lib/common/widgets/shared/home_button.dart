@@ -9,7 +9,7 @@ import "package:pull_up_club/common/widgets/core/gradient_button.dart";
 
 class HomeButton extends StatelessWidget {
   const HomeButton({
-    required this.text,
+    this.text = "Home",
     super.key,
     this.icon = LucideIcons.house,
     this.gradient = AppGradients.light,

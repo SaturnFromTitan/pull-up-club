@@ -99,6 +99,24 @@ class WorkoutProvider extends ChangeNotifier {
 
   bool isResting() => _restStartTime != null;
 
+  void undoLastSet() {
+    if (_workout.sets.isEmpty) {
+      _logger.warning("Cannot undo: no sets to remove");
+      return;
+    }
+    if (_workout.end != null) {
+      throw StateError("Cannot undo: workout finished");
+    }
+
+    final removedSet = _workout.sets.removeLast();
+    _logger.info(
+      "Undid last set: $removedSet, remaining sets: ${_workout.sets.length}",
+    );
+
+    // Notify listeners to update the UI
+    notifyListeners();
+  }
+
   @override
   void dispose() {
     _logger.fine("WorkoutProvider disposed: $_workout");

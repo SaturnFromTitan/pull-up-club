@@ -10,6 +10,7 @@ import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
 import "package:pull_up_club/common/themes/app_typography.dart";
 import "package:pull_up_club/common/utils/utils.dart";
+import "package:pull_up_club/common/widgets/core/gradient_button.dart";
 import "package:pull_up_club/common/widgets/core/screen_scaffold.dart";
 import "package:pull_up_club/common/widgets/shared/home_button.dart";
 import "package:pull_up_club/common/widgets/shared/set_cards.dart";
@@ -103,9 +104,14 @@ abstract class BaseWorkoutState<T extends BaseWorkoutScreen> extends State<T> {
     }
   }
 
+  void undoLastSet() {
+    context.read<WorkoutProvider>().undoLastSet();
+  }
+
   @override
   Widget build(final BuildContext context) {
     final workoutProvider = context.watch<WorkoutProvider>();
+    final workout = workoutProvider.workout;
     final targetReps = getTargetReps();
     final inputs = getInputs();
     const instructionTextStyle = AppTypography.headlineLarge;
@@ -158,13 +164,27 @@ abstract class BaseWorkoutState<T extends BaseWorkoutScreen> extends State<T> {
             ),
           ),
           SetCards(
-            values: getSetCardValues(workoutProvider.workout),
-            numExpectedCards: workoutProvider.workout.maxGroups,
+            values: getSetCardValues(workout),
+            numExpectedCards: workout.maxGroups,
             highlightedIndex: getNumCompletedGroups(),
           ),
-          SizedBox(
-            width: Screen.width(context) * 0.5,
-            child: const HomeButton(text: "Abort", icon: LucideIcons.x),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              SizedBox(
+                width: Screen.width(context) * 0.4,
+                child: GradientButton(
+                  onPressed: workout.sets.isEmpty ? null : undoLastSet,
+                  text: "Back",
+                  icon: LucideIcons.arrowLeft,
+                  gradient: AppGradients.light,
+                ),
+              ),
+              SizedBox(
+                width: Screen.width(context) * 0.4,
+                child: const HomeButton(text: "Abort", icon: LucideIcons.x),
+              ),
+            ],
           ),
         ],
       ),
