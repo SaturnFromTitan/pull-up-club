@@ -21,6 +21,17 @@ class WorkoutSet {
   final int group; // to identify ladders (1-based)
   final int? targetReps;
   final int completedReps;
+
+  @override
+  String toString() {
+    final buffer = StringBuffer("WorkoutSet(")
+      ..write("number=$number")
+      ..write(", group=$group")
+      ..write(", targetReps=$targetReps")
+      ..write(", completedReps=$completedReps")
+      ..write(")");
+    return buffer.toString();
+  }
 }
 
 class Workout {
