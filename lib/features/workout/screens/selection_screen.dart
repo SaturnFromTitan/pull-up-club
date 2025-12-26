@@ -12,6 +12,7 @@ import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
 import "package:pull_up_club/common/themes/app_typography.dart";
 import "package:pull_up_club/common/utils/utils.dart";
+import "package:pull_up_club/common/widgets/core/dismissible_dialog.dart";
 import "package:pull_up_club/common/widgets/core/gradient_button.dart";
 import "package:pull_up_club/common/widgets/core/gradient_surface.dart";
 import "package:pull_up_club/domain/models.dart";
@@ -34,43 +35,33 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
   static const double _cardGap = AppSpacing.md;
   static const double _iconSize = 28;
 
-  Future<int?> askForTargetReps() async {
+  Future<int?> _askForTargetReps() {
     final workoutHistoryProvider = context.read<WorkoutHistoryProvider>();
     final defaultData = workoutHistoryProvider.calculateDefaultTargetReps();
 
-    final res = await showDialog<int>(
+    return showDialog<int>(
       context: context,
-      builder: (final context) => Dialog(
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.paddingLg),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text("🎯", style: TextStyle(fontSize: 40, color: Colors.white)),
-              const Text(
-                "Enter Your Target Reps",
-                style: AppTypography.headlineLarge,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: AppSpacing.md),
-              RepsForm(
-                submitText: "Start",
-                submitIcon: LucideIcons.flame,
-                submitGradient: AppGradients.primary,
-                onValidSubmit: (final reps) => Navigator.pop(context, reps),
-                minValue: 1,
-                cancelText: "Cancel",
-                cancelIcon: LucideIcons.x,
-                onCancel: () => Navigator.pop(context),
-                initialValue: defaultData.defaultValue,
-                infoText: defaultData.infoText,
-              ),
-            ],
+      builder: (final dialogContext) => DismissibleDialog(
+        children: [
+          const Text("🎯", style: TextStyle(fontSize: 40, color: Colors.white)),
+          const Text(
+            "Enter Your Target Reps",
+            style: AppTypography.headlineLarge,
+            textAlign: TextAlign.center,
           ),
-        ),
+          const SizedBox(height: AppSpacing.xl),
+          RepsForm(
+            submitText: "Start",
+            submitIcon: LucideIcons.flame,
+            submitGradient: AppGradients.primary,
+            onValidSubmit: (final reps) => Navigator.pop(dialogContext, reps),
+            minValue: 1,
+            initialValue: defaultData.defaultValue,
+            infoText: defaultData.infoText,
+          ),
+        ],
       ),
     );
-    return res;
   }
 
   Future<void> _handleSubmit() async {
@@ -80,7 +71,7 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
       case WorkoutType.maxSets:
         workoutScreen = const MaxSetsScreen();
       case WorkoutType.submaxVolume:
-        final targetReps = await askForTargetReps();
+        final targetReps = await _askForTargetReps();
         if (!mounted || targetReps == null) {
           _logger.fine(
             "Workout start cancelled: targetReps dialog cancelled or widget unmounted",

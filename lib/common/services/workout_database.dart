@@ -35,7 +35,7 @@ class WorkoutSets extends Table {
   IntColumn get groupNumber => integer()();
   IntColumn get targetReps => integer().nullable()();
   IntColumn get completedReps => integer()();
-  // Index is created in migration v5:
+  // Index is created in migration v5
 }
 
 @DriftDatabase(tables: [Workouts, WorkoutSets])
