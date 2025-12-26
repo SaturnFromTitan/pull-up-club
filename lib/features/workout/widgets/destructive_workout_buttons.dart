@@ -50,40 +50,29 @@ class DestructiveWorkoutButtons extends StatelessWidget {
   Future<void> _handleExit(final BuildContext context) async {
     // If no sets have been added, exit immediately without dialog
     if (workout.sets.isEmpty) {
-      // TODO
-      final navigationProvider = context.read<NavigationProvider>();
-      if (context.mounted) {
-        navigationProvider.resetTab();
-        await Navigator.of(
-          context,
-        ).pushNamedAndRemoveUntil(Shell.route, (final route) => false);
-      }
+      context.read<NavigationProvider>().resetTab();
+      await Navigator.of(
+        context,
+      ).pushNamedAndRemoveUntil(Shell.route, (final route) => false);
       return;
     }
 
-    // Show dialog if sets have been added
-    final result = await _showExitDialog(context);
-
-    if (result == null) {
+    // Let user decide if the workout gets saved or scrapped
+    final shouldSave = await _showExitDialog(context);
+    if (shouldSave == null || !context.mounted) {
       // User cancelled
       return;
     }
 
-    if (!context.mounted) {
-      return;
-    }
-    final navigationProvider = context.read<NavigationProvider>();
-    final workoutHistoryProvider = context.read<WorkoutHistoryProvider>();
-
-    if (result) {
-      // Save incomplete workout
+    // Save incomplete workout
+    if (shouldSave) {
       workout.finish();
-      await workoutHistoryProvider.addWorkout(workout);
+      await context.read<WorkoutHistoryProvider>().addWorkout(workout);
     }
 
     // Navigate home
-    navigationProvider.resetTab();
     if (context.mounted) {
+      context.read<NavigationProvider>().resetTab();
       await Navigator.of(
         context,
       ).pushNamedAndRemoveUntil(Shell.route, (final route) => false);
@@ -94,45 +83,54 @@ class DestructiveWorkoutButtons extends StatelessWidget {
     return showDialog<bool>(
       context: context,
       builder: (final dialogContext) => Dialog(
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.paddingLg),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                "Exit Workout",
-                style: AppTypography.headlineLarge,
-                textAlign: TextAlign.center,
+        child: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(AppSpacing.paddingLg),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    "Exit Workout",
+                    style: AppTypography.headlineLarge,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  const Text(
+                    "Do you want to save this incomplete workout?",
+                    style: AppTypography.bodyMedium,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  GradientButton(
+                    onPressed: () => Navigator.of(dialogContext).pop(true),
+                    text: "Save",
+                    icon: LucideIcons.save,
+                    gradient: AppGradients.secondary,
+                  ),
+                  const SizedBox(height: AppSpacing.buttonDistance),
+                  GradientButton(
+                    onPressed: () => Navigator.of(dialogContext).pop(false),
+                    text: "Scrap",
+                    icon: LucideIcons.trash,
+                    gradient: AppGradients.light,
+                  ),
+                ],
               ),
-              const SizedBox(height: AppSpacing.md),
-              const Text(
-                "Do you want to save this incomplete workout?",
-                style: AppTypography.bodyMedium,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: AppSpacing.md),
-              GradientButton(
-                onPressed: () => Navigator.of(dialogContext).pop(true),
-                text: "Save",
-                icon: LucideIcons.save,
-                gradient: AppGradients.secondary,
-              ),
-              const SizedBox(height: AppSpacing.buttonDistance),
-              GradientButton(
-                onPressed: () => Navigator.of(dialogContext).pop(false),
-                text: "Scrap",
-                icon: LucideIcons.trash,
-                gradient: AppGradients.light,
-              ),
-              const SizedBox(height: AppSpacing.buttonDistance),
-              GradientButton(
+            ),
+            Positioned(
+              top: AppSpacing.sm,
+              right: AppSpacing.sm,
+              child: IconButton(
+                icon: const Icon(
+                  LucideIcons.x,
+                  size: 30,
+                  color: AppColors.onLightSecondary,
+                ),
                 onPressed: () => Navigator.of(dialogContext).pop(),
-                text: "Cancel",
-                icon: LucideIcons.x,
-                gradient: AppGradients.light,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
