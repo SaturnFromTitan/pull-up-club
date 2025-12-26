@@ -129,7 +129,7 @@ Future<void> deleteWorkout(
 
   // A confirmation dialog should appear
   expect(find.text("Delete Workout"), findsOneWidget);
-  expect(find.text("Are you sure you want to delete this workout?"), findsOneWidget);
+  expect(find.text("Are you sure?"), findsOneWidget);
 
   // Tap the "Delete" button to confirm
   final deleteButton = find.text("Delete");

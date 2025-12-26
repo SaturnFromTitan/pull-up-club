@@ -7,6 +7,7 @@ import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
 import "package:pull_up_club/common/themes/app_typography.dart";
 import "package:pull_up_club/common/utils/utils.dart";
+import "package:pull_up_club/common/widgets/core/dismissible_dialog.dart";
 import "package:pull_up_club/common/widgets/core/gradient_button.dart";
 import "package:pull_up_club/domain/models.dart";
 
@@ -75,56 +76,34 @@ class DestructiveWorkoutButtons extends StatelessWidget {
   Future<bool?> _showExitDialog(final BuildContext context) {
     return showDialog<bool>(
       context: context,
-      builder: (final dialogContext) => Dialog(
-        child: Stack(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(AppSpacing.paddingLg),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text(
-                    "Exit Workout",
-                    style: AppTypography.headlineLarge,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: AppSpacing.md),
-                  const Text(
-                    "Do you want to save this incomplete workout?",
-                    style: AppTypography.bodyMedium,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: AppSpacing.md),
-                  GradientButton(
-                    onPressed: () => Navigator.of(dialogContext).pop(true),
-                    text: "Save",
-                    icon: LucideIcons.save,
-                    gradient: AppGradients.secondary,
-                  ),
-                  const SizedBox(height: AppSpacing.buttonDistance),
-                  GradientButton(
-                    onPressed: () => Navigator.of(dialogContext).pop(false),
-                    text: "Scrap",
-                    icon: LucideIcons.trash,
-                    gradient: AppGradients.light,
-                  ),
-                ],
-              ),
-            ),
-            Positioned(
-              top: AppSpacing.sm,
-              right: AppSpacing.sm,
-              child: IconButton(
-                icon: const Icon(
-                  LucideIcons.x,
-                  size: 30,
-                  color: AppColors.onLightSecondary,
-                ),
-                onPressed: () => Navigator.of(dialogContext).pop(),
-              ),
-            ),
-          ],
-        ),
+      builder: (final dialogContext) => DismissibleDialog(
+        children: [
+          const Text(
+            "Exit Workout",
+            style: AppTypography.headlineLarge,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: AppSpacing.md),
+          const Text(
+            "Do you want to save this incomplete workout?",
+            style: AppTypography.bodyMedium,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: AppSpacing.md),
+          GradientButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            text: "Save",
+            icon: LucideIcons.save,
+            gradient: AppGradients.secondary,
+          ),
+          const SizedBox(height: AppSpacing.buttonDistance),
+          GradientButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            text: "Scrap",
+            icon: LucideIcons.trash,
+            gradient: AppGradients.light,
+          ),
+        ],
       ),
     );
   }
