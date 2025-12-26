@@ -1,10 +1,22 @@
+import "dart:async";
+
 import "package:flutter/material.dart";
+import "package:provider/provider.dart";
+import "package:pull_up_club/common/providers/navigation_provider.dart";
+import "package:pull_up_club/common/screens/shell_screen.dart";
 import "package:pull_up_club/domain/models.dart";
 
 double lineHeight(final TextStyle style) {
   final fontSize = style.fontSize ?? 1;
   final lineHeight = style.height ?? 1.4;
   return fontSize * lineHeight;
+}
+
+void navigateToHome(final BuildContext context) {
+  context.read<NavigationProvider>().resetTab();
+  unawaited(
+    Navigator.of(context).pushNamedAndRemoveUntil(Shell.route, (final route) => false),
+  );
 }
 
 String twoDigits(final int n) => n.toString().padLeft(2, "0");

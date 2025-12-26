@@ -2,13 +2,14 @@ import "dart:async";
 
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
+import "package:lucide_icons_flutter/lucide_icons.dart";
 import "package:pull_up_club/common/services/sound_service.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
 import "package:pull_up_club/common/themes/app_typography.dart";
 import "package:pull_up_club/common/utils/utils.dart";
+import "package:pull_up_club/common/widgets/core/gradient_button.dart";
 import "package:pull_up_club/common/widgets/core/screen_scaffold.dart";
-import "package:pull_up_club/common/widgets/shared/home_button.dart";
 import "package:pull_up_club/common/widgets/shared/set_cards.dart";
 import "package:pull_up_club/common/widgets/shared/total_card.dart";
 import "package:pull_up_club/domain/models.dart";
@@ -142,7 +143,12 @@ class _SuccessScreenState extends State<SuccessScreen>
             SetCards(values: getSetCardValues(widget.workout)),
             SizedBox(
               width: Screen.width(context) * 0.5,
-              child: const HomeButton(gradient: AppGradients.primary),
+              child: GradientButton(
+                onPressed: () => navigateToHome(context),
+                text: "Home",
+                icon: LucideIcons.house,
+                gradient: AppGradients.primary,
+              ),
             ),
           ],
         ),

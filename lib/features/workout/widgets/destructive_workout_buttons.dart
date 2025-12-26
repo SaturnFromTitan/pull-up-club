@@ -2,12 +2,11 @@ import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:lucide_icons_flutter/lucide_icons.dart";
 import "package:provider/provider.dart";
-import "package:pull_up_club/common/providers/navigation_provider.dart";
 import "package:pull_up_club/common/providers/workout_history_provider.dart";
-import "package:pull_up_club/common/screens/shell_screen.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
 import "package:pull_up_club/common/themes/app_typography.dart";
+import "package:pull_up_club/common/utils/utils.dart";
 import "package:pull_up_club/common/widgets/core/gradient_button.dart";
 import "package:pull_up_club/domain/models.dart";
 
@@ -50,17 +49,13 @@ class DestructiveWorkoutButtons extends StatelessWidget {
   Future<void> _handleExit(final BuildContext context) async {
     // If no sets have been added, exit immediately without dialog
     if (workout.sets.isEmpty) {
-      context.read<NavigationProvider>().resetTab();
-      await Navigator.of(
-        context,
-      ).pushNamedAndRemoveUntil(Shell.route, (final route) => false);
+      navigateToHome(context);
       return;
     }
 
     // Let user decide if the workout gets saved or scrapped
     final shouldSave = await _showExitDialog(context);
     if (shouldSave == null || !context.mounted) {
-      // User cancelled
       return;
     }
 
@@ -69,14 +64,12 @@ class DestructiveWorkoutButtons extends StatelessWidget {
       workout.finish();
       await context.read<WorkoutHistoryProvider>().addWorkout(workout);
     }
+    if (!context.mounted) {
+      return;
+    }
 
     // Navigate home
-    if (context.mounted) {
-      context.read<NavigationProvider>().resetTab();
-      await Navigator.of(
-        context,
-      ).pushNamedAndRemoveUntil(Shell.route, (final route) => false);
-    }
+    navigateToHome(context);
   }
 
   Future<bool?> _showExitDialog(final BuildContext context) {
