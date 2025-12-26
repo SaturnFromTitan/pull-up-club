@@ -12,6 +12,10 @@ set shell := ["bash", "-c"]
 install:
   flutter pub get
 
+# Run the app in debug mode on iPhone 15 simulator
+run DEVICE="iPhone 15":
+    flutter run -d "{{DEVICE}}"
+
 # watches for code changes and generates code with incremental rebuilds
 generate:
   dart run build_runner build

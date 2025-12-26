@@ -5,6 +5,7 @@ import "package:clock/clock.dart";
 import "package:flutter/material.dart";
 import "package:logging/logging.dart";
 import "package:pull_up_club/common/config/test_config.dart";
+import "package:pull_up_club/common/services/live_activity_service.dart";
 import "package:pull_up_club/common/services/sound_service.dart";
 import "package:pull_up_club/domain/models.dart";
 
@@ -59,6 +60,15 @@ class WorkoutProvider extends ChangeNotifier {
     _restStartTime = clock.now().toUtc();
     _restTotalMillis = actualDuration;
 
+    // Update Live Activity
+    unawaited(
+      LiveActivityService.instance.updateActivity(
+        workout: _workout,
+        isResting: true,
+        restRemainingMillis: restRemainingMillis,
+      ),
+    );
+
     _restTimer = Timer.periodic(const Duration(seconds: 1), (final timer) {
       final remaining = restRemainingMillis;
 
@@ -81,6 +91,15 @@ class WorkoutProvider extends ChangeNotifier {
         return;
       }
 
+      // Update Live Activity every second during rest
+      unawaited(
+        LiveActivityService.instance.updateActivity(
+          workout: _workout,
+          isResting: true,
+          restRemainingMillis: remaining,
+        ),
+      );
+
       notifyListeners();
     });
   }
@@ -94,6 +113,16 @@ class WorkoutProvider extends ChangeNotifier {
     _restTimer = null;
     _restStartTime = null;
     _restTotalMillis = 0;
+
+    // Update Live Activity to show not resting
+    unawaited(
+      LiveActivityService.instance.updateActivity(
+        workout: _workout,
+        isResting: false,
+        restRemainingMillis: 0,
+      ),
+    );
+
     notifyListeners();
   }
 
@@ -120,6 +149,8 @@ class WorkoutProvider extends ChangeNotifier {
   void dispose() {
     _logger.fine("WorkoutProvider disposed: $_workout");
     _restTimer?.cancel();
+    // End Live Activity when workout provider is disposed
+    unawaited(LiveActivityService.instance.endActivity());
     super.dispose();
   }
 }

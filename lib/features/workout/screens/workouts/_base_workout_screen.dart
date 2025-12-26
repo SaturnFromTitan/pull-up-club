@@ -5,6 +5,7 @@ import "package:flutter/material.dart";
 import "package:logging/logging.dart";
 import "package:provider/provider.dart";
 import "package:pull_up_club/common/providers/workout_history_provider.dart";
+import "package:pull_up_club/common/services/live_activity_service.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
 import "package:pull_up_club/common/themes/app_typography.dart";
@@ -30,6 +31,22 @@ abstract class BaseWorkoutState<T extends BaseWorkoutScreen> extends State<T> {
 
   int? getTargetReps();
   Widget getInputs();
+
+  @override
+  void initState() {
+    super.initState();
+    // Start Live Activity when workout screen appears
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final workoutProvider = context.read<WorkoutProvider>();
+      unawaited(
+        LiveActivityService.instance.startActivity(
+          workout: workoutProvider.workout,
+          isResting: workoutProvider.isResting(),
+          restRemainingMillis: workoutProvider.restRemainingMillis,
+        ),
+      );
+    });
+  }
 
   int getNumCompletedGroups() {
     final workoutProvider = context.read<WorkoutProvider>();
