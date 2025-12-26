@@ -85,14 +85,14 @@ class DestructiveWorkoutButtons extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.md),
           const Text(
-            "Do you want to save this incomplete workout?",
+            "Do you want to add this incomplete workout to your history?",
             style: AppTypography.bodyMedium,
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: AppSpacing.md),
           GradientButton(
             onPressed: () => Navigator.of(dialogContext).pop(true),
-            text: "Save",
+            text: "Add to History",
             icon: LucideIcons.save,
             gradient: AppGradients.secondary,
           ),

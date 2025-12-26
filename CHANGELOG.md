@@ -5,6 +5,7 @@
 Features:
 
 - "Undo Set" button during workouts to fix data entry errors
+- Incomplete workouts can now be added to the history when exiting the workout
 
 Misc:
 
