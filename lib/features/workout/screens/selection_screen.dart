@@ -34,43 +34,55 @@ class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
   static const double _cardGap = AppSpacing.md;
   static const double _iconSize = 28;
 
-  Future<int?> askForTargetReps() async {
+  Future<int?> askForTargetReps() {
     final workoutHistoryProvider = context.read<WorkoutHistoryProvider>();
     final defaultData = workoutHistoryProvider.calculateDefaultTargetReps();
 
-    final res = await showDialog<int>(
+    return showDialog<int>(
       context: context,
       builder: (final context) => Dialog(
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.paddingLg),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text("🎯", style: TextStyle(fontSize: 40, color: Colors.white)),
-              const Text(
-                "Enter Your Target Reps",
-                style: AppTypography.headlineLarge,
-                textAlign: TextAlign.center,
+        child: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(AppSpacing.paddingLg),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text("🎯", style: TextStyle(fontSize: 40, color: Colors.white)),
+                  const Text(
+                    "Enter Your Target Reps",
+                    style: AppTypography.headlineLarge,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  RepsForm(
+                    submitText: "Start",
+                    submitIcon: LucideIcons.flame,
+                    submitGradient: AppGradients.primary,
+                    onValidSubmit: (final reps) => Navigator.pop(context, reps),
+                    minValue: 1,
+                    initialValue: defaultData.defaultValue,
+                    infoText: defaultData.infoText,
+                  ),
+                ],
               ),
-              const SizedBox(height: AppSpacing.md),
-              RepsForm(
-                submitText: "Start",
-                submitIcon: LucideIcons.flame,
-                submitGradient: AppGradients.primary,
-                onValidSubmit: (final reps) => Navigator.pop(context, reps),
-                minValue: 1,
-                cancelText: "Cancel",
-                cancelIcon: LucideIcons.x,
-                onCancel: () => Navigator.pop(context),
-                initialValue: defaultData.defaultValue,
-                infoText: defaultData.infoText,
+            ),
+            Positioned(
+              top: AppSpacing.sm,
+              right: AppSpacing.sm,
+              child: IconButton(
+                icon: const Icon(
+                  LucideIcons.x,
+                  size: 30,
+                  color: AppColors.onLightSecondary,
+                ),
+                onPressed: () => Navigator.pop(context),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
-    return res;
   }
 
   Future<void> _handleSubmit() async {
