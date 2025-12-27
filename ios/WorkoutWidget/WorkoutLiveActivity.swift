@@ -35,7 +35,7 @@ struct WorkoutLiveActivity: Widget {
                 .activityBackgroundTint(Color.black.opacity(0.1))
         } dynamicIsland: { context in
             DynamicIsland {
-                // Expanded Regions
+                // Expanded Regions aren't used yet
                 DynamicIslandExpandedRegion(.leading) {
                     EmptyView()
                 }
@@ -46,38 +46,32 @@ struct WorkoutLiveActivity: Widget {
                     EmptyView()
                 }
             } compactLeading: {
-                // Compact leading UI - app icon
                 Image("AppIconImage")
                     .resizable()
                     .scaledToFit()
                     .frame(width: 16, height: 16)
                     .clipShape(RoundedRectangle(cornerRadius: 3))
             } compactTrailing: {
-                // Compact trailing UI - keep width consistent
                 Group {
                     if let endTimeString = context.state.restEndTime,
                        let endTimeUTC = parseISO8601Date(from: endTimeString) {
-                        // Display timer when resting
                         Text(timerInterval: Date()...endTimeUTC, countsDown: true)
                             .font(.caption2)
                             .monospacedDigit()
                             .foregroundColor(.orange)
                             .lineLimit(1)
                     } else if context.state.restEndTime != nil {
-                        // Parsing failed, show fallback
                         Text("--")
                             .font(.caption2)
                             .foregroundColor(.orange)
                     } else {
-                        // Display "Go!" when not resting
                         Text("Go!")
                             .font(.caption2)
                             .foregroundColor(.green)
                     }
                 }
-                .frame(minWidth: 35, maxWidth: 35) // Constrain width to keep Dynamic Island compact
+                .frame(minWidth: 35, maxWidth: 35)
             } minimal: {
-                // Minimal UI
                 Image(systemName: "figure.pullups")
                     .foregroundColor(.white)
             }
@@ -106,26 +100,26 @@ struct WorkoutActivityView: View {
 
             // Rest timer or status - positioned at very right
             if context.state.restEndTime != nil {
-                Group {
-                    if let endTimeString = context.state.restEndTime,
-                       let endTimeUTC = parseISO8601Date(from: endTimeString) {
-                        Text(timerInterval: Date()...endTimeUTC, countsDown: true)
-                            .font(.headline)
-                            .monospacedDigit()
-                            .foregroundColor(.orange)
-                    } else {
-                        Text("--:--")
-                            .font(.headline)
-                            .monospacedDigit()
-                            .foregroundColor(.orange)
-                    }
+                if let endTimeString = context.state.restEndTime,
+                   let endTimeUTC = parseISO8601Date(from: endTimeString) {
+                    Text(timerInterval: Date()...endTimeUTC, countsDown: true)
+                        .font(.headline)
+                        .monospacedDigit()
+                        .foregroundColor(.orange)
+                        .multilineTextAlignment(.trailing)
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                } else {
+                    Text("--:--")
+                        .font(.headline)
+                        .monospacedDigit()
+                        .foregroundColor(.orange)
+                        .multilineTextAlignment(.trailing)
+                        .frame(maxWidth: .infinity, alignment: .trailing)
                 }
-                .frame(maxWidth: .infinity, alignment: .trailing)
             } else {
                 Text("Go!")
-                    .font(.caption)
+                    .font(.headline)
                     .foregroundColor(.green)
-                    .frame(maxWidth: .infinity, alignment: .trailing)
             }
         }
         .padding()
