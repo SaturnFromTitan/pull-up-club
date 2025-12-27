@@ -1,5 +1,3 @@
-import "dart:async";
-
 import "package:clock/clock.dart";
 import "package:flutter/foundation.dart";
 import "package:flutter/services.dart";
@@ -15,7 +13,6 @@ class LiveActivityService {
 
   static const MethodChannel _channel = MethodChannel("pull_up_club/live_activity");
   String? _currentActivityId;
-  Timer? _updateTimer;
 
   /// Starts a Live Activity for the given workout.
   /// Updates the activity when rest state changes.
@@ -36,9 +33,14 @@ class LiveActivityService {
       final restEndTime = isResting && restRemainingMillis > 0
           ? clock
                 .now()
+                .toUtc()
                 .add(Duration(milliseconds: restRemainingMillis))
                 .toIso8601String()
           : null;
+
+      _logger.info(
+        "Starting Live Activity: isResting=$isResting, restRemainingMillis=$restRemainingMillis, restEndTime=$restEndTime",
+      );
 
       final result = await _channel.invokeMethod<String>("startActivity", {
         "workoutType": workout.workoutType.name,
@@ -52,11 +54,6 @@ class LiveActivityService {
 
       _currentActivityId = result;
       _logger.info("Live Activity started: $_currentActivityId");
-
-      // Start periodic updates if resting
-      if (isResting) {
-        _startUpdateTimer(workout);
-      }
     } on Exception catch (error, stackTrace) {
       _logger.severe("Failed to start Live Activity", error, stackTrace);
     }
@@ -86,9 +83,14 @@ class LiveActivityService {
       final restEndTime = isResting && restRemainingMillis > 0
           ? clock
                 .now()
+                .toUtc()
                 .add(Duration(milliseconds: restRemainingMillis))
                 .toIso8601String()
           : null;
+
+      _logger.info(
+        "Updating Live Activity: isResting=$isResting, restRemainingMillis=$restRemainingMillis, restEndTime=$restEndTime",
+      );
 
       await _channel.invokeMethod("updateActivity", {
         "activityId": _currentActivityId,
@@ -101,15 +103,8 @@ class LiveActivityService {
         "restEndTime": restEndTime,
       });
 
-      // Manage update timer based on rest state
-      if (isResting) {
-        _startUpdateTimer(workout);
-      } else {
-        _stopUpdateTimer();
-      }
-
       _logger.fine(
-        "Live Activity updated: isResting=$isResting, restRemaining=$restRemainingMillis",
+        "Live Activity updated: isResting=$isResting, restEndTime=$restEndTime",
       );
     } on Exception catch (error, stackTrace) {
       _logger.severe("Failed to update Live Activity", error, stackTrace);
@@ -127,7 +122,6 @@ class LiveActivityService {
     }
 
     try {
-      _stopUpdateTimer();
       await _channel.invokeMethod("endActivity", {"activityId": _currentActivityId});
       _logger.info("Live Activity ended: $_currentActivityId");
       _currentActivityId = null;
@@ -135,24 +129,6 @@ class LiveActivityService {
       _logger.severe("Failed to end Live Activity", error, stackTrace);
       _currentActivityId = null;
     }
-  }
-
-  void _startUpdateTimer(final Workout workout) {
-    _stopUpdateTimer();
-    // Update every second when resting
-    _updateTimer = Timer.periodic(const Duration(seconds: 1), (final timer) {
-      if (_currentActivityId == null) {
-        timer.cancel();
-        return;
-      }
-      // The WorkoutProvider will call updateActivity directly
-      // This timer is just a backup
-    });
-  }
-
-  void _stopUpdateTimer() {
-    _updateTimer?.cancel();
-    _updateTimer = null;
   }
 
   /// Checks if a Live Activity is currently active.

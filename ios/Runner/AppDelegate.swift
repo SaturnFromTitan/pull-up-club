@@ -58,6 +58,9 @@ import ActivityKit
       totalReps: totalReps
     )
 
+    let restEndTimeString = args["restEndTime"] as? String
+    print("LiveActivity start: restEndTime='\(restEndTimeString ?? "nil")', isResting=\(isResting), restRemainingMillis=\(restRemainingMillis)")
+
     let contentState = WorkoutActivityAttributes.ContentState(
       workoutType: workoutType,
       maxGroups: maxGroups,
@@ -65,7 +68,7 @@ import ActivityKit
       totalReps: totalReps,
       isResting: isResting,
       restRemainingMillis: restRemainingMillis,
-      restEndTime: args["restEndTime"] as? String
+      restEndTime: restEndTimeString
     )
 
     do {
@@ -94,6 +97,9 @@ import ActivityKit
       return
     }
 
+    let restEndTimeString = args["restEndTime"] as? String
+    print("LiveActivity update: restEndTime='\(restEndTimeString ?? "nil")', isResting=\(isResting), restRemainingMillis=\(restRemainingMillis)")
+
     let contentState = WorkoutActivityAttributes.ContentState(
       workoutType: workoutType,
       maxGroups: maxGroups,
@@ -101,7 +107,7 @@ import ActivityKit
       totalReps: totalReps,
       isResting: isResting,
       restRemainingMillis: restRemainingMillis,
-      restEndTime: args["restEndTime"] as? String
+      restEndTime: restEndTimeString
     )
 
     Task {

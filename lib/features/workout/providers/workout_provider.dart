@@ -91,15 +91,6 @@ class WorkoutProvider extends ChangeNotifier {
         return;
       }
 
-      // Update Live Activity every second during rest
-      unawaited(
-        LiveActivityService.instance.updateActivity(
-          workout: _workout,
-          isResting: true,
-          restRemainingMillis: remaining,
-        ),
-      );
-
       notifyListeners();
     });
   }

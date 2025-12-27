@@ -1,6 +1,49 @@
 import ActivityKit
 import WidgetKit
 import SwiftUI
+import Foundation
+
+/// Helper function to parse ISO8601 date strings from Flutter
+func parseISO8601Date(from string: String) -> Date? {
+    // Dart's toIso8601String() produces format like "2024-12-27T12:34:56.789Z"
+    // Try ISO8601DateFormatter with different option combinations
+    let formatOptionsList: [ISO8601DateFormatter.Options] = [
+        [.withInternetDateTime, .withFractionalSeconds, .withTimeZone], // "2024-12-27T12:34:56.789Z"
+        [.withInternetDateTime, .withTimeZone], // "2024-12-27T12:34:56Z"
+    ]
+
+    for formatOptions in formatOptionsList {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = formatOptions
+        // Don't set timeZone - let the formatter use the timezone from the string (Z = UTC)
+        if let date = formatter.date(from: string) {
+            print("parseISO8601Date: Successfully parsed '\(string)' to \(date)")
+            return date
+        }
+    }
+
+    // Fallback: try DateFormatter with explicit format
+    let fallbackFormatter = DateFormatter()
+    fallbackFormatter.locale = Locale(identifier: "en_US_POSIX")
+    fallbackFormatter.timeZone = TimeZone(secondsFromGMT: 0)
+
+    // Try with fractional seconds first
+    fallbackFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+    if let date = fallbackFormatter.date(from: string) {
+        print("parseISO8601Date: Successfully parsed '\(string)' to \(date) (with fractional seconds)")
+        return date
+    }
+
+    // Try without fractional seconds
+    fallbackFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+    if let date = fallbackFormatter.date(from: string) {
+        print("parseISO8601Date: Successfully parsed '\(string)' to \(date) (without fractional seconds)")
+        return date
+    }
+
+    print("parseISO8601Date: Failed to parse '\(string)'")
+    return nil
+}
 
 /// Live Activity widget view for workout state.
 struct WorkoutLiveActivity: Widget {
@@ -116,12 +159,26 @@ struct RestTimerView: View {
 
     var body: some View {
         VStack(alignment: .trailing, spacing: 4) {
-            if let endTimeString = restEndTime,
-               let endTime = ISO8601DateFormatter().date(from: endTimeString) {
-                Text(timerInterval: Date.now...endTime, countsDown: true)
-                    .font(.headline)
-                    .monospacedDigit()
-                    .foregroundColor(.orange)
+            if let endTimeString = restEndTime {
+                if let endTimeUTC = parseISO8601Date(from: endTimeString) {
+                    // Convert UTC time to local time for the timer
+                    // The parsed date is in UTC, but Date.now is in local timezone
+                    // So we need to use the UTC date directly - Date.now will be compared correctly
+                    // Actually, Date objects are timezone-agnostic, so we can use them directly
+                    Text(timerInterval: Date()...endTimeUTC, countsDown: true)
+                        .font(.headline)
+                        .monospacedDigit()
+                        .foregroundColor(.orange)
+                } else {
+                    // Date parsing failed - log for debugging
+                    Text("--:--")
+                        .font(.headline)
+                        .monospacedDigit()
+                        .foregroundColor(.orange)
+                        .onAppear {
+                            print("RestTimerView: Failed to parse date '\(endTimeString)'")
+                        }
+                }
             } else {
                 Text("--:--")
                     .font(.headline)
@@ -140,12 +197,18 @@ struct RestTimerCompactView: View {
     let restEndTime: String?
 
     var body: some View {
-        if let endTimeString = restEndTime,
-           let endTime = ISO8601DateFormatter().date(from: endTimeString) {
-            Text(timerInterval: Date.now...endTime, countsDown: true)
-                .font(.caption2)
-                .monospacedDigit()
-                .foregroundColor(.orange)
+        if let endTimeString = restEndTime {
+            if let endTimeUTC = parseISO8601Date(from: endTimeString) {
+                Text(timerInterval: Date()...endTimeUTC, countsDown: true)
+                    .font(.caption2)
+                    .monospacedDigit()
+                    .foregroundColor(.orange)
+            } else {
+                // Date parsing failed
+                Text("--")
+                    .font(.caption2)
+                    .foregroundColor(.orange)
+            }
         } else {
             Text("--")
                 .font(.caption2)
