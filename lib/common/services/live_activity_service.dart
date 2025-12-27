@@ -21,8 +21,6 @@ class LiveActivityService {
     }
 
     try {
-      await endActivity(); // just to be safe
-
       _logger.info("Starting Live Activity: workout=$workout");
 
       final result = await _channel.invokeMethod<String>("startActivity", {
@@ -80,14 +78,9 @@ class LiveActivityService {
       return;
     }
 
-    if (_currentActivityId == null) {
-      _logger.info("Can't end activity as it's not active.");
-      return;
-    }
-
     try {
-      await _channel.invokeMethod("endActivity", {"activityId": _currentActivityId});
-      _logger.info("Live Activity ended: $_currentActivityId");
+      await _channel.invokeMethod("endActivity");
+      _logger.info("Live Activity ended");
       _currentActivityId = null;
     } on Exception catch (error, stackTrace) {
       _logger.severe("Failed to end Live Activity", error, stackTrace);

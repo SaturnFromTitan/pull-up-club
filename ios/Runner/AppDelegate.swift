@@ -18,7 +18,9 @@ import ActivityKit
 
     liveActivityChannel.setMethodCallHandler { (call: FlutterMethodCall, result: @escaping FlutterResult) in
       if call.method == "startActivity" {
-        self.startLiveActivity(call: call, result: result)
+        Task {
+          await self.startLiveActivity(call: call, result: result)
+        }
       } else if call.method == "updateActivity" {
         self.updateLiveActivity(call: call, result: result)
       } else if call.method == "endActivity" {
@@ -32,26 +34,22 @@ import ActivityKit
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 
-  private func startLiveActivity(call: FlutterMethodCall, result: @escaping FlutterResult) {
+  private func startLiveActivity(call: FlutterMethodCall, result: @escaping FlutterResult) async {
     guard let args = call.arguments as? [String: Any],
           let workoutType = args["workoutType"] as? String else {
       result(FlutterError(code: "INVALID_ARGS", message: "Invalid arguments", details: nil))
       return
     }
+    print("LiveActivity start")
 
-    // End any existing activity
+    // End any existing activity before starting a new one to avoid race conditions
     if let existingActivity = currentActivity {
-      Task {
-        await existingActivity.end(dismissalPolicy: .immediate)
-      }
+      await existingActivity.end(dismissalPolicy: .immediate)
     }
 
     let attributes = WorkoutActivityAttributes(
       workoutType: workoutType
     )
-
-    print("LiveActivity start")
-
     let contentState = WorkoutActivityAttributes.ContentState(
       restEndTime: nil,
     )
@@ -62,10 +60,14 @@ import ActivityKit
         contentState: contentState,
         pushType: nil
       )
-      currentActivity = activity
-      result(activity.id)
+      await MainActor.run {
+        self.currentActivity = activity
+        result(activity.id)
+      }
     } catch {
-      result(FlutterError(code: "START_FAILED", message: error.localizedDescription, details: nil))
+      await MainActor.run {
+        result(FlutterError(code: "START_FAILED", message: error.localizedDescription, details: nil))
+      }
     }
   }
 
@@ -76,7 +78,6 @@ import ActivityKit
       result(FlutterError(code: "INVALID_ARGS", message: "Invalid arguments", details: nil))
       return
     }
-
     print("LiveActivity update: restEndTime='\(restEndTimeString ?? "nil")'")
 
     let contentState = WorkoutActivityAttributes.ContentState(
@@ -98,28 +99,17 @@ import ActivityKit
   }
 
   private func endLiveActivity(call: FlutterMethodCall, result: @escaping FlutterResult) {
-    guard let args = call.arguments as? [String: Any],
-          let activityId = args["activityId"] as? String else {
-      result(FlutterError(code: "INVALID_ARGS", message: "Invalid arguments", details: nil))
-      return
-    }
-
-    Task {
-      for activity in Activity<WorkoutActivityAttributes>.activities where activity.id == activityId {
-        await activity.end(dismissalPolicy: .immediate)
-        if activity.id == currentActivity?.id {
-          await MainActor.run {
-            self.currentActivity = nil
-          }
-        }
+    // End the current activity if it exists
+    if let existingActivity = currentActivity {
+      Task {
+        await existingActivity.end(dismissalPolicy: .immediate)
         await MainActor.run {
+          self.currentActivity = nil
           result(nil)
         }
-        return
       }
-      await MainActor.run {
-        result(FlutterError(code: "ACTIVITY_NOT_FOUND", message: "Activity not found", details: nil))
-      }
+    } else {
+      result(nil) // No activity to end, but that's fine
     }
   }
 }
