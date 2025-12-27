@@ -29,62 +29,59 @@ class WorkoutProvider extends ChangeNotifier {
   // private state
   final Workout _workout;
   DateTime? _restStartTime;
-  int _restTotalMillis = 0;
+  DateTime? _restEndTime;
   Timer? _restTimer;
 
   // getters
   Workout get workout => _workout;
+  DateTime? get restEndTime => _restEndTime;
 
-  int get restRemainingMillis {
-    if (_restStartTime == null) {
+  int getRestRemainingMillis() {
+    if (_restEndTime == null) {
       return 0;
     }
-    final elapsedMillis = clock
-        .now()
-        .toUtc()
-        .difference(_restStartTime!.toUtc())
+    final remainingMillis = _restEndTime!
+        .difference(clock.now().toUtc())
         .inMilliseconds;
-    return max(0, _restTotalMillis - elapsedMillis);
+    return max(0, remainingMillis);
   }
 
   // lifecyle management
   void rest(final int durationMillis) {
     // In test mode, override rest duration to 5 seconds
-    final actualDuration = TestConfig.isTestMode
+    final actualDurationMillis = TestConfig.isTestMode
         ? TestConfig.testRestDurationMillis
         : durationMillis;
 
     _logger.info(
-      "Starting rest period: duration=${actualDuration}ms (requested: ${durationMillis}ms, testMode: ${TestConfig.isTestMode}), workout: $_workout",
+      "Starting rest period: duration=${actualDurationMillis}ms (requested: ${durationMillis}ms, testMode: ${TestConfig.isTestMode}), workout: $_workout",
     );
     _restStartTime = clock.now().toUtc();
-    _restTotalMillis = actualDuration;
+    _restEndTime = _restStartTime!.add(Duration(milliseconds: actualDurationMillis));
 
     // Update Live Activity
     unawaited(
       LiveActivityService.instance.updateActivity(
         workout: _workout,
-        isResting: true,
-        restRemainingMillis: restRemainingMillis,
+        restEndTime: _restEndTime,
       ),
     );
 
     _restTimer = Timer.periodic(const Duration(seconds: 1), (final timer) {
-      final remaining = restRemainingMillis;
-
       // Play countdown sound on last 3 seconds (3, 2, 1)
       // Only play sound when remaining transitions to 3, 2, or 1 (i.e., just after a whole second tick)
       // This ensures that beeps after backgrounding are not repeated in rapid succession
+      final remainingMillis = getRestRemainingMillis();
       const precision = 100; // 100ms
       for (final targetSecond in [3, 2, 1]) {
-        if ((remaining - targetSecond * 1_000).abs() < precision) {
+        if ((remainingMillis - targetSecond * 1_000).abs() < precision) {
           unawaited(SoundService.instance.playCountdown());
           break;
         }
       }
 
       // Play complete sound when timer reaches 0
-      if (remaining <= 0) {
+      if (remainingMillis <= 0) {
         _logger.info("Rest period completed");
         unawaited(SoundService.instance.playCountdownCompleted());
         resume(stopSounds: false);
@@ -103,15 +100,11 @@ class WorkoutProvider extends ChangeNotifier {
     _restTimer?.cancel();
     _restTimer = null;
     _restStartTime = null;
-    _restTotalMillis = 0;
+    _restEndTime = null;
 
     // Update Live Activity to show not resting
     unawaited(
-      LiveActivityService.instance.updateActivity(
-        workout: _workout,
-        isResting: false,
-        restRemainingMillis: 0,
-      ),
+      LiveActivityService.instance.updateActivity(workout: _workout, restEndTime: null),
     );
 
     notifyListeners();

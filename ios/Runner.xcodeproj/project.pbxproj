@@ -14,8 +14,8 @@
 		47BC7D9A2EFF4867000FA091 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47BC7D992EFF4867000FA091 /* WidgetKit.framework */; };
 		47BC7D9C2EFF4867000FA091 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47BC7D9B2EFF4867000FA091 /* SwiftUI.framework */; };
 		47BC7DA92EFF4868000FA091 /* WorkoutWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 47BC7D982EFF4867000FA091 /* WorkoutWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		47D74C7E2EFFDB970026C246 /* Contents.json in Resources */ = {isa = PBXBuildFile; fileRef = 47D74C7C2EFFDB970026C246 /* Contents.json */; };
-		47D74C7F2EFFDB970026C246 /* app_icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 47D74C7B2EFFDB970026C246 /* app_icon.png */; };
+		47D27D172F00566400D016BF /* WorkoutActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47D27D162F00566400D016BF /* WorkoutActivityAttributes.swift */; };
+		47D27D182F00566400D016BF /* WorkoutActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47D27D162F00566400D016BF /* WorkoutActivityAttributes.swift */; };
 		74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
 		8E539CDDB34C80F1D68BD0E7 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3854AA00972B404EA094502 /* Pods_Runner.framework */; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
@@ -75,8 +75,7 @@
 		47BC7D982EFF4867000FA091 /* WorkoutWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = WorkoutWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		47BC7D992EFF4867000FA091 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		47BC7D9B2EFF4867000FA091 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
-		47D74C7B2EFFDB970026C246 /* app_icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = app_icon.png; sourceTree = "<group>"; };
-		47D74C7C2EFFDB970026C246 /* Contents.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Contents.json; sourceTree = "<group>"; };
+		47D27D162F00566400D016BF /* WorkoutActivityAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutActivityAttributes.swift; sourceTree = "<group>"; };
 		6FB895D68EADB1B15F9EBD9D /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
 		74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Runner-Bridging-Header.h"; sourceTree = "<group>"; };
 		74858FAE1ED2DC5600515810 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -97,13 +96,6 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		4791D0632EFF56C700C34C81 /* Exceptions for "WorkoutWidget" folder in "Runner" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				WorkoutActivityAttributes.swift,
-			);
-			target = 97C146ED1CF9000F007C117D /* Runner */;
-		};
 		4791D0902EFF584A00C34C81 /* Exceptions for "WorkoutWidget" folder in "WorkoutWidgetExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -117,7 +109,6 @@
 		47BC7D9D2EFF4867000FA091 /* WorkoutWidget */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				4791D0632EFF56C700C34C81 /* Exceptions for "WorkoutWidget" folder in "Runner" target */,
 				4791D0902EFF584A00C34C81 /* Exceptions for "WorkoutWidget" folder in "WorkoutWidgetExtension" target */,
 			);
 			explicitFileTypes = {
@@ -179,15 +170,6 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
-		47D74C7D2EFFDB970026C246 /* AppIconImage.imageset */ = {
-			isa = PBXGroup;
-			children = (
-				47D74C7B2EFFDB970026C246 /* app_icon.png */,
-				47D74C7C2EFFDB970026C246 /* Contents.json */,
-			);
-			path = AppIconImage.imageset;
-			sourceTree = "<group>";
-		};
 		9740EEB11CF90186004384FC /* Flutter */ = {
 			isa = PBXGroup;
 			children = (
@@ -225,12 +207,12 @@
 		97C146F01CF9000F007C117D /* Runner */ = {
 			isa = PBXGroup;
 			children = (
-				47D74C7D2EFFDB970026C246 /* AppIconImage.imageset */,
 				97C146FA1CF9000F007C117D /* Main.storyboard */,
 				97C146FD1CF9000F007C117D /* Assets.xcassets */,
 				97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */,
 				97C147021CF9000F007C117D /* Info.plist */,
 				97C147031CF9000F007C117E /* Runner.entitlements */,
+				47D27D162F00566400D016BF /* WorkoutActivityAttributes.swift */,
 				1498D2321E8E86230040F4C2 /* GeneratedPluginRegistrant.h */,
 				1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */,
 				74858FAE1ED2DC5600515810 /* AppDelegate.swift */,
@@ -372,8 +354,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				47D74C7E2EFFDB970026C246 /* Contents.json in Resources */,
-				47D74C7F2EFFDB970026C246 /* app_icon.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -498,6 +478,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				47D27D182F00566400D016BF /* WorkoutActivityAttributes.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -505,6 +486,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				47D27D172F00566400D016BF /* WorkoutActivityAttributes.swift in Sources */,
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
 			);

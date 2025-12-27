@@ -1,4 +1,3 @@
-import "package:clock/clock.dart";
 import "package:flutter/foundation.dart";
 import "package:flutter/services.dart";
 import "package:logging/logging.dart";
@@ -18,11 +17,10 @@ class LiveActivityService {
   /// Updates the activity when rest state changes.
   Future<void> startActivity({
     required final Workout workout,
-    required final bool isResting,
-    required final int restRemainingMillis,
+    required final DateTime? restEndTime,
   }) async {
     if (defaultTargetPlatform != TargetPlatform.iOS) {
-      _logger.fine("Live Activities only supported on iOS");
+      _logger.warning("Live Activities only supported on iOS");
       return;
     }
 
@@ -30,26 +28,17 @@ class LiveActivityService {
       // End any existing activity first
       await endActivity();
 
-      final restEndTime = isResting && restRemainingMillis > 0
-          ? clock
-                .now()
-                .toUtc()
-                .add(Duration(milliseconds: restRemainingMillis))
-                .toIso8601String()
-          : null;
+      final restEndTimeString = restEndTime?.toIso8601String();
 
       _logger.info(
-        "Starting Live Activity: isResting=$isResting, restRemainingMillis=$restRemainingMillis, restEndTime=$restEndTime",
+        "Starting Live Activity: restEndTime=$restEndTimeString, workout=$workout",
       );
 
       final result = await _channel.invokeMethod<String>("startActivity", {
         "workoutType": workout.workoutType.name,
         "maxGroups": workout.maxGroups,
         "completedSets": workout.sets.length,
-        "totalReps": workout.totalReps(),
-        "isResting": isResting,
-        "restRemainingMillis": restRemainingMillis,
-        "restEndTime": restEndTime,
+        "restEndTime": restEndTimeString,
       });
 
       _currentActivityId = result;
@@ -62,34 +51,26 @@ class LiveActivityService {
   /// Updates the current Live Activity with new state.
   Future<void> updateActivity({
     required final Workout workout,
-    required final bool isResting,
-    required final int restRemainingMillis,
+    required final DateTime? restEndTime,
   }) async {
     if (defaultTargetPlatform != TargetPlatform.iOS) {
+      _logger.warning(
+        "Attempted to update Live Activity on unsupported platform: $defaultTargetPlatform",
+      );
       return;
     }
 
     if (_currentActivityId == null) {
       // Activity doesn't exist, start a new one
-      await startActivity(
-        workout: workout,
-        isResting: isResting,
-        restRemainingMillis: restRemainingMillis,
-      );
+      await startActivity(workout: workout, restEndTime: restEndTime);
       return;
     }
 
     try {
-      final restEndTime = isResting && restRemainingMillis > 0
-          ? clock
-                .now()
-                .toUtc()
-                .add(Duration(milliseconds: restRemainingMillis))
-                .toIso8601String()
-          : null;
+      final restEndTimeString = restEndTime?.toIso8601String();
 
       _logger.info(
-        "Updating Live Activity: isResting=$isResting, restRemainingMillis=$restRemainingMillis, restEndTime=$restEndTime",
+        "Updating Live Activity: restEndTime=$restEndTimeString, workout=$workout",
       );
 
       await _channel.invokeMethod("updateActivity", {
@@ -97,15 +78,10 @@ class LiveActivityService {
         "workoutType": workout.workoutType.name,
         "maxGroups": workout.maxGroups,
         "completedSets": workout.sets.length,
-        "totalReps": workout.totalReps(),
-        "isResting": isResting,
-        "restRemainingMillis": restRemainingMillis,
-        "restEndTime": restEndTime,
+        "restEndTime": restEndTimeString,
       });
 
-      _logger.fine(
-        "Live Activity updated: isResting=$isResting, restEndTime=$restEndTime",
-      );
+      _logger.fine("Live Activity updated: $_currentActivityId");
     } on Exception catch (error, stackTrace) {
       _logger.severe("Failed to update Live Activity", error, stackTrace);
     }
@@ -114,10 +90,14 @@ class LiveActivityService {
   /// Ends the current Live Activity.
   Future<void> endActivity() async {
     if (defaultTargetPlatform != TargetPlatform.iOS) {
+      _logger.warning(
+        "Attempted to end Live Activity on unsupported platform: $defaultTargetPlatform",
+      );
       return;
     }
 
     if (_currentActivityId == null) {
+      _logger.info("Can't end activity as it's currently not active.");
       return;
     }
 

@@ -36,10 +36,7 @@ import ActivityKit
     guard let args = call.arguments as? [String: Any],
           let workoutType = args["workoutType"] as? String,
           let maxGroups = args["maxGroups"] as? Int,
-          let completedSets = args["completedSets"] as? Int,
-          let totalReps = args["totalReps"] as? Int,
-          let isResting = args["isResting"] as? Bool,
-          let restRemainingMillis = args["restRemainingMillis"] as? Int else {
+          let completedSets = args["completedSets"] as? Int else {
       result(FlutterError(code: "INVALID_ARGS", message: "Invalid arguments", details: nil))
       return
     }
@@ -53,21 +50,14 @@ import ActivityKit
 
     let attributes = WorkoutActivityAttributes(
       workoutType: workoutType,
-      maxGroups: maxGroups,
-      completedSets: completedSets,
-      totalReps: totalReps
+      maxGroups: maxGroups
     )
 
     let restEndTimeString = args["restEndTime"] as? String
-    print("LiveActivity start: restEndTime='\(restEndTimeString ?? "nil")', isResting=\(isResting), restRemainingMillis=\(restRemainingMillis)")
+    print("LiveActivity start: restEndTime='\(restEndTimeString ?? "nil")'")
 
     let contentState = WorkoutActivityAttributes.ContentState(
-      workoutType: workoutType,
-      maxGroups: maxGroups,
       completedSets: completedSets,
-      totalReps: totalReps,
-      isResting: isResting,
-      restRemainingMillis: restRemainingMillis,
       restEndTime: restEndTimeString
     )
 
@@ -87,26 +77,16 @@ import ActivityKit
   private func updateLiveActivity(call: FlutterMethodCall, result: @escaping FlutterResult) {
     guard let args = call.arguments as? [String: Any],
           let activityId = args["activityId"] as? String,
-          let workoutType = args["workoutType"] as? String,
-          let maxGroups = args["maxGroups"] as? Int,
-          let completedSets = args["completedSets"] as? Int,
-          let totalReps = args["totalReps"] as? Int,
-          let isResting = args["isResting"] as? Bool,
-          let restRemainingMillis = args["restRemainingMillis"] as? Int else {
+          let completedSets = args["completedSets"] as? Int else {
       result(FlutterError(code: "INVALID_ARGS", message: "Invalid arguments", details: nil))
       return
     }
 
     let restEndTimeString = args["restEndTime"] as? String
-    print("LiveActivity update: restEndTime='\(restEndTimeString ?? "nil")', isResting=\(isResting), restRemainingMillis=\(restRemainingMillis)")
+    print("LiveActivity update: restEndTime='\(restEndTimeString ?? "nil")'")
 
     let contentState = WorkoutActivityAttributes.ContentState(
-      workoutType: workoutType,
-      maxGroups: maxGroups,
       completedSets: completedSets,
-      totalReps: totalReps,
-      isResting: isResting,
-      restRemainingMillis: restRemainingMillis,
       restEndTime: restEndTimeString
     )
 

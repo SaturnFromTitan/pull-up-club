@@ -41,8 +41,7 @@ abstract class BaseWorkoutState<T extends BaseWorkoutScreen> extends State<T> {
       unawaited(
         LiveActivityService.instance.startActivity(
           workout: workoutProvider.workout,
-          isResting: workoutProvider.isResting(),
-          restRemainingMillis: workoutProvider.restRemainingMillis,
+          restEndTime: workoutProvider.restEndTime,
         ),
       );
     });
@@ -78,7 +77,7 @@ abstract class BaseWorkoutState<T extends BaseWorkoutScreen> extends State<T> {
         MaterialPageRoute(
           builder: (_) => ChangeNotifierProvider.value(
             value: workoutProvider,
-            child: RestScreen(currentGroupIndex: getNumCompletedGroups()),
+            child: RestScreen(numCompletedGroups: getNumCompletedGroups()),
           ),
         ),
       ),

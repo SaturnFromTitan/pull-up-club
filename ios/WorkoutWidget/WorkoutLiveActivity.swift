@@ -56,34 +56,28 @@ struct WorkoutLiveActivity: Widget {
             DynamicIsland {
                 // Expanded UI for Dynamic Island
                 DynamicIslandExpandedRegion(.leading) {
-                    let isLadder = context.state.workoutType == "Ladders"
+                    let isLadder = context.attributes.workoutType == "Ladders"
                     let currentGroup = context.state.completedSets + 1
                     let groupLabel = isLadder ? "Ladder" : "Set"
 
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(context.state.workoutType)
+                        Text(context.attributes.workoutType)
                             .font(.headline)
                             .foregroundColor(.white)
-                        if context.state.isResting {
-                            Text("\(groupLabel) \(currentGroup) of \(context.state.maxGroups) next")
+                        if context.state.restEndTime != nil {
+                            Text("\(groupLabel) \(currentGroup) of \(context.attributes.maxGroups) next")
                                 .font(.caption)
                                 .foregroundColor(.white.opacity(0.8))
                         } else {
-                            if isLadder {
-                                Text("Ladder \(currentGroup) of \(context.state.maxGroups)")
-                                    .font(.caption)
-                                    .foregroundColor(.white.opacity(0.8))
-                            } else {
-                                Text("Set \(currentGroup) of \(context.state.maxGroups)")
-                                    .font(.caption)
-                                    .foregroundColor(.white.opacity(0.8))
-                            }
+                            Text("\(groupLabel) \(currentGroup) of \(context.attributes.maxGroups)")
+                                .font(.caption)
+                                .foregroundColor(.white.opacity(0.8))
                         }
                     }
                 }
 
                 DynamicIslandExpandedRegion(.trailing) {
-                    if context.state.isResting {
+                    if context.state.restEndTime != nil {
                         RestTimerView(restEndTime: context.state.restEndTime)
                     } else {
                         VStack(alignment: .trailing, spacing: 4) {
@@ -95,7 +89,7 @@ struct WorkoutLiveActivity: Widget {
                 }
 
                 DynamicIslandExpandedRegion(.bottom) {
-                    if context.state.isResting {
+                    if context.state.restEndTime != nil {
                         Text("Rest time remaining")
                             .font(.caption)
                             .foregroundColor(.white.opacity(0.8))
@@ -115,7 +109,7 @@ struct WorkoutLiveActivity: Widget {
             } compactTrailing: {
                 // Compact trailing UI - keep width consistent
                 Group {
-                    if context.state.isResting {
+                    if context.state.restEndTime != nil {
                         // Display timer when resting - constrain width to match "Go!"
                         if let endTimeString = context.state.restEndTime,
                            let endTimeUTC = parseISO8601Date(from: endTimeString) {
@@ -151,7 +145,7 @@ struct WorkoutActivityView: View {
     let context: ActivityViewContext<WorkoutActivityAttributes>
 
     private var isLadder: Bool {
-        context.state.workoutType == "Ladders"
+        context.attributes.workoutType == "Ladders"
     }
 
     private var currentGroup: Int {
@@ -171,32 +165,26 @@ struct WorkoutActivityView: View {
 
             VStack(alignment: .leading, spacing: 4) {
                 // Workout type
-                Text(context.state.workoutType)
+                Text(context.attributes.workoutType)
                     .font(.headline)
                     .foregroundColor(.white)
 
                 // Current/next set/group info
-                if context.state.isResting {
-                    Text("\(groupLabel) \(currentGroup) of \(context.state.maxGroups) next")
+                if context.state.restEndTime != nil {
+                    Text("\(groupLabel) \(currentGroup) of \(context.attributes.maxGroups) next")
                         .font(.caption)
                         .foregroundColor(.white.opacity(0.8))
                 } else {
-                    if isLadder {
-                        Text("Ladder \(currentGroup) of \(context.state.maxGroups)")
-                            .font(.caption)
-                            .foregroundColor(.white.opacity(0.8))
-                    } else {
-                        Text("Set \(currentGroup) of \(context.state.maxGroups)")
-                            .font(.caption)
-                            .foregroundColor(.white.opacity(0.8))
-                    }
+                    Text("\(groupLabel) \(currentGroup) of \(context.attributes.maxGroups)")
+                        .font(.caption)
+                        .foregroundColor(.white.opacity(0.8))
                 }
             }
 
             Spacer()
 
             // Rest timer or status - positioned at very right, timer above "Rest" text
-            if context.state.isResting {
+            if context.state.restEndTime != nil {
                 VStack(alignment: .trailing, spacing: 2) {
                     if let endTimeString = context.state.restEndTime,
                        let endTimeUTC = parseISO8601Date(from: endTimeString) {

@@ -5,17 +5,12 @@ import Foundation
 /// This file must be included in both the Runner and WorkoutWidget targets.
 struct WorkoutActivityAttributes: ActivityAttributes {
     public struct ContentState: Codable, Hashable {
-        var workoutType: String
-        var maxGroups: Int
+        // Only dynamic values that change during the activity
         var completedSets: Int
-        var totalReps: Int
-        var isResting: Bool
-        var restRemainingMillis: Int
         var restEndTime: String?
     }
 
+    // Only immutable values that identify the activity
     var workoutType: String
     var maxGroups: Int
-    var completedSets: Int
-    var totalReps: Int
 }
