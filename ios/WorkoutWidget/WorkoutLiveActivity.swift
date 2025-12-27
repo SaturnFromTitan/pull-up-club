@@ -22,25 +22,6 @@ func parseISO8601Date(from string: String) -> Date? {
         }
     }
 
-    // Fallback: try DateFormatter with explicit format
-    let fallbackFormatter = DateFormatter()
-    fallbackFormatter.locale = Locale(identifier: "en_US_POSIX")
-    fallbackFormatter.timeZone = TimeZone(secondsFromGMT: 0)
-
-    // Try with fractional seconds first
-    fallbackFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
-    if let date = fallbackFormatter.date(from: string) {
-        print("parseISO8601Date: Successfully parsed '\(string)' to \(date) (with fractional seconds)")
-        return date
-    }
-
-    // Try without fractional seconds
-    fallbackFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
-    if let date = fallbackFormatter.date(from: string) {
-        print("parseISO8601Date: Successfully parsed '\(string)' to \(date) (without fractional seconds)")
-        return date
-    }
-
     print("parseISO8601Date: Failed to parse '\(string)'")
     return nil
 }

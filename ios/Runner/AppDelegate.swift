@@ -73,11 +73,12 @@ import ActivityKit
 
   private func updateLiveActivity(call: FlutterMethodCall, result: @escaping FlutterResult) {
     guard let args = call.arguments as? [String: Any],
-          let activityId = args["activityId"] as? String,
-          let restEndTimeString = args["restEndTime"] as? String else {
+          let activityId = args["activityId"] as? String else {
       result(FlutterError(code: "INVALID_ARGS", message: "Invalid arguments", details: nil))
       return
     }
+
+    let restEndTimeString = args["restEndTime"] as? String
     print("LiveActivity update: restEndTime='\(restEndTimeString ?? "nil")'")
 
     let contentState = WorkoutActivityAttributes.ContentState(
