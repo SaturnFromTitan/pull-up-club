@@ -165,6 +165,7 @@ class BackendService {
             .copyWith(microsecond: 0, millisecond: 0)
             .toIso8601String(),
         "end": workout.end!.copyWith(microsecond: 0, millisecond: 0).toIso8601String(),
+        "idempotency_key": workout.idempotencyKey,
       };
 
       // Insert workout and get the ID
@@ -185,6 +186,7 @@ class BackendService {
                 "target_reps": set_.targetReps,
                 "completed_reps": set_.completedReps,
                 "number": set_.number,
+                "idempotency_key": set_.idempotencyKey,
               },
             )
             .toList();
