@@ -14,6 +14,8 @@
 		47BC7D9A2EFF4867000FA091 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47BC7D992EFF4867000FA091 /* WidgetKit.framework */; };
 		47BC7D9C2EFF4867000FA091 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47BC7D9B2EFF4867000FA091 /* SwiftUI.framework */; };
 		47BC7DA92EFF4868000FA091 /* WorkoutWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 47BC7D982EFF4867000FA091 /* WorkoutWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		47D74C7E2EFFDB970026C246 /* Contents.json in Resources */ = {isa = PBXBuildFile; fileRef = 47D74C7C2EFFDB970026C246 /* Contents.json */; };
+		47D74C7F2EFFDB970026C246 /* app_icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 47D74C7B2EFFDB970026C246 /* app_icon.png */; };
 		74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
 		8E539CDDB34C80F1D68BD0E7 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3854AA00972B404EA094502 /* Pods_Runner.framework */; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
@@ -73,6 +75,8 @@
 		47BC7D982EFF4867000FA091 /* WorkoutWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = WorkoutWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		47BC7D992EFF4867000FA091 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		47BC7D9B2EFF4867000FA091 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		47D74C7B2EFFDB970026C246 /* app_icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = app_icon.png; sourceTree = "<group>"; };
+		47D74C7C2EFFDB970026C246 /* Contents.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Contents.json; sourceTree = "<group>"; };
 		6FB895D68EADB1B15F9EBD9D /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
 		74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Runner-Bridging-Header.h"; sourceTree = "<group>"; };
 		74858FAE1ED2DC5600515810 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -175,6 +179,15 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
+		47D74C7D2EFFDB970026C246 /* AppIconImage.imageset */ = {
+			isa = PBXGroup;
+			children = (
+				47D74C7B2EFFDB970026C246 /* app_icon.png */,
+				47D74C7C2EFFDB970026C246 /* Contents.json */,
+			);
+			path = AppIconImage.imageset;
+			sourceTree = "<group>";
+		};
 		9740EEB11CF90186004384FC /* Flutter */ = {
 			isa = PBXGroup;
 			children = (
@@ -212,6 +225,7 @@
 		97C146F01CF9000F007C117D /* Runner */ = {
 			isa = PBXGroup;
 			children = (
+				47D74C7D2EFFDB970026C246 /* AppIconImage.imageset */,
 				97C146FA1CF9000F007C117D /* Main.storyboard */,
 				97C146FD1CF9000F007C117D /* Assets.xcassets */,
 				97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */,
@@ -358,6 +372,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				47D74C7E2EFFDB970026C246 /* Contents.json in Resources */,
+				47D74C7F2EFFDB970026C246 /* app_icon.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -107,9 +107,11 @@ struct WorkoutLiveActivity: Widget {
                 }
             } compactLeading: {
                 // Compact leading UI - app icon
-                Image(systemName: "figure.pullups")
-                    .foregroundColor(.white)
-                    .imageScale(.small)
+                Image("AppIconImage")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 16, height: 16)
+                    .clipShape(RoundedRectangle(cornerRadius: 3))
             } compactTrailing: {
                 // Compact trailing UI - keep width consistent
                 Group {
