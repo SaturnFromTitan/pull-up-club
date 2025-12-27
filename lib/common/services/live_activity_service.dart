@@ -14,31 +14,19 @@ class LiveActivityService {
   String? _currentActivityId;
 
   /// Starts a Live Activity for the given workout.
-  /// Updates the activity when rest state changes.
-  Future<void> startActivity({
-    required final Workout workout,
-    required final DateTime? restEndTime,
-  }) async {
+  Future<void> startActivity({required final Workout workout}) async {
     if (defaultTargetPlatform != TargetPlatform.iOS) {
       _logger.warning("Live Activities only supported on iOS");
       return;
     }
 
     try {
-      // End any existing activity first
-      await endActivity();
+      await endActivity(); // just to be safe
 
-      final restEndTimeString = restEndTime?.toIso8601String();
-
-      _logger.info(
-        "Starting Live Activity: restEndTime=$restEndTimeString, workout=$workout",
-      );
+      _logger.info("Starting Live Activity: workout=$workout");
 
       final result = await _channel.invokeMethod<String>("startActivity", {
         "workoutType": workout.workoutType.name,
-        "maxGroups": workout.maxGroups,
-        "completedSets": workout.sets.length,
-        "restEndTime": restEndTimeString,
       });
 
       _currentActivityId = result;
@@ -61,8 +49,7 @@ class LiveActivityService {
     }
 
     if (_currentActivityId == null) {
-      // Activity doesn't exist, start a new one
-      await startActivity(workout: workout, restEndTime: restEndTime);
+      await startActivity(workout: workout); // just to be safe
       return;
     }
 
@@ -75,9 +62,6 @@ class LiveActivityService {
 
       await _channel.invokeMethod("updateActivity", {
         "activityId": _currentActivityId,
-        "workoutType": workout.workoutType.name,
-        "maxGroups": workout.maxGroups,
-        "completedSets": workout.sets.length,
         "restEndTime": restEndTimeString,
       });
 
@@ -97,7 +81,7 @@ class LiveActivityService {
     }
 
     if (_currentActivityId == null) {
-      _logger.info("Can't end activity as it's currently not active.");
+      _logger.info("Can't end activity as it's not active.");
       return;
     }
 
@@ -110,7 +94,4 @@ class LiveActivityService {
       _currentActivityId = null;
     }
   }
-
-  /// Checks if a Live Activity is currently active.
-  bool get isActive => _currentActivityId != null;
 }

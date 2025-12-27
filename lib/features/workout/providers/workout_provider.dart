@@ -24,7 +24,10 @@ class WorkoutProvider extends ChangeNotifier {
               return 5;
           }
         }(),
-      );
+      ) {
+    // Start Live Activity when workout provider is created
+    unawaited(LiveActivityService.instance.startActivity(workout: _workout));
+  }
   static final Logger _logger = Logger("WorkoutProvider");
   // private state
   final Workout _workout;
@@ -59,7 +62,6 @@ class WorkoutProvider extends ChangeNotifier {
     _restStartTime = clock.now().toUtc();
     _restEndTime = _restStartTime!.add(Duration(milliseconds: actualDurationMillis));
 
-    // Update Live Activity
     unawaited(
       LiveActivityService.instance.updateActivity(
         workout: _workout,
@@ -102,7 +104,6 @@ class WorkoutProvider extends ChangeNotifier {
     _restStartTime = null;
     _restEndTime = null;
 
-    // Update Live Activity to show not resting
     unawaited(
       LiveActivityService.instance.updateActivity(workout: _workout, restEndTime: null),
     );
@@ -133,7 +134,6 @@ class WorkoutProvider extends ChangeNotifier {
   void dispose() {
     _logger.fine("WorkoutProvider disposed: $_workout");
     _restTimer?.cancel();
-    // End Live Activity when workout provider is disposed
     unawaited(LiveActivityService.instance.endActivity());
     super.dispose();
   }

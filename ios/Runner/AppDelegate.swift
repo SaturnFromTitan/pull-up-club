@@ -34,9 +34,7 @@ import ActivityKit
 
   private func startLiveActivity(call: FlutterMethodCall, result: @escaping FlutterResult) {
     guard let args = call.arguments as? [String: Any],
-          let workoutType = args["workoutType"] as? String,
-          let maxGroups = args["maxGroups"] as? Int,
-          let completedSets = args["completedSets"] as? Int else {
+          let workoutType = args["workoutType"] as! String else {
       result(FlutterError(code: "INVALID_ARGS", message: "Invalid arguments", details: nil))
       return
     }
@@ -49,16 +47,13 @@ import ActivityKit
     }
 
     let attributes = WorkoutActivityAttributes(
-      workoutType: workoutType,
-      maxGroups: maxGroups
+      workoutType: workoutType
     )
 
-    let restEndTimeString = args["restEndTime"] as? String
-    print("LiveActivity start: restEndTime='\(restEndTimeString ?? "nil")'")
+    print("LiveActivity start")
 
     let contentState = WorkoutActivityAttributes.ContentState(
-      completedSets: completedSets,
-      restEndTime: restEndTimeString
+      restEndTime: nil,
     )
 
     do {
@@ -76,18 +71,16 @@ import ActivityKit
 
   private func updateLiveActivity(call: FlutterMethodCall, result: @escaping FlutterResult) {
     guard let args = call.arguments as? [String: Any],
-          let activityId = args["activityId"] as? String,
-          let completedSets = args["completedSets"] as? Int else {
+          let activityId = args["activityId"] as! String,
+          let restEndTimeString = args["restEndTime"] as? String else {
       result(FlutterError(code: "INVALID_ARGS", message: "Invalid arguments", details: nil))
       return
     }
 
-    let restEndTimeString = args["restEndTime"] as? String
     print("LiveActivity update: restEndTime='\(restEndTimeString ?? "nil")'")
 
     let contentState = WorkoutActivityAttributes.ContentState(
-      completedSets: completedSets,
-      restEndTime: restEndTimeString
+      restEndTime: restEndTimeString,
     )
 
     Task {
@@ -106,7 +99,7 @@ import ActivityKit
 
   private func endLiveActivity(call: FlutterMethodCall, result: @escaping FlutterResult) {
     guard let args = call.arguments as? [String: Any],
-          let activityId = args["activityId"] as? String else {
+          let activityId = args["activityId"] as! String else {
       result(FlutterError(code: "INVALID_ARGS", message: "Invalid arguments", details: nil))
       return
     }

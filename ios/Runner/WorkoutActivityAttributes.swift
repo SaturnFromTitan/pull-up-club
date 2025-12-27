@@ -6,11 +6,9 @@ import Foundation
 struct WorkoutActivityAttributes: ActivityAttributes {
     public struct ContentState: Codable, Hashable {
         // Only dynamic values that change during the activity
-        var completedSets: Int
         var restEndTime: String?
     }
 
     // Only immutable values that identify the activity
     var workoutType: String
-    var maxGroups: Int
 }

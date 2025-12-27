@@ -142,7 +142,7 @@ class _RestTimerSpinnerState extends State<_RestTimerSpinner>
   @override
   Widget build(final BuildContext context) {
     final workoutProvider = context.watch<WorkoutProvider>();
-    final remaining = workoutProvider.getRestRemainingMillis();
+    final remainingMillis = workoutProvider.getRestRemainingMillis();
 
     const double ringThickness = 6;
     const arcPortion = 0.25;
@@ -172,7 +172,7 @@ class _RestTimerSpinnerState extends State<_RestTimerSpinner>
               ),
               // center content
               Text(
-                displayDuration(remaining),
+                displayDuration(remainingMillis),
                 style: AppTypography.headlineLarge.copyWith(
                   fontSize: widget.size / 4,
                   fontFeatures: const [FontFeature.tabularFigures()],

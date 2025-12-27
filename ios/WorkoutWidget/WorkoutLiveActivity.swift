@@ -56,20 +56,16 @@ struct WorkoutLiveActivity: Widget {
             DynamicIsland {
                 // Expanded UI for Dynamic Island
                 DynamicIslandExpandedRegion(.leading) {
-                    let isLadder = context.attributes.workoutType == "Ladders"
-                    let currentGroup = context.state.completedSets + 1
-                    let groupLabel = isLadder ? "Ladder" : "Set"
-
                     VStack(alignment: .leading, spacing: 4) {
                         Text(context.attributes.workoutType)
                             .font(.headline)
                             .foregroundColor(.white)
                         if context.state.restEndTime != nil {
-                            Text("\(groupLabel) \(currentGroup) of \(context.attributes.maxGroups) next")
+                            Text("Resting")
                                 .font(.caption)
                                 .foregroundColor(.white.opacity(0.8))
                         } else {
-                            Text("\(groupLabel) \(currentGroup) of \(context.attributes.maxGroups)")
+                            Text("Active")
                                 .font(.caption)
                                 .foregroundColor(.white.opacity(0.8))
                         }
@@ -144,18 +140,6 @@ struct WorkoutLiveActivity: Widget {
 struct WorkoutActivityView: View {
     let context: ActivityViewContext<WorkoutActivityAttributes>
 
-    private var isLadder: Bool {
-        context.attributes.workoutType == "Ladders"
-    }
-
-    private var currentGroup: Int {
-        context.state.completedSets + 1
-    }
-
-    private var groupLabel: String {
-        isLadder ? "Ladder" : "Set"
-    }
-
     var body: some View {
         HStack(spacing: 12) {
             // Workout icon
@@ -169,13 +153,13 @@ struct WorkoutActivityView: View {
                     .font(.headline)
                     .foregroundColor(.white)
 
-                // Current/next set/group info
+                // Status
                 if context.state.restEndTime != nil {
-                    Text("\(groupLabel) \(currentGroup) of \(context.attributes.maxGroups) next")
+                    Text("Resting")
                         .font(.caption)
                         .foregroundColor(.white.opacity(0.8))
                 } else {
-                    Text("\(groupLabel) \(currentGroup) of \(context.attributes.maxGroups)")
+                    Text("Active")
                         .font(.caption)
                         .foregroundColor(.white.opacity(0.8))
                 }
