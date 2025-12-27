@@ -34,7 +34,7 @@ import ActivityKit
 
   private func startLiveActivity(call: FlutterMethodCall, result: @escaping FlutterResult) {
     guard let args = call.arguments as? [String: Any],
-          let workoutType = args["workoutType"] as! String else {
+          let workoutType = args["workoutType"] as? String else {
       result(FlutterError(code: "INVALID_ARGS", message: "Invalid arguments", details: nil))
       return
     }
@@ -71,7 +71,7 @@ import ActivityKit
 
   private func updateLiveActivity(call: FlutterMethodCall, result: @escaping FlutterResult) {
     guard let args = call.arguments as? [String: Any],
-          let activityId = args["activityId"] as! String,
+          let activityId = args["activityId"] as? String,
           let restEndTimeString = args["restEndTime"] as? String else {
       result(FlutterError(code: "INVALID_ARGS", message: "Invalid arguments", details: nil))
       return
@@ -99,7 +99,7 @@ import ActivityKit
 
   private func endLiveActivity(call: FlutterMethodCall, result: @escaping FlutterResult) {
     guard let args = call.arguments as? [String: Any],
-          let activityId = args["activityId"] as! String else {
+          let activityId = args["activityId"] as? String else {
       result(FlutterError(code: "INVALID_ARGS", message: "Invalid arguments", details: nil))
       return
     }
