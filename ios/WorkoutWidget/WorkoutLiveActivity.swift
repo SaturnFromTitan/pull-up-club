@@ -56,13 +56,29 @@ struct WorkoutLiveActivity: Widget {
             DynamicIsland {
                 // Expanded UI for Dynamic Island
                 DynamicIslandExpandedRegion(.leading) {
+                    let isLadder = context.state.workoutType == "Ladders"
+                    let currentGroup = context.state.completedSets + 1
+                    let groupLabel = isLadder ? "Ladder" : "Set"
+
                     VStack(alignment: .leading, spacing: 4) {
                         Text(context.state.workoutType)
                             .font(.headline)
                             .foregroundColor(.white)
-                        Text("\(context.state.completedSets)/\(context.state.maxGroups) sets")
-                            .font(.caption)
-                            .foregroundColor(.white.opacity(0.8))
+                        if context.state.isResting {
+                            Text("\(groupLabel) \(currentGroup) of \(context.state.maxGroups) next")
+                                .font(.caption)
+                                .foregroundColor(.white.opacity(0.8))
+                        } else {
+                            if isLadder {
+                                Text("Ladder \(currentGroup) of \(context.state.maxGroups)")
+                                    .font(.caption)
+                                    .foregroundColor(.white.opacity(0.8))
+                            } else {
+                                Text("Set \(currentGroup) of \(context.state.maxGroups)")
+                                    .font(.caption)
+                                    .foregroundColor(.white.opacity(0.8))
+                            }
+                        }
                     }
                 }
 
@@ -71,11 +87,8 @@ struct WorkoutLiveActivity: Widget {
                         RestTimerView(restEndTime: context.state.restEndTime)
                     } else {
                         VStack(alignment: .trailing, spacing: 4) {
-                            Text("\(context.state.totalReps) reps")
+                            Text("Go!")
                                 .font(.headline)
-                                .foregroundColor(.white)
-                            Text("Active")
-                                .font(.caption)
                                 .foregroundColor(.green)
                         }
                     }
@@ -93,18 +106,35 @@ struct WorkoutLiveActivity: Widget {
                     }
                 }
             } compactLeading: {
-                // Compact leading UI
+                // Compact leading UI - app icon
                 Image(systemName: "figure.pullups")
                     .foregroundColor(.white)
+                    .imageScale(.small)
             } compactTrailing: {
-                // Compact trailing UI
-                if context.state.isResting {
-                    RestTimerCompactView(restEndTime: context.state.restEndTime)
-                } else {
-                    Text("\(context.state.completedSets)/\(context.state.maxGroups)")
-                        .font(.caption2)
-                        .foregroundColor(.white)
+                // Compact trailing UI - keep width consistent
+                Group {
+                    if context.state.isResting {
+                        // Display timer when resting - constrain width to match "Go!"
+                        if let endTimeString = context.state.restEndTime,
+                           let endTimeUTC = parseISO8601Date(from: endTimeString) {
+                            Text(timerInterval: Date()...endTimeUTC, countsDown: true)
+                                .font(.caption2)
+                                .monospacedDigit()
+                                .foregroundColor(.orange)
+                                .lineLimit(1)
+                        } else {
+                            Text("--")
+                                .font(.caption2)
+                                .foregroundColor(.orange)
+                        }
+                    } else {
+                        // Display "Go!" when not resting
+                        Text("Go!")
+                            .font(.caption2)
+                            .foregroundColor(.green)
+                    }
                 }
+                .frame(minWidth: 30, maxWidth: 35) // Constrain width to keep Dynamic Island compact
             } minimal: {
                 // Minimal UI
                 Image(systemName: "figure.pullups")
@@ -118,6 +148,18 @@ struct WorkoutLiveActivity: Widget {
 struct WorkoutActivityView: View {
     let context: ActivityViewContext<WorkoutActivityAttributes>
 
+    private var isLadder: Bool {
+        context.state.workoutType == "Ladders"
+    }
+
+    private var currentGroup: Int {
+        context.state.completedSets + 1
+    }
+
+    private var groupLabel: String {
+        isLadder ? "Ladder" : "Set"
+    }
+
     var body: some View {
         HStack(spacing: 12) {
             // Workout icon
@@ -126,34 +168,65 @@ struct WorkoutActivityView: View {
                 .foregroundColor(.white)
 
             VStack(alignment: .leading, spacing: 4) {
-                // Workout type and progress
+                // Workout type
                 Text(context.state.workoutType)
                     .font(.headline)
                     .foregroundColor(.white)
 
-                Text("Set \(context.state.completedSets) of \(context.state.maxGroups) • \(context.state.totalReps) reps")
-                    .font(.caption)
-                    .foregroundColor(.white.opacity(0.8))
+                // Current/next set/group info
+                if context.state.isResting {
+                    Text("\(groupLabel) \(currentGroup) of \(context.state.maxGroups) next")
+                        .font(.caption)
+                        .foregroundColor(.white.opacity(0.8))
+                } else {
+                    if isLadder {
+                        Text("Ladder \(currentGroup) of \(context.state.maxGroups)")
+                            .font(.caption)
+                            .foregroundColor(.white.opacity(0.8))
+                    } else {
+                        Text("Set \(currentGroup) of \(context.state.maxGroups)")
+                            .font(.caption)
+                            .foregroundColor(.white.opacity(0.8))
+                    }
+                }
             }
 
             Spacer()
 
-            // Rest timer or status
+            // Rest timer or status - positioned at very right, timer above "Rest" text
             if context.state.isResting {
-                RestTimerView(restEndTime: context.state.restEndTime)
+                VStack(alignment: .trailing, spacing: 2) {
+                    if let endTimeString = context.state.restEndTime,
+                       let endTimeUTC = parseISO8601Date(from: endTimeString) {
+                        Text(timerInterval: Date()...endTimeUTC, countsDown: true)
+                            .font(.headline)
+                            .monospacedDigit()
+                            .foregroundColor(.orange)
+                    } else {
+                        Text("--:--")
+                            .font(.headline)
+                            .monospacedDigit()
+                            .foregroundColor(.orange)
+                    }
+                    Text("Rest")
+                        .font(.caption2)
+                        .foregroundColor(.white.opacity(0.8))
+                }
+                .frame(maxWidth: .infinity, alignment: .trailing)
             } else {
                 VStack(alignment: .trailing, spacing: 4) {
-                    Text("Active")
+                    Text("Go!")
                         .font(.caption)
                         .foregroundColor(.green)
                 }
+                .frame(maxWidth: .infinity, alignment: .trailing)
             }
         }
         .padding()
     }
 }
 
-/// Rest timer view that shows countdown
+/// Rest timer view that shows countdown (used in Dynamic Island expanded view)
 struct RestTimerView: View {
     let restEndTime: String?
 
@@ -161,23 +234,15 @@ struct RestTimerView: View {
         VStack(alignment: .trailing, spacing: 4) {
             if let endTimeString = restEndTime {
                 if let endTimeUTC = parseISO8601Date(from: endTimeString) {
-                    // Convert UTC time to local time for the timer
-                    // The parsed date is in UTC, but Date.now is in local timezone
-                    // So we need to use the UTC date directly - Date.now will be compared correctly
-                    // Actually, Date objects are timezone-agnostic, so we can use them directly
                     Text(timerInterval: Date()...endTimeUTC, countsDown: true)
                         .font(.headline)
                         .monospacedDigit()
                         .foregroundColor(.orange)
                 } else {
-                    // Date parsing failed - log for debugging
                     Text("--:--")
                         .font(.headline)
                         .monospacedDigit()
                         .foregroundColor(.orange)
-                        .onAppear {
-                            print("RestTimerView: Failed to parse date '\(endTimeString)'")
-                        }
                 }
             } else {
                 Text("--:--")
@@ -197,22 +262,28 @@ struct RestTimerCompactView: View {
     let restEndTime: String?
 
     var body: some View {
-        if let endTimeString = restEndTime {
-            if let endTimeUTC = parseISO8601Date(from: endTimeString) {
-                Text(timerInterval: Date()...endTimeUTC, countsDown: true)
-                    .font(.caption2)
-                    .monospacedDigit()
-                    .foregroundColor(.orange)
+        Group {
+            if let endTimeString = restEndTime {
+                if let endTimeUTC = parseISO8601Date(from: endTimeString) {
+                    // Use a compact format to minimize width - same width as "1/3" format
+                    Text(timerInterval: Date()...endTimeUTC, countsDown: true)
+                        .font(.caption2)
+                        .monospacedDigit()
+                        .foregroundColor(.orange)
+                        .lineLimit(1)
+                        .fixedSize(horizontal: true, vertical: false)
+                } else {
+                    // Date parsing failed
+                    Text("--")
+                        .font(.caption2)
+                        .foregroundColor(.orange)
+                }
             } else {
-                // Date parsing failed
                 Text("--")
                     .font(.caption2)
                     .foregroundColor(.orange)
             }
-        } else {
-            Text("--")
-                .font(.caption2)
-                .foregroundColor(.orange)
         }
+        .frame(minWidth: 30, maxWidth: 40) // Constrain width to match non-resting state
     }
 }
