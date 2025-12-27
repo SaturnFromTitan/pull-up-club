@@ -10,10 +10,15 @@ import ActivityKit
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-    let controller = window?.rootViewController as! FlutterViewController
+    GeneratedPluginRegistrant.register(with: self)
+
+    guard let registrar = self.registrar(forPlugin: "LiveActivityPlugin") else {
+      return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+    }
+
     let liveActivityChannel = FlutterMethodChannel(
       name: "pull_up_club/live_activity",
-      binaryMessenger: controller.binaryMessenger
+      binaryMessenger: registrar.messenger()
     )
 
     liveActivityChannel.setMethodCallHandler { (call: FlutterMethodCall, result: @escaping FlutterResult) in
@@ -30,7 +35,6 @@ import ActivityKit
       }
     }
 
-    GeneratedPluginRegistrant.register(with: self)
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 
