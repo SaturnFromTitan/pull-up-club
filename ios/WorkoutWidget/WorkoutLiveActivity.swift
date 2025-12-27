@@ -35,46 +35,15 @@ struct WorkoutLiveActivity: Widget {
                 .activityBackgroundTint(Color.black.opacity(0.1))
         } dynamicIsland: { context in
             DynamicIsland {
-                // Expanded UI for Dynamic Island
+                // Expanded Regions
                 DynamicIslandExpandedRegion(.leading) {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(context.attributes.workoutType)
-                            .font(.headline)
-                            .foregroundColor(.white)
-                        if context.state.restEndTime != nil {
-                            Text("Resting")
-                                .font(.caption)
-                                .foregroundColor(.white.opacity(0.8))
-                        } else {
-                            Text("Active")
-                                .font(.caption)
-                                .foregroundColor(.white.opacity(0.8))
-                        }
-                    }
+                    EmptyView()
                 }
-
                 DynamicIslandExpandedRegion(.trailing) {
-                    if context.state.restEndTime != nil {
-                        RestTimerView(restEndTime: context.state.restEndTime)
-                    } else {
-                        VStack(alignment: .trailing, spacing: 4) {
-                            Text("Go!")
-                                .font(.headline)
-                                .foregroundColor(.green)
-                        }
-                    }
+                    EmptyView()
                 }
-
                 DynamicIslandExpandedRegion(.bottom) {
-                    if context.state.restEndTime != nil {
-                        Text("Rest time remaining")
-                            .font(.caption)
-                            .foregroundColor(.white.opacity(0.8))
-                    } else {
-                        Text("Continue your workout")
-                            .font(.caption)
-                            .foregroundColor(.white.opacity(0.8))
-                    }
+                    EmptyView()
                 }
             } compactLeading: {
                 // Compact leading UI - app icon
@@ -86,20 +55,19 @@ struct WorkoutLiveActivity: Widget {
             } compactTrailing: {
                 // Compact trailing UI - keep width consistent
                 Group {
-                    if context.state.restEndTime != nil {
-                        // Display timer when resting - constrain width to match "Go!"
-                        if let endTimeString = context.state.restEndTime,
-                           let endTimeUTC = parseISO8601Date(from: endTimeString) {
-                            Text(timerInterval: Date()...endTimeUTC, countsDown: true)
-                                .font(.caption2)
-                                .monospacedDigit()
-                                .foregroundColor(.orange)
-                                .lineLimit(1)
-                        } else {
-                            Text("--")
-                                .font(.caption2)
-                                .foregroundColor(.orange)
-                        }
+                    if let endTimeString = context.state.restEndTime,
+                       let endTimeUTC = parseISO8601Date(from: endTimeString) {
+                        // Display timer when resting
+                        Text(timerInterval: Date()...endTimeUTC, countsDown: true)
+                            .font(.caption2)
+                            .monospacedDigit()
+                            .foregroundColor(.orange)
+                            .lineLimit(1)
+                    } else if context.state.restEndTime != nil {
+                        // Parsing failed, show fallback
+                        Text("--")
+                            .font(.caption2)
+                            .foregroundColor(.orange)
                     } else {
                         // Display "Go!" when not resting
                         Text("Go!")
@@ -107,7 +75,7 @@ struct WorkoutLiveActivity: Widget {
                             .foregroundColor(.green)
                     }
                 }
-                .frame(minWidth: 30, maxWidth: 35) // Constrain width to keep Dynamic Island compact
+                .frame(minWidth: 35, maxWidth: 35) // Constrain width to keep Dynamic Island compact
             } minimal: {
                 // Minimal UI
                 Image(systemName: "figure.pullups")
@@ -123,34 +91,22 @@ struct WorkoutActivityView: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            // Workout icon
-            Image(systemName: "figure.pullups")
-                .font(.title2)
+            // App icon
+            Image("AppIconImage")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 32, height: 32)
+                .clipShape(RoundedRectangle(cornerRadius: 6))
+
+            Text(context.attributes.workoutType)
+                .font(.headline)
                 .foregroundColor(.white)
-
-            VStack(alignment: .leading, spacing: 4) {
-                // Workout type
-                Text(context.attributes.workoutType)
-                    .font(.headline)
-                    .foregroundColor(.white)
-
-                // Status
-                if context.state.restEndTime != nil {
-                    Text("Resting")
-                        .font(.caption)
-                        .foregroundColor(.white.opacity(0.8))
-                } else {
-                    Text("Active")
-                        .font(.caption)
-                        .foregroundColor(.white.opacity(0.8))
-                }
-            }
 
             Spacer()
 
-            // Rest timer or status - positioned at very right, timer above "Rest" text
+            // Rest timer or status - positioned at very right
             if context.state.restEndTime != nil {
-                VStack(alignment: .trailing, spacing: 2) {
+                Group {
                     if let endTimeString = context.state.restEndTime,
                        let endTimeUTC = parseISO8601Date(from: endTimeString) {
                         Text(timerInterval: Date()...endTimeUTC, countsDown: true)
@@ -163,82 +119,15 @@ struct WorkoutActivityView: View {
                             .monospacedDigit()
                             .foregroundColor(.orange)
                     }
-                    Text("Rest")
-                        .font(.caption2)
-                        .foregroundColor(.white.opacity(0.8))
                 }
                 .frame(maxWidth: .infinity, alignment: .trailing)
             } else {
-                VStack(alignment: .trailing, spacing: 4) {
-                    Text("Go!")
-                        .font(.caption)
-                        .foregroundColor(.green)
-                }
-                .frame(maxWidth: .infinity, alignment: .trailing)
+                Text("Go!")
+                    .font(.caption)
+                    .foregroundColor(.green)
+                    .frame(maxWidth: .infinity, alignment: .trailing)
             }
         }
         .padding()
-    }
-}
-
-/// Rest timer view that shows countdown (used in Dynamic Island expanded view)
-struct RestTimerView: View {
-    let restEndTime: String?
-
-    var body: some View {
-        VStack(alignment: .trailing, spacing: 4) {
-            if let endTimeString = restEndTime {
-                if let endTimeUTC = parseISO8601Date(from: endTimeString) {
-                    Text(timerInterval: Date()...endTimeUTC, countsDown: true)
-                        .font(.headline)
-                        .monospacedDigit()
-                        .foregroundColor(.orange)
-                } else {
-                    Text("--:--")
-                        .font(.headline)
-                        .monospacedDigit()
-                        .foregroundColor(.orange)
-                }
-            } else {
-                Text("--:--")
-                    .font(.headline)
-                    .monospacedDigit()
-                    .foregroundColor(.orange)
-            }
-            Text("Rest")
-                .font(.caption2)
-                .foregroundColor(.white.opacity(0.8))
-        }
-    }
-}
-
-/// Compact rest timer view for Dynamic Island
-struct RestTimerCompactView: View {
-    let restEndTime: String?
-
-    var body: some View {
-        Group {
-            if let endTimeString = restEndTime {
-                if let endTimeUTC = parseISO8601Date(from: endTimeString) {
-                    // Use a compact format to minimize width - same width as "1/3" format
-                    Text(timerInterval: Date()...endTimeUTC, countsDown: true)
-                        .font(.caption2)
-                        .monospacedDigit()
-                        .foregroundColor(.orange)
-                        .lineLimit(1)
-                        .fixedSize(horizontal: true, vertical: false)
-                } else {
-                    // Date parsing failed
-                    Text("--")
-                        .font(.caption2)
-                        .foregroundColor(.orange)
-                }
-            } else {
-                Text("--")
-                    .font(.caption2)
-                    .foregroundColor(.orange)
-            }
-        }
-        .frame(minWidth: 30, maxWidth: 40) // Constrain width to match non-resting state
     }
 }

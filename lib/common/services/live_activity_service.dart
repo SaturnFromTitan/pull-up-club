@@ -55,7 +55,7 @@ class LiveActivityService {
       final restEndTimeString = restEndTime?.toIso8601String();
 
       _logger.info(
-        "Updating Live Activity: restEndTime=$restEndTimeString, workout=$workout",
+        "Updating Live Activity: restEndTime=$restEndTimeString, activityId=$_currentActivityId",
       );
 
       await _channel.invokeMethod("updateActivity", {
