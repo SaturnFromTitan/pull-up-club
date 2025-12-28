@@ -17,9 +17,11 @@ platform :ios do
       key_content: ENV['APP_STORE_CONNECT_API_KEY']
     )
 
+    widget_bundle_id = "#{ENV['APP_BUNDLE_ID']}.WorkoutWidget"
+
     match(
       type: "appstore",
-      app_identifier: [ENV['APP_BUNDLE_ID']],
+      app_identifier: [ENV['APP_BUNDLE_ID'], widget_bundle_id],
       git_url: ENV['MATCH_GIT_URL'],
       readonly: true,
       api_key: api_key
@@ -31,6 +33,14 @@ platform :ios do
       targets: ["Runner"],
       code_sign_identity: "Apple Distribution",
       profile_name: "match AppStore #{ENV['APP_BUNDLE_ID']}"
+    )
+
+    update_code_signing_settings(
+      use_automatic_signing: false,
+      path: "Runner.xcodeproj",
+      targets: ["WorkoutWidgetExtension"],
+      code_sign_identity: "Apple Distribution",
+      profile_name: "match AppStore #{widget_bundle_id}"
     )
 
     UI.message("Deriving target marketing version and build number")
@@ -59,7 +69,8 @@ platform :ios do
       export_options: {
         signingStyle: "manual",
         provisioningProfiles: {
-          ENV['APP_BUNDLE_ID'] => "match AppStore #{ENV['APP_BUNDLE_ID']}"
+          ENV['APP_BUNDLE_ID'] => "match AppStore #{ENV['APP_BUNDLE_ID']}",
+          widget_bundle_id => "match AppStore #{widget_bundle_id}"
         }
       },
       xcargs: "FLUTTER_BUILD_NAME=#{marketing_version} FLUTTER_BUILD_NUMBER=#{build_number}"
