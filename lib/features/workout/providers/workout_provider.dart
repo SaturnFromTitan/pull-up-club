@@ -39,14 +39,14 @@ class WorkoutProvider extends ChangeNotifier {
   Workout get workout => _workout;
   DateTime? get restEndTime => _restEndTime;
 
-  int getRestRemainingMillis() {
+  int getRestRemainingMillis({final bool clampToZero = true}) {
     if (_restEndTime == null) {
       return 0;
     }
     final remainingMillis = _restEndTime!
         .difference(clock.now().toUtc())
         .inMilliseconds;
-    return max(0, remainingMillis);
+    return clampToZero ? max(0, remainingMillis) : remainingMillis;
   }
 
   // lifecyle management
@@ -62,28 +62,21 @@ class WorkoutProvider extends ChangeNotifier {
     _restStartTime = clock.now().toUtc();
     _restEndTime = _restStartTime!.add(Duration(milliseconds: actualDurationMillis));
 
-    unawaited(
-      LiveActivityService.instance.updateActivity(
-        workout: _workout,
-        restEndTime: _restEndTime,
-      ),
-    );
+    unawaited(LiveActivityService.instance.updateActivity(restEndTime: _restEndTime));
 
     _restTimer = Timer.periodic(const Duration(seconds: 1), (final timer) {
       // Play countdown sound on last 3 seconds (3, 2, 1)
       // Only play sound when remaining transitions to 3, 2, or 1 (i.e., just after a whole second tick)
       // This ensures that beeps after backgrounding are not repeated in rapid succession
-      final remainingMillis = getRestRemainingMillis();
-      const precision = 100; // 100ms
+      final remainingMillis = getRestRemainingMillis(clampToZero: false);
       for (final targetSecond in [3, 2, 1]) {
-        if ((remainingMillis - targetSecond * 1_000).abs() < precision) {
+        if (_isClose(remainingMillis, targetSecond * 1_000)) {
           unawaited(SoundService.instance.playCountdown());
           break;
         }
       }
 
-      // Play complete sound when timer reaches 0
-      if (remainingMillis <= 0) {
+      if (_isClose(remainingMillis, 0)) {
         _logger.info("Rest period completed");
         unawaited(SoundService.instance.playCountdownCompleted());
         resume(stopSounds: false);
@@ -93,6 +86,12 @@ class WorkoutProvider extends ChangeNotifier {
       notifyListeners();
     });
   }
+
+  bool _isClose(
+    final int remainingMillis,
+    final int targetMillis, {
+    final int precisionMillis = 100,
+  }) => (remainingMillis - targetMillis).abs() < precisionMillis;
 
   void resume({final bool stopSounds = true}) {
     _logger.info("Resuming workout: $_workout");
@@ -104,9 +103,12 @@ class WorkoutProvider extends ChangeNotifier {
     _restStartTime = null;
     _restEndTime = null;
 
-    unawaited(
-      LiveActivityService.instance.updateActivity(workout: _workout, restEndTime: null),
-    );
+    // When the app is in the background, the live activity may not get updated
+    // as the background execution is limited by iOS. Therefore the widget doesn't
+    // update its text from "00:00" to "Go!". This is a known limitation which is
+    // hard to work around.
+    // The update call here is still useful for when the rest timer gets skipped
+    unawaited(LiveActivityService.instance.updateActivity(restEndTime: null));
 
     notifyListeners();
   }
