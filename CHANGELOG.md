@@ -1,27 +1,14 @@
 # Changelog
 
-## 1.3.0
-
-Features:
-
-- "Undo Set" button during workouts to fix data entry errors
-- Incomplete workouts can now be added to the history when exiting the workout
-
-Misc:
-
-- Added a proper [landing page](https://pullup-club.com)!
-
-Fixes:
-
-- Handle edge case in BE sync which could result in duplicated workouts
-
-## 1.2.0 (not released on AppStore)
+## 1.2.0
 
 Features:
 
 - Cloud Sync
   - You can now back up your workout data to the cloud
   - All you need to do is sign in with your Apple ID
+- "Undo Set" button during workouts to fix data entry errors
+- Incomplete workouts can now be added to the history when exiting the workout
 
 UI:
 
@@ -31,6 +18,10 @@ UI:
 Fixes:
 
 - Fix day of week in Workout History
+
+Misc:
+
+- Added a proper [landing page](https://pullup-club.com)!
 
 Privacy:
 
