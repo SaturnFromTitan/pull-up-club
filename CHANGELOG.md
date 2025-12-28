@@ -11,7 +11,11 @@ Misc:
 
 - Added a proper [landing page](https://pullup-club.com)!
 
-## 1.2.0
+Fixes:
+
+- Handle edge case in BE sync which could result in duplicated workouts
+
+## 1.2.0 (not released on AppStore)
 
 Features:
 

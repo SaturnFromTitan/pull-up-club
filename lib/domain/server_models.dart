@@ -4,6 +4,7 @@ import "package:pull_up_club/domain/models.dart";
 class ServerWorkoutSet {
   ServerWorkoutSet({
     required this.id,
+    required this.idempotencyKey,
     required this.workoutId,
     required this.groupNumber,
     required this.completedReps,
@@ -14,6 +15,7 @@ class ServerWorkoutSet {
   factory ServerWorkoutSet.fromJson(final Map<String, dynamic> json) {
     return ServerWorkoutSet(
       id: json["id"] as int,
+      idempotencyKey: json["idempotency_key"] as String,
       workoutId: json["workout_id"] as int,
       groupNumber: json["group_number"] as int,
       targetReps: json["target_reps"] as int?,
@@ -23,6 +25,7 @@ class ServerWorkoutSet {
   }
 
   final int id;
+  final String idempotencyKey;
   final int workoutId;
   final int groupNumber;
   final int? targetReps;
@@ -32,6 +35,7 @@ class ServerWorkoutSet {
   /// Converts to local WorkoutSet model.
   WorkoutSet toLocal() {
     return WorkoutSet(
+      idempotencyKey: idempotencyKey,
       group: groupNumber,
       targetReps: targetReps,
       completedReps: completedReps,
@@ -44,6 +48,7 @@ class ServerWorkoutSet {
 class ServerWorkout {
   ServerWorkout({
     required this.id,
+    required this.idempotencyKey,
     required this.workoutType,
     required this.maxGroups,
     required this.start,
@@ -64,6 +69,7 @@ class ServerWorkout {
 
     return ServerWorkout(
       id: json["id"] as int,
+      idempotencyKey: json["idempotency_key"] as String,
       workoutType: _parseWorkoutType(json["workout_type"] as String),
       maxGroups: json["max_groups"] as int,
       start: DateTime.parse(json["start"] as String).toUtc(),
@@ -83,6 +89,7 @@ class ServerWorkout {
   }
 
   final int id;
+  final String idempotencyKey;
   final WorkoutType workoutType;
   final int maxGroups;
   final DateTime start;
@@ -94,6 +101,7 @@ class ServerWorkout {
   Workout toLocal() {
     final workout = Workout(
       serverId: id,
+      idempotencyKey: idempotencyKey,
       workoutType: workoutType,
       maxGroups: maxGroups,
       start: start,

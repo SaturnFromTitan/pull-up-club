@@ -23,6 +23,7 @@ class Workouts extends Table {
   DateTimeColumn get start => dateTime()();
   DateTimeColumn get end => dateTime()();
   DateTimeColumn get deletedAt => dateTime().nullable()();
+  TextColumn get idempotencyKey => text()();
   // Indexes are created in migration v5
 }
 
@@ -35,6 +36,7 @@ class WorkoutSets extends Table {
   IntColumn get groupNumber => integer()();
   IntColumn get targetReps => integer().nullable()();
   IntColumn get completedReps => integer()();
+  TextColumn get idempotencyKey => text()();
   // Index is created in migration v5
 }
 
@@ -45,7 +47,7 @@ class WorkoutDatabase extends _$WorkoutDatabase {
   static final Logger _logger = Logger("WorkoutDatabase");
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -75,6 +77,8 @@ class WorkoutDatabase extends _$WorkoutDatabase {
             await migrateToVersion4(m);
           case 5:
             await migrateToVersion5(m);
+          case 6:
+            await migrateToVersion6(m);
           default:
             _logger.warning("No explicit migration defined for version $version");
         }
@@ -102,6 +106,7 @@ class WorkoutDatabase extends _$WorkoutDatabase {
         deletedAt: workout.deletedAt == null
             ? const Value.absent()
             : Value(workout.deletedAt),
+        idempotencyKey: workout.idempotencyKey,
       ),
     );
     _logger.info("Workout inserted with ID: $workoutId");
@@ -117,6 +122,7 @@ class WorkoutDatabase extends _$WorkoutDatabase {
               ? const Value.absent()
               : Value(set_.targetReps),
           completedReps: set_.completedReps,
+          idempotencyKey: set_.idempotencyKey,
         ),
       );
     }
@@ -182,6 +188,7 @@ class WorkoutDatabase extends _$WorkoutDatabase {
         group: setRow.groupNumber,
         targetReps: setRow.targetReps,
         completedReps: setRow.completedReps,
+        idempotencyKey: setRow.idempotencyKey,
       );
       setsByWorkoutId
           .putIfAbsent(setRow.workoutId, () => <WorkoutSet>[])
@@ -204,6 +211,7 @@ class WorkoutDatabase extends _$WorkoutDatabase {
         end: workoutRow.end.toUtc(),
         deletedAt: workoutRow.deletedAt?.toUtc(),
         sets: setsByWorkoutId[workoutRow.id] ?? <WorkoutSet>[],
+        idempotencyKey: workoutRow.idempotencyKey,
       );
 
       workoutList.add(workout);
