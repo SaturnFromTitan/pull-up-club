@@ -1,4 +1,5 @@
 import "package:clock/clock.dart";
+import "package:uuid/uuid.dart";
 
 enum WorkoutType {
   maxSets("Max Sets"),
@@ -16,16 +17,19 @@ class WorkoutSet {
     required this.group,
     required this.targetReps,
     required this.completedReps,
-  });
+    final String? idempotencyKey,
+  }) : idempotencyKey = idempotencyKey ?? const Uuid().v4();
   final int number; // order of the set within the workout (1-based)
   final int group; // to identify ladders (1-based)
   final int? targetReps;
   final int completedReps;
+  final String idempotencyKey;
 
   @override
   String toString() {
     final buffer = StringBuffer("WorkoutSet(")
       ..write("number=$number")
+      ..write(", idempotencyKey=$idempotencyKey")
       ..write(", group=$group")
       ..write(", targetReps=$targetReps")
       ..write(", completedReps=$completedReps")
@@ -44,8 +48,10 @@ class Workout {
     this.end,
     this.deletedAt,
     final List<WorkoutSet>? sets,
+    final String? idempotencyKey,
   }) : start = start ?? clock.now().toUtc(),
-       sets = sets ?? <WorkoutSet>[];
+       sets = sets ?? <WorkoutSet>[],
+       idempotencyKey = idempotencyKey ?? const Uuid().v4();
 
   int? id;
   int? serverId;
@@ -55,6 +61,7 @@ class Workout {
   DateTime? end;
   DateTime? deletedAt;
   List<WorkoutSet> sets;
+  final String idempotencyKey;
   // Even though workouts can be aborted, I decided against adding an isCompleted argument
   // 1) before introducing the abort & persist option, the workaround was to log "0" sets for the remaining groups.
   //    So the exisitng data could contain effectively incomplete workouts, but the isComplete set would be set to true.
@@ -78,6 +85,7 @@ class Workout {
   String toString() {
     final buffer = StringBuffer("Workout(")
       ..write("id=$id")
+      ..write(", idempotencyKey=$idempotencyKey")
       ..write(", serverId=$serverId")
       ..write(", type=${workoutType.name}")
       ..write(", maxGroups=$maxGroups")

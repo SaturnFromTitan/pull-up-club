@@ -5,12 +5,6 @@
 🚀 Features:
 
 - Added a live widget to keep track of your workout while the app is in the background
-- "Undo Set" button during workouts to fix data entry errors
-- Incomplete workouts can now be added to the history when exiting the workout
-
-✨ Misc:
-
-- Added a proper [landing page](https://pullup-club.com)!
 
 ## 1.2.0
 
@@ -19,6 +13,8 @@
 - Cloud Sync
   - You can now back up your workout data to the cloud
   - All you need to do is sign in with your Apple ID
+- "Undo Set" button during workouts to fix data entry errors
+- Incomplete workouts can now be added to the history when exiting the workout
 
 🖥️ UI:
 
@@ -28,6 +24,10 @@
 🪲 Fixes:
 
 - Fix day of week in Workout History
+
+✨ Misc:
+
+- Added a proper [landing page](https://pullup-club.com)!
 
 🔍 Privacy:
 
