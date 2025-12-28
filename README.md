@@ -38,9 +38,10 @@ bundle install
 Then publish the certificates to the repository via
 
 ```sh
+APP_BUNDLE_ID="${APP_BUNDLE_ID:-com.saturnfromtitan.pullupclub}"
 bundle exec fastlane match appstore \
       --git_url "${MATCH_GIT_URL:-git@github.com:SaturnFromTitan/pull-up-club-certificates.git}" \
-      --app_identifier "${APP_BUNDLE_ID:-com.saturnfromtitan.pullupclub}"
+      --app_identifier "${APP_BUNDLE_ID},${APP_BUNDLE_ID}.WorkoutWidget"
 ```
 
 ## Local Setup
