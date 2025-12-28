@@ -11,7 +11,6 @@ class LiveActivityService {
   static final Logger _logger = Logger("LiveActivityService");
 
   static const MethodChannel _channel = MethodChannel("pull_up_club/live_activity");
-  String? _currentActivityId;
 
   /// Starts a Live Activity for the given workout.
   Future<void> startActivity({required final Workout workout}) async {
@@ -23,12 +22,11 @@ class LiveActivityService {
     try {
       _logger.info("Starting Live Activity: workout=$workout");
 
-      final result = await _channel.invokeMethod<String>("startActivity", {
+      await _channel.invokeMethod("startActivity", {
         "workoutType": workout.workoutType.name,
       });
 
-      _currentActivityId = result;
-      _logger.info("Live Activity started: $_currentActivityId");
+      _logger.info("Live Activity started");
     } on Exception catch (error, stackTrace) {
       _logger.severe("Failed to start Live Activity", error, stackTrace);
     }
@@ -46,24 +44,14 @@ class LiveActivityService {
       return;
     }
 
-    if (_currentActivityId == null) {
-      await startActivity(workout: workout); // just to be safe
-      return;
-    }
-
     try {
       final restEndTimeString = restEndTime?.toIso8601String();
 
-      _logger.info(
-        "Updating Live Activity: restEndTime=$restEndTimeString, activityId=$_currentActivityId",
-      );
+      _logger.info("Updating Live Activity: restEndTime=$restEndTimeString");
 
-      await _channel.invokeMethod("updateActivity", {
-        "activityId": _currentActivityId,
-        "restEndTime": restEndTimeString,
-      });
+      await _channel.invokeMethod("updateActivity", {"restEndTime": restEndTimeString});
 
-      _logger.fine("Live Activity updated: $_currentActivityId");
+      _logger.fine("Live Activity updated");
     } on Exception catch (error, stackTrace) {
       _logger.severe("Failed to update Live Activity", error, stackTrace);
     }
@@ -81,10 +69,8 @@ class LiveActivityService {
     try {
       await _channel.invokeMethod("endActivity");
       _logger.info("Live Activity ended");
-      _currentActivityId = null;
     } on Exception catch (error, stackTrace) {
       _logger.severe("Failed to end Live Activity", error, stackTrace);
-      _currentActivityId = null;
     }
   }
 }

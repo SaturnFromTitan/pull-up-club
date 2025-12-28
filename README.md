@@ -84,6 +84,26 @@ The app uses a multi-layered logging and error reporting system:
 2. **Sentry integration**: Errors and warnings are automatically sent to Sentry (if configured)
 3. **Console logging**: Development logs are printed to console (debug mode only)
 
+### Log File Details
+
+- **File name**: `app_logs.jsonl`
+- **Location**: App's Documents directory (`getApplicationDocumentsDirectory()`)
+- **Format**: JSON Lines (one JSON object per line)
+- **Rotation**: Automatically rotated when file size exceeds 1MB (keeps last 500 lines)
+
+### Retrieving Log Files from Physical iOS Device
+
+Since file sharing is enabled in the app, you can retrieve the log file like so:
+
+1. Connect your iOS device to your Mac via USB
+2. Unlock your device and trust the computer if prompted
+3. Open **Finder** on your Mac
+4. In the sidebar, under **Locations**, select your iOS device
+5. Click on **Files** tab
+6. Find **Pull-Up Club** in the list of apps
+7. You should see `app_logs.jsonl` in the app's documents
+8. Select the file and drag it to your desired location, or click **Save to...** to choose a destination
+
 ## Cloud Sync
 
 When signing in with an Apple ID, the workout data can be synced to a remote backend (Supabase).
