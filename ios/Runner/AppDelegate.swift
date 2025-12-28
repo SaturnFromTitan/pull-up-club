@@ -27,9 +27,13 @@ import ActivityKit
           await self.startLiveActivity(call: call, result: result)
         }
       } else if call.method == "updateActivity" {
-        self.updateLiveActivity(call: call, result: result)
+        Task {
+          await self.updateLiveActivity(call: call, result: result)
+        }
       } else if call.method == "endActivity" {
-        self.endLiveActivity(call: call, result: result)
+        Task {
+          await self.endLiveActivity(call: call, result: result)
+        }
       } else {
         result(FlutterMethodNotImplemented)
       }
@@ -66,7 +70,7 @@ import ActivityKit
       )
       await MainActor.run {
         self.currentActivity = activity
-        result(activity.id)
+        result(nil)
       }
     } catch {
       await MainActor.run {
@@ -75,9 +79,8 @@ import ActivityKit
     }
   }
 
-  private func updateLiveActivity(call: FlutterMethodCall, result: @escaping FlutterResult) {
-    guard let args = call.arguments as? [String: Any],
-          let activityId = args["activityId"] as? String else {
+  private func updateLiveActivity(call: FlutterMethodCall, result: @escaping FlutterResult) async {
+    guard let args = call.arguments as? [String: Any] else {
       result(FlutterError(code: "INVALID_ARGS", message: "Invalid arguments", details: nil))
       return
     }
@@ -89,29 +92,41 @@ import ActivityKit
       restEndTime: restEndTimeString,
     )
 
-    Task {
-      for activity in Activity<WorkoutActivityAttributes>.activities where activity.id == activityId {
-        await activity.update(using: contentState)
-        await MainActor.run {
-          result(nil)
+    // Use the stored activity, or find the first active activity if we lost track of it
+    // (e.g., after app restart)
+    var activityToUpdate: Activity<WorkoutActivityAttributes>?
+    await MainActor.run {
+      if let activity = self.currentActivity {
+        activityToUpdate = activity
+      } else {
+        // Restore from active activities if we lost track (e.g., after app restart)
+        activityToUpdate = Activity<WorkoutActivityAttributes>.activities.first
+        if let restoredActivity = activityToUpdate {
+          self.currentActivity = restoredActivity
         }
-        return
       }
+    }
+
+    guard let activity = activityToUpdate else {
       await MainActor.run {
-        result(FlutterError(code: "ACTIVITY_NOT_FOUND", message: "Activity not found", details: nil))
+        result(FlutterError(code: "ACTIVITY_NOT_FOUND", message: "No active activity found", details: nil))
       }
+      return
+    }
+
+    await activity.update(using: contentState)
+    await MainActor.run {
+      result(nil)
     }
   }
 
-  private func endLiveActivity(call: FlutterMethodCall, result: @escaping FlutterResult) {
+  private func endLiveActivity(call: FlutterMethodCall, result: @escaping FlutterResult) async {
     // End the current activity if it exists
     if let existingActivity = currentActivity {
-      Task {
-        await existingActivity.end(dismissalPolicy: .immediate)
-        await MainActor.run {
-          self.currentActivity = nil
-          result(nil)
-        }
+      await existingActivity.end(dismissalPolicy: .immediate)
+      await MainActor.run {
+        self.currentActivity = nil
+        result(nil)
       }
     } else {
       result(nil) // No activity to end, but that's fine
