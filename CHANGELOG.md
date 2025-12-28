@@ -1,8 +1,14 @@
 # Changelog
 
+## 1.3.0
+
+🚀 Features:
+
+- Added a live widget to keep track of your workout while the app is in the background
+
 ## 1.2.0
 
-Features:
+🚀 Features:
 
 - Cloud Sync
   - You can now back up your workout data to the cloud
@@ -10,31 +16,31 @@ Features:
 - "Undo Set" button during workouts to fix data entry errors
 - Incomplete workouts can now be added to the history when exiting the workout
 
-UI:
+🖥️ UI:
 
 - Updated the icon library (Lucide) throughout the app
 - The program info now contains an embedded instruction video
 
-Fixes:
+🪲 Fixes:
 
 - Fix day of week in Workout History
 
-Misc:
+✨ Misc:
 
 - Added a proper [landing page](https://pullup-club.com)!
 
-Privacy:
+🔍 Privacy:
 
 - Updated the privacy policy to detail how the (optional) Cloud Sync affects the data collection and usage
 
 ## 1.1.0
 
-UI / UX:
+🖥️ UI / UX:
 
 - Reworked the styling of the bottom navigation bar
 - Added detailed program and workout descriptions to improve the onboarding
 
-Technical Improvements:
+🤖 Technical Improvements:
 
 - File-based logging
 - Sentry integration for error reporting
@@ -42,7 +48,7 @@ Technical Improvements:
 - Remote config
 - Forced update functionality
 
-Legal:
+🔍 Legal:
 
 - Business Source License (BSL)
 

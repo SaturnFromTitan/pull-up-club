@@ -61,7 +61,7 @@ abstract class BaseWorkoutState<T extends BaseWorkoutScreen> extends State<T> {
         MaterialPageRoute(
           builder: (_) => ChangeNotifierProvider.value(
             value: workoutProvider,
-            child: RestScreen(currentGroupIndex: getNumCompletedGroups()),
+            child: RestScreen(numCompletedGroups: getNumCompletedGroups()),
           ),
         ),
       ),

@@ -15,8 +15,8 @@ import "package:pull_up_club/features/workout/providers/workout_provider.dart";
 import "package:pull_up_club/features/workout/widgets/destructive_workout_buttons.dart";
 
 class RestScreen extends StatefulWidget {
-  const RestScreen({required this.currentGroupIndex, super.key});
-  final int currentGroupIndex;
+  const RestScreen({required this.numCompletedGroups, super.key});
+  final int numCompletedGroups;
 
   @override
   State<RestScreen> createState() => _RestScreenState();
@@ -24,7 +24,7 @@ class RestScreen extends StatefulWidget {
   @override
   void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(IntProperty("currentGroupIndex", currentGroupIndex));
+    properties.add(IntProperty("numCompletedGroups", numCompletedGroups));
   }
 }
 
@@ -97,7 +97,7 @@ class _RestScreenState extends State<RestScreen> {
           SetCards(
             values: getSetCardValues(workout),
             numExpectedCards: workout.maxGroups,
-            highlightedIndex: widget.currentGroupIndex,
+            highlightedIndex: widget.numCompletedGroups,
           ),
           DestructiveWorkoutButtons(workout: workout, onUndoLastSet: _undoLastSet),
         ],
@@ -142,8 +142,7 @@ class _RestTimerSpinnerState extends State<_RestTimerSpinner>
   @override
   Widget build(final BuildContext context) {
     final workoutProvider = context.watch<WorkoutProvider>();
-
-    final remaining = workoutProvider.restRemainingMillis;
+    final remainingMillis = workoutProvider.getRestRemainingMillis();
 
     const double ringThickness = 6;
     const arcPortion = 0.25;
@@ -173,7 +172,7 @@ class _RestTimerSpinnerState extends State<_RestTimerSpinner>
               ),
               // center content
               Text(
-                displayDuration(remaining),
+                displayDuration(remainingMillis),
                 style: AppTypography.headlineLarge.copyWith(
                   fontSize: widget.size / 4,
                   fontFeatures: const [FontFeature.tabularFigures()],
