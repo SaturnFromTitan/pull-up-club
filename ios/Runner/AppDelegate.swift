@@ -39,7 +39,22 @@ import ActivityKit
       }
     }
 
+    // Clean up any stale activities on app launch
+    Task {
+      await self.endAllActivities()
+    }
+
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+  }
+
+  private func endAllActivities() async {
+    let activities = Activity<WorkoutActivityAttributes>.activities
+    for activity in activities {
+      await activity.end(dismissalPolicy: .immediate)
+    }
+    await MainActor.run {
+      self.currentActivity = nil
+    }
   }
 
   private func startLiveActivity(call: FlutterMethodCall, result: @escaping FlutterResult) async {
@@ -50,10 +65,8 @@ import ActivityKit
     }
     print("LiveActivity start")
 
-    // End any existing activity before starting a new one to avoid race conditions
-    if let existingActivity = currentActivity {
-      await existingActivity.end(dismissalPolicy: .immediate)
-    }
+    // End existing activities beforehand to avoid race conditions
+    await endAllActivities()
 
     let attributes = WorkoutActivityAttributes(
       workoutType: workoutType
@@ -121,15 +134,9 @@ import ActivityKit
   }
 
   private func endLiveActivity(call: FlutterMethodCall, result: @escaping FlutterResult) async {
-    // End the current activity if it exists
-    if let existingActivity = currentActivity {
-      await existingActivity.end(dismissalPolicy: .immediate)
-      await MainActor.run {
-        self.currentActivity = nil
-        result(nil)
-      }
-    } else {
-      result(nil) // No activity to end, but that's fine
+    await endAllActivities()
+    await MainActor.run {
+      result(nil)
     }
   }
 }
