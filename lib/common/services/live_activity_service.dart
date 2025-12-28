@@ -47,7 +47,7 @@ class LiveActivityService {
     }
 
     if (_currentActivityId == null) {
-      await startActivity(workout: workout); // just to be safe
+      _logger.severe("Attempted to update Live Activity without an activity ID");
       return;
     }
 
