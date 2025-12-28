@@ -6,6 +6,10 @@
 
 - Added a live widget to keep track of your workout while the app is in the background
 
+🪲 Fixes:
+
+- Don't play a sound if the app comes back to foreground and the rest period has already finished
+
 ## 1.2.0
 
 🚀 Features:
