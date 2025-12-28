@@ -26,6 +26,67 @@ func parseISO8601Date(from string: String) -> Date? {
     return nil
 }
 
+/// Reusable view component for displaying rest timer or "Go!" status.
+/// Handles the logic for checking if rest time has passed and displaying appropriate UI.
+struct RestTimerView: View {
+    let restEndTimeString: String?
+    let font: Font
+    let isCompact: Bool
+
+    init(
+        restEndTimeString: String?,
+        font: Font,
+        isCompact: Bool = false
+    ) {
+        self.restEndTimeString = restEndTimeString
+        self.font = font
+        self.isCompact = isCompact
+    }
+
+    var body: some View {
+        let goText = Text("Go!")
+            .font(font)
+            .foregroundColor(.green)
+
+        if let endTimeString = restEndTimeString,
+            let endTimeUTC = parseISO8601Date(from: endTimeString) {
+            // Check if the rest time has already passed
+            // TimelineView ensures this check is re-evaluated every second
+            if context.date >= endTimeUTC {
+                goText
+            } else {
+                Text(timerInterval: context.date...endTimeUTC, countsDown: true)
+                    .font(font)
+                    .monospacedDigit()
+                    .foregroundColor(.orange)
+                    .applyCompactStyle(isCompact: isCompact)
+            }
+        } else if restEndTimeString != nil {
+            Text("--:--")
+                .font(font)
+                .monospacedDigit()
+                .foregroundColor(.orange)
+                .applyCompactStyle(isCompact: isCompact)
+        } else {
+            goText
+        }
+    }
+}
+
+/// View extension to apply compact-specific styling
+private extension View {
+    @ViewBuilder
+    func applyCompactStyle(isCompact: Bool) -> some View {
+        if isCompact {
+            self.lineLimit(1)
+        } else {
+            self
+                .multilineTextAlignment(.trailing)
+                .frame(maxWidth: .infinity, alignment: .trailing)
+        }
+    }
+}
+
 /// Live Activity widget view for workout state.
 struct WorkoutLiveActivity: Widget {
     var body: some WidgetConfiguration {
@@ -52,24 +113,11 @@ struct WorkoutLiveActivity: Widget {
                     .frame(width: 16, height: 16)
                     .clipShape(RoundedRectangle(cornerRadius: 3))
             } compactTrailing: {
-                Group {
-                    if let endTimeString = context.state.restEndTime,
-                       let endTimeUTC = parseISO8601Date(from: endTimeString) {
-                        Text(timerInterval: Date()...endTimeUTC, countsDown: true)
-                            .font(.caption2)
-                            .monospacedDigit()
-                            .foregroundColor(.orange)
-                            .lineLimit(1)
-                    } else if context.state.restEndTime != nil {
-                        Text("--")
-                            .font(.caption2)
-                            .foregroundColor(.orange)
-                    } else {
-                        Text("Go!")
-                            .font(.caption2)
-                            .foregroundColor(.green)
-                    }
-                }
+                RestTimerView(
+                    restEndTimeString: context.state.restEndTime,
+                    font: .caption2,
+                    isCompact: true
+                )
                 .frame(minWidth: 35, maxWidth: 35)
             } minimal: {
                 Image(systemName: "figure.pullups")
@@ -98,29 +146,11 @@ struct WorkoutActivityView: View {
 
             Spacer()
 
-            // Rest timer or status - positioned at very right
-            if context.state.restEndTime != nil {
-                if let endTimeString = context.state.restEndTime,
-                   let endTimeUTC = parseISO8601Date(from: endTimeString) {
-                    Text(timerInterval: Date()...endTimeUTC, countsDown: true)
-                        .font(.headline)
-                        .monospacedDigit()
-                        .foregroundColor(.orange)
-                        .multilineTextAlignment(.trailing)
-                        .frame(maxWidth: .infinity, alignment: .trailing)
-                } else {
-                    Text("--:--")
-                        .font(.headline)
-                        .monospacedDigit()
-                        .foregroundColor(.orange)
-                        .multilineTextAlignment(.trailing)
-                        .frame(maxWidth: .infinity, alignment: .trailing)
-                }
-            } else {
-                Text("Go!")
-                    .font(.headline)
-                    .foregroundColor(.green)
-            }
+            RestTimerView(
+                restEndTimeString: context.state.restEndTime,
+                font: .headline,
+                isCompact: false
+            )
         }
         .padding()
     }

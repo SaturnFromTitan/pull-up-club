@@ -33,10 +33,7 @@ class LiveActivityService {
   }
 
   /// Updates the current Live Activity with new state.
-  Future<void> updateActivity({
-    required final Workout workout,
-    required final DateTime? restEndTime,
-  }) async {
+  Future<void> updateActivity({required final DateTime? restEndTime}) async {
     if (defaultTargetPlatform != TargetPlatform.iOS) {
       _logger.warning(
         "Attempted to update Live Activity on unsupported platform: $defaultTargetPlatform",
