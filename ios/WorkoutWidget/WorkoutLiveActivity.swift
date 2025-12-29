@@ -51,11 +51,11 @@ struct RestTimerView: View {
         if let endTimeString = restEndTimeString,
             let endTimeUTC = parseISO8601Date(from: endTimeString) {
             // Check if the rest time has already passed
-            // TimelineView ensures this check is re-evaluated every second
-            if context.date >= endTimeUTC {
+            let now = Date()
+            if now >= endTimeUTC {
                 goText
             } else {
-                Text(timerInterval: context.date...endTimeUTC, countsDown: true)
+                Text(timerInterval: now...endTimeUTC, countsDown: true)
                     .font(font)
                     .monospacedDigit()
                     .foregroundColor(.orange)
