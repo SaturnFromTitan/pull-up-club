@@ -76,11 +76,14 @@ class WorkoutProvider extends ChangeNotifier {
         }
       }
 
+      // only play the sound exactly when we hit 0 - this avoids sounds
+      //after the app was in the background for a while
       if (_isClose(remainingMillis, 0)) {
         _logger.info("Rest period completed");
         unawaited(SoundService.instance.playCountdownCompleted());
+      }
+      if (remainingMillis <= 0) {
         resume(stopSounds: false);
-        return;
       }
 
       notifyListeners();
