@@ -100,7 +100,7 @@ class DestructiveWorkoutButtons extends StatelessWidget {
           GradientButton(
             onPressed: () => Navigator.of(dialogContext).pop(false),
             text: "Scrap",
-            icon: LucideIcons.trash,
+            icon: LucideIcons.trash2,
             gradient: AppGradients.light,
           ),
         ],

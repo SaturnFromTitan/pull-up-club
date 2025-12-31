@@ -8,9 +8,11 @@ import "package:pull_up_club/common/constants/app_constants.dart";
 import "package:pull_up_club/common/providers/workout_history_provider.dart";
 import "package:pull_up_club/common/services/backend_service.dart";
 import "package:pull_up_club/common/services/package_info_service.dart";
+import "package:pull_up_club/common/services/workout_database.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
 import "package:pull_up_club/common/themes/app_typography.dart";
+import "package:pull_up_club/common/widgets/core/dismissible_dialog.dart";
 import "package:pull_up_club/common/widgets/core/gradient_button.dart";
 
 class AccountScreen extends StatefulWidget {
@@ -19,6 +21,8 @@ class AccountScreen extends StatefulWidget {
   @override
   State<AccountScreen> createState() => _AccountScreenState();
 }
+
+enum _DeleteAccountOption { deleteAccountKeepLocal, deleteAccountAndLocal }
 
 class _AccountScreenState extends State<AccountScreen> {
   static final Logger _logger = Logger("AccountScreen");
@@ -63,6 +67,103 @@ class _AccountScreenState extends State<AccountScreen> {
     setState(() => _isLoading = false);
   }
 
+  Future<_DeleteAccountOption?> _confirmDeleteAccount(
+    final BuildContext context,
+  ) => showDialog<_DeleteAccountOption>(
+    context: context,
+    builder: (final dialogContext) => DismissibleDialog(
+      children: [
+        const Text(
+          "Delete Account",
+          style: AppTypography.headlineLarge,
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: AppSpacing.md),
+        const Text(
+          "Are you sure you want to delete your account? This will permanently delete all your workout data and cannot be undone.",
+          style: AppTypography.bodyMedium,
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: AppSpacing.lg),
+        GradientButton(
+          onPressed: () => Navigator.of(
+            dialogContext,
+          ).pop(_DeleteAccountOption.deleteAccountAndLocal),
+          text: "Delete Account & Local Data",
+          icon: LucideIcons.trash2,
+          gradient: AppGradients.primary,
+        ),
+        const SizedBox(height: AppSpacing.md),
+        GradientButton(
+          onPressed: () => Navigator.of(
+            dialogContext,
+          ).pop(_DeleteAccountOption.deleteAccountKeepLocal),
+          text: "Delete Account, Keep Local Data",
+          icon: LucideIcons.save,
+          gradient: AppGradients.secondary,
+        ),
+      ],
+    ),
+  );
+
+  Future<void> _handleDeleteAccount() async {
+    final option = await _confirmDeleteAccount(context);
+    if (option == null || !mounted) {
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      final success = await BackendService.instance.deleteAccount();
+      if (!mounted) {
+        return;
+      }
+
+      if (success) {
+        // Clear local workout data if user chose to delete it
+        if (option == _DeleteAccountOption.deleteAccountAndLocal) {
+          await WorkoutDatabase.instance.deleteAllWorkouts();
+        }
+        // Reload workouts to update the UI
+        if (mounted) {
+          final workoutHistoryProvider = context.read<WorkoutHistoryProvider>();
+          await workoutHistoryProvider.loadWorkouts();
+        }
+      } else {
+        setState(() => _errorMessage = "Failed to delete account");
+      }
+    } on Exception catch (error, stackTrace) {
+      _logger.severe("Account deletion failed", error, stackTrace);
+      if (mounted) {
+        setState(() => _errorMessage = "Failed to delete account");
+      }
+    }
+    setState(() => _isLoading = false);
+  }
+
+  List<Widget> _buildErrorMessage() {
+    if (_errorMessage == null) {
+      return [];
+    }
+    return [
+      Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(AppSpacing.md),
+        decoration: BoxDecoration(color: AppColors.errorBackground),
+        child: Text(
+          _errorMessage!,
+          style: AppTypography.bodySmall.copyWith(color: AppColors.errorText),
+          textAlign: TextAlign.center,
+        ),
+      ),
+      const SizedBox(height: AppSpacing.lg),
+    ];
+  }
+
   @override
   Widget build(final BuildContext context) {
     final supabase = BackendService.instance;
@@ -105,11 +206,19 @@ class _AccountScreenState extends State<AccountScreen> {
                                     ],
                                   ),
                                   const SizedBox(height: AppSpacing.lg),
+                                  ..._buildErrorMessage(),
                                   GradientButton(
                                     onPressed: _isLoading ? null : _handleSignOut,
                                     text: "Sign Out",
                                     icon: LucideIcons.logOut,
                                     gradient: AppGradients.secondary,
+                                  ),
+                                  const SizedBox(height: AppSpacing.md),
+                                  GradientButton(
+                                    onPressed: _isLoading ? null : _handleDeleteAccount,
+                                    text: "Delete Account",
+                                    icon: LucideIcons.trash2,
+                                    gradient: AppGradients.primary,
                                   ),
                                 ]
                               : [
@@ -122,23 +231,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                     ),
                                   ),
                                   const SizedBox(height: AppSpacing.md),
-                                  if (_errorMessage != null) ...[
-                                    Container(
-                                      width: double.infinity,
-                                      padding: const EdgeInsets.all(AppSpacing.md),
-                                      decoration: BoxDecoration(
-                                        color: AppColors.errorBackground,
-                                      ),
-                                      child: Text(
-                                        _errorMessage!,
-                                        style: AppTypography.bodySmall.copyWith(
-                                          color: AppColors.errorText,
-                                        ),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                    const SizedBox(height: AppSpacing.lg),
-                                  ],
+                                  ..._buildErrorMessage(),
                                   GradientButton(
                                     onPressed: _isLoading ? null : _handleAppleSignIn,
                                     text: "Sign in with Apple",

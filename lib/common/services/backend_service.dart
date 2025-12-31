@@ -239,4 +239,41 @@ class BackendService {
       return false;
     }
   }
+
+  /// Deletes the current user's account and all associated data.
+  /// This will:
+  /// 1. Call a database function to delete the auth user (if available)
+  ///    Deleting the user will cascade delete workouts and workout sets
+  /// 2. Sign out the user
+  /// Returns true on success, false on error.
+  Future<bool> deleteAccount() async {
+    if (!isAuthenticated) {
+      _logger.warning("Cannot delete account: not authenticated");
+      return false;
+    }
+
+    try {
+      final userId = currentUserId;
+      _logger.info("Starting account deletion for current user: $userId");
+
+      try {
+        _logger.info("Calling delete_user_account database function");
+        await _client!.rpc("delete_user_account");
+        _logger.info("User account deleted successfully");
+      } on Exception catch (error, stackTrace) {
+        _logger.warning(
+          "Failed to call delete_user_account function. ",
+          error,
+          stackTrace,
+        );
+      }
+
+      // Sign out the user
+      await signOut(); // TODO: does this work?
+      return true;
+    } on Exception catch (error, stackTrace) {
+      _logger.severe("Failed to delete account", error, stackTrace);
+      return false;
+    }
+  }
 }

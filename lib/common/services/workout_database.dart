@@ -274,4 +274,13 @@ class WorkoutDatabase extends _$WorkoutDatabase {
     _logger.info("Successfully soft deleted workout: id=${workout.id}");
     return true;
   }
+
+  /// Deletes all workouts and associated workout sets from the local database.
+  /// Typically used when the user deletes their account to remove all local workout data.
+  Future<void> deleteAllWorkouts() async {
+    _logger.info("Deleting all workouts from the local database");
+    await delete(workouts).go();
+    // workout sets are cascaded
+    _logger.info("Successfully deleted all workouts from the local database");
+  }
 }
