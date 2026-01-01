@@ -1,15 +1,5 @@
 # Changelog
 
-## 1.3.0
-
-🚀 Features:
-
-- Added a live widget to keep track of your workout while the app is in the background
-
-🪲 Fixes:
-
-- Don't play a sound if the app comes back to foreground and the rest period has already finished
-
 ## 1.2.0
 
 🚀 Features:
@@ -17,6 +7,7 @@
 - Cloud Sync
   - You can now back up your workout data to the cloud
   - All you need to do is sign in with your Apple ID
+- Added a live widget to keep track of your workout while the app is in the background
 - "Undo Set" button during workouts to fix data entry errors
 - Incomplete workouts can now be added to the history when exiting the workout
 
@@ -28,6 +19,7 @@
 🪲 Fixes:
 
 - Fix day of week in Workout History
+- Don't play a sound if the app comes back to foreground and the rest period has already finished
 
 ✨ Misc:
 
