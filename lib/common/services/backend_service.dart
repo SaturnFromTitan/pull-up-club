@@ -13,6 +13,9 @@ class BackendService {
   static final BackendService instance = BackendService._();
   static final Logger _logger = Logger("BackendService");
 
+  // Edge functions
+  static const String _edgeFunctionUserSelfDelete = "user-self-delete";
+
   SupabaseClient? _client;
   bool _initialized = false;
 
@@ -240,12 +243,7 @@ class BackendService {
     }
   }
 
-  /// Deletes the current user's account and all associated data.
-  /// This will:
-  /// 1. Call a database function to delete the auth user (if available)
-  ///    Deleting the user will cascade delete workouts and workout sets
-  /// 2. Sign out the user
-  /// Returns true on success, false on error.
+  /// Deletes the current user's account and all associated data & sign out..
   Future<bool> deleteAccount() async {
     if (!isAuthenticated) {
       _logger.warning("Cannot delete account: not authenticated");
@@ -257,19 +255,20 @@ class BackendService {
       _logger.info("Starting account deletion for current user: $userId");
 
       try {
-        _logger.info("Calling delete_user_account database function");
-        await _client!.rpc("delete_user_account");
+        _logger.info("Calling $_edgeFunctionUserSelfDelete edge function");
+        await _client!.functions.invoke(_edgeFunctionUserSelfDelete);
         _logger.info("User account deleted successfully");
       } on Exception catch (error, stackTrace) {
-        _logger.warning(
-          "Failed to call delete_user_account function. ",
+        _logger.severe(
+          "Failed to call $_edgeFunctionUserSelfDelete edge function",
           error,
           stackTrace,
         );
+        rethrow;
       }
 
       // Sign out the user
-      await signOut(); // TODO: does this work?
+      await signOut();
       return true;
     } on Exception catch (error, stackTrace) {
       _logger.severe("Failed to delete account", error, stackTrace);
