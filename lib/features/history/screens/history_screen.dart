@@ -118,7 +118,7 @@ class _DismissablePastWorkout extends StatelessWidget {
         GradientButton(
           onPressed: () => Navigator.of(dialogContext).pop(true),
           text: "Delete",
-          icon: LucideIcons.trash,
+          icon: LucideIcons.trash2,
           gradient: AppGradients.primary,
         ),
       ],
@@ -143,7 +143,7 @@ class _DismissablePastWorkout extends StatelessWidget {
         ),
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: AppSpacing.md),
-        child: const Icon(LucideIcons.trash, color: Colors.white, size: 32),
+        child: const Icon(LucideIcons.trash2, color: Colors.white, size: 32),
       ),
       confirmDismiss: (final direction) => _confirmDismiss(context),
       onDismissed: (final direction) => _onDelete(context),
