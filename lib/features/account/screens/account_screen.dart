@@ -80,7 +80,13 @@ class _AccountScreenState extends State<AccountScreen> {
         ),
         const SizedBox(height: AppSpacing.md),
         const Text(
-          "Are you sure you want to delete your account? This will permanently delete all your workout data and cannot be undone.",
+          "This will permanently delete your account and workout data in the cloud.",
+          style: AppTypography.bodyMedium,
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        const Text(
+          "You can still keep your local data.",
           style: AppTypography.bodyMedium,
           textAlign: TextAlign.center,
         ),
@@ -88,19 +94,19 @@ class _AccountScreenState extends State<AccountScreen> {
         GradientButton(
           onPressed: () => Navigator.of(
             dialogContext,
-          ).pop(_DeleteAccountOption.deleteAccountAndLocal),
-          text: "Delete Account & Local Data",
-          icon: LucideIcons.trash2,
-          gradient: AppGradients.primary,
+          ).pop(_DeleteAccountOption.deleteAccountKeepLocal),
+          text: "Keep Local Data",
+          icon: LucideIcons.cloudOff,
+          gradient: AppGradients.light,
         ),
         const SizedBox(height: AppSpacing.md),
         GradientButton(
           onPressed: () => Navigator.of(
             dialogContext,
-          ).pop(_DeleteAccountOption.deleteAccountKeepLocal),
-          text: "Delete Account, Keep Local Data",
-          icon: LucideIcons.save,
-          gradient: AppGradients.secondary,
+          ).pop(_DeleteAccountOption.deleteAccountAndLocal),
+          text: "Delete Everything",
+          icon: LucideIcons.trash2,
+          gradient: AppGradients.primary,
         ),
       ],
     ),
@@ -218,7 +224,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                     onPressed: _isLoading ? null : _handleDeleteAccount,
                                     text: "Delete Account",
                                     icon: LucideIcons.trash2,
-                                    gradient: AppGradients.primary,
+                                    gradient: AppGradients.light,
                                   ),
                                 ]
                               : [
