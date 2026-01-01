@@ -22,8 +22,6 @@ class AccountScreen extends StatefulWidget {
   State<AccountScreen> createState() => _AccountScreenState();
 }
 
-enum _DeleteAccountOption { deleteAccountKeepLocal, deleteAccountAndLocal }
-
 class _AccountScreenState extends State<AccountScreen> {
   static final Logger _logger = Logger("AccountScreen");
   bool _isLoading = false;
@@ -67,9 +65,7 @@ class _AccountScreenState extends State<AccountScreen> {
     setState(() => _isLoading = false);
   }
 
-  Future<_DeleteAccountOption?> _confirmDeleteAccount(
-    final BuildContext context,
-  ) => showDialog<_DeleteAccountOption>(
+  Future<bool?> _confirmDeleteAccount(final BuildContext context) => showDialog<bool>(
     context: context,
     builder: (final dialogContext) => DismissibleDialog(
       children: [
@@ -92,18 +88,14 @@ class _AccountScreenState extends State<AccountScreen> {
         ),
         const SizedBox(height: AppSpacing.lg),
         GradientButton(
-          onPressed: () => Navigator.of(
-            dialogContext,
-          ).pop(_DeleteAccountOption.deleteAccountKeepLocal),
+          onPressed: () => Navigator.of(dialogContext).pop(false),
           text: "Keep Local Data",
           icon: LucideIcons.cloudOff,
           gradient: AppGradients.light,
         ),
         const SizedBox(height: AppSpacing.md),
         GradientButton(
-          onPressed: () => Navigator.of(
-            dialogContext,
-          ).pop(_DeleteAccountOption.deleteAccountAndLocal),
+          onPressed: () => Navigator.of(dialogContext).pop(true),
           text: "Delete Everything",
           icon: LucideIcons.trash2,
           gradient: AppGradients.primary,
@@ -113,8 +105,8 @@ class _AccountScreenState extends State<AccountScreen> {
   );
 
   Future<void> _handleDeleteAccount() async {
-    final option = await _confirmDeleteAccount(context);
-    if (option == null || !mounted) {
+    final deleteEverything = await _confirmDeleteAccount(context);
+    if (deleteEverything == null || !mounted) {
       return;
     }
 
@@ -130,9 +122,12 @@ class _AccountScreenState extends State<AccountScreen> {
       }
 
       if (success) {
-        // Clear local workout data if user chose to delete it
-        if (option == _DeleteAccountOption.deleteAccountAndLocal) {
+        if (deleteEverything) {
+          // Delete all local workout data
           await WorkoutDatabase.instance.deleteAllWorkouts();
+        } else {
+          // Clear serverIds from all workouts so they could be synced again if needed.
+          await WorkoutDatabase.instance.clearAllServerIds();
         }
         // Reload workouts to update the UI
         if (mounted) {

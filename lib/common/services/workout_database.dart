@@ -275,6 +275,16 @@ class WorkoutDatabase extends _$WorkoutDatabase {
     return true;
   }
 
+  /// Clears the server_id for all workouts in the local database.
+  /// Typically used when the user deletes their account but wants to keep local data.
+  Future<void> clearAllServerIds() async {
+    _logger.info("Clearing server IDs for all workouts in the local database");
+    await (update(workouts)..where((final t) => t.serverId.isNotNull())).write(
+      const WorkoutsCompanion(serverId: Value(null)),
+    );
+    _logger.info("Successfully cleared all server IDs from the local database");
+  }
+
   /// Deletes all workouts and associated workout sets from the local database.
   /// Typically used when the user deletes their account to remove all local workout data.
   Future<void> deleteAllWorkouts() async {
