@@ -31,9 +31,17 @@ class WorkoutSelectionScreen extends StatefulWidget {
 
 class _WorkoutSelectionScreenState extends State<WorkoutSelectionScreen> {
   static final Logger _logger = Logger("WorkoutSelectionScreen");
-  WorkoutType _selected = WorkoutType.maxSets;
+  late WorkoutType _selected;
   static const double _cardGap = AppSpacing.md;
   static const double _iconSize = 28;
+
+  @override
+  void initState() {
+    super.initState();
+    final workoutHistoryProvider = context.read<WorkoutHistoryProvider>();
+    final nextWorkoutType = workoutHistoryProvider.getNextWorkoutType();
+    _selected = nextWorkoutType ?? WorkoutType.maxSets;
+  }
 
   Future<int?> _askForTargetReps() {
     final workoutHistoryProvider = context.read<WorkoutHistoryProvider>();
