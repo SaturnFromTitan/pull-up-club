@@ -8,6 +8,7 @@ import "package:pull_up_club/common/config/test_config.dart";
 import "package:pull_up_club/common/services/live_activity_service.dart";
 import "package:pull_up_club/common/services/sound_service.dart";
 import "package:pull_up_club/domain/models.dart";
+import "package:wakelock_plus/wakelock_plus.dart";
 
 class WorkoutProvider extends ChangeNotifier {
   // initialisation
@@ -27,6 +28,8 @@ class WorkoutProvider extends ChangeNotifier {
       ) {
     // Start Live Activity when workout provider is created
     unawaited(LiveActivityService.instance.startActivity(workout: _workout));
+    // Keep the screen awake for the duration of the workout (including rests)
+    unawaited(WakelockPlus.enable());
   }
   static final Logger _logger = Logger("WorkoutProvider");
   // private state
@@ -140,6 +143,7 @@ class WorkoutProvider extends ChangeNotifier {
     _logger.fine("WorkoutProvider disposed: $_workout");
     _restTimer?.cancel();
     unawaited(LiveActivityService.instance.endActivity());
+    unawaited(WakelockPlus.disable());
     super.dispose();
   }
 }

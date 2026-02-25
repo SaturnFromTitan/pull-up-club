@@ -4,6 +4,7 @@
 
 🖥️ UX:
 
+- Screen stays on during active workout and rest; turns off again when the success screen is shown (wakelock)
 - Workout selection screen now preselects the workout marked as "Next" to streamline starting your next session
 
 ## 1.2.0
