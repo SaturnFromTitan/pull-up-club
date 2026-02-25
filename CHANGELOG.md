@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.1
+
+🖥️ UX:
+
+- Workout selection screen now preselects the workout marked as "Next" to streamline starting your next session
+
 ## 1.2.0
 
 🚀 Features:
