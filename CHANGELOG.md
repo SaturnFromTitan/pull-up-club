@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.2
+
+TBA ... (so far only technical changes, which aren't relevant to end users).
+
 ## 1.2.1
 
 🖥️ UX:
