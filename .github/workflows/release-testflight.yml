@@ -29,6 +29,11 @@ jobs:
         with:
           lfs: true
 
+      - name: Select Xcode 26.2
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '26.2'
+
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
