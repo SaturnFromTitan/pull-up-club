@@ -2,7 +2,9 @@
 
 ## 1.2.2
 
-TBA ... (so far only technical changes, which aren't relevant to end users).
+🖥️ UX:
+
+- increase the button size and distance for the input shortcuts during workout
 
 ## 1.2.1
 

@@ -52,6 +52,7 @@ class _LaddersState extends BaseWorkoutState<LaddersScreen> {
           finishSet(group: _completedGroups + 1, completedReps: getTargetReps());
           _targetReps++;
         },
+        height: AppSpacing.buttonHeightLg,
         text: "Done, continue this ladder",
         icon: LucideIcons.trendingUp,
         gradient: AppGradients.accentGreen,
@@ -64,6 +65,7 @@ class _LaddersState extends BaseWorkoutState<LaddersScreen> {
           finishSet(group: _completedGroups, completedReps: getTargetReps());
           _targetReps = 1;
         },
+        height: AppSpacing.buttonHeightLg,
         text: isLastGroup() ? "Finish Workout" : "Done, start new ladder",
         icon: isLastGroup() ? LucideIcons.check : LucideIcons.rotateCcw,
         gradient: AppGradients.accentPurple,
@@ -74,6 +76,7 @@ class _LaddersState extends BaseWorkoutState<LaddersScreen> {
             _showCustomRepsForm = !_showCustomRepsForm;
           });
         },
+        height: AppSpacing.buttonHeightLg,
         text: "Custom",
         icon: Icons.question_mark,
         gradient: AppGradients.light,
@@ -98,8 +101,9 @@ class _LaddersState extends BaseWorkoutState<LaddersScreen> {
         : Column(
             children: List<Widget>.generate(
               buttons.length * 2 - 1,
-              (final i) =>
-                  i.isEven ? buttons[i ~/ 2] : const SizedBox(height: AppSpacing.sm),
+              (final i) => i.isEven
+                  ? buttons[i ~/ 2]
+                  : const SizedBox(height: AppSpacing.buttonDistance),
             ),
           );
   }

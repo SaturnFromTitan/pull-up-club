@@ -86,7 +86,6 @@ class _RepsFormState extends State<RepsForm> {
       key: _formKey,
       child: Column(
         children: [
-          // const SizedBox(height: AppSpacing.md),
           SizedBox(
             height: AppSpacing.buttonHeight,
             child: TextFormField(
@@ -136,6 +135,7 @@ class _RepsFormState extends State<RepsForm> {
           const SizedBox(height: AppSpacing.buttonDistance),
           GradientButton(
             onPressed: _isValid ? submit : null,
+            height: AppSpacing.buttonHeightLg,
             text: widget.submitText,
             icon: widget.submitIcon,
             gradient: widget.submitGradient,
@@ -144,6 +144,7 @@ class _RepsFormState extends State<RepsForm> {
             const SizedBox(height: AppSpacing.buttonDistance),
             GradientButton(
               onPressed: widget.onCancel,
+              height: AppSpacing.buttonHeightLg,
               text: widget.cancelText,
               icon: widget.cancelIcon,
               gradient: AppGradients.light,

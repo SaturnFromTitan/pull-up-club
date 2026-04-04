@@ -113,20 +113,22 @@ abstract class BaseWorkoutState<T extends BaseWorkoutScreen> extends State<T> {
     final targetReps = getTargetReps();
     final inputs = getInputs();
     const instructionTextStyle = AppTypography.headlineLarge;
-    final instructionIconStyle = Screen.isSmall(context)
-        ? const TextStyle(fontSize: 100, color: Colors.white, height: 1.3)
-        : const TextStyle(fontSize: 110, color: Colors.white, height: 1.4);
-    final instructionsNoTargetReps = Column(
+    const instructionIconStyle = TextStyle(
+      fontSize: 100,
+      color: Colors.white,
+      height: 1.3,
+    );
+    const instructionsNoTargetReps = Column(
       children: [
-        const SizedBox(height: AppSpacing.xl),
-        const Text(
+        SizedBox(height: AppSpacing.xl),
+        Text(
           "Do as many reps as possible!",
           style: instructionTextStyle,
           textAlign: TextAlign.center,
         ),
-        const SizedBox(height: AppSpacing.sm),
+        SizedBox(height: AppSpacing.sm),
         Text("🔥", style: instructionIconStyle, textAlign: TextAlign.center),
-        const SizedBox(height: AppSpacing.md),
+        SizedBox(height: AppSpacing.md),
       ],
     );
     final instructionsTargetReps = Row(
