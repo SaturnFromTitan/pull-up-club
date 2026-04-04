@@ -1,10 +1,11 @@
 # Changelog
 
-## 1.2.2
+## 1.3.0
 
 🖥️ UX:
 
 - increase the button size and distance for the input shortcuts during workout
+- Press and hold the set cards during a workout or rest to peek at your previous workout's results
 
 ## 1.2.1
 

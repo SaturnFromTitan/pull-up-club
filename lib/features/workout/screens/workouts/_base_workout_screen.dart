@@ -10,12 +10,12 @@ import "package:pull_up_club/common/themes/app_spacing.dart";
 import "package:pull_up_club/common/themes/app_typography.dart";
 import "package:pull_up_club/common/utils/utils.dart";
 import "package:pull_up_club/common/widgets/core/screen_scaffold.dart";
-import "package:pull_up_club/common/widgets/shared/set_cards.dart";
 import "package:pull_up_club/domain/models.dart";
 import "package:pull_up_club/features/workout/providers/workout_provider.dart";
 import "package:pull_up_club/features/workout/screens/rest_screen.dart";
 import "package:pull_up_club/features/workout/screens/success_screen.dart";
 import "package:pull_up_club/features/workout/widgets/destructive_workout_buttons.dart";
+import "package:pull_up_club/features/workout/widgets/previous_workout_set_cards.dart";
 
 abstract class BaseWorkoutScreen extends StatefulWidget {
   const BaseWorkoutScreen({super.key});
@@ -163,9 +163,10 @@ abstract class BaseWorkoutState<T extends BaseWorkoutScreen> extends State<T> {
               ),
             ),
           ),
-          SetCards(
+          PreviousWorkoutSetCards(
             values: getSetCardValues(workout),
             numExpectedCards: workout.maxGroups,
+            workoutType: workout.workoutType,
             highlightedIndex: getNumCompletedGroups(),
           ),
           DestructiveWorkoutButtons(workout: workout, onUndoLastSet: undoLastSet),
