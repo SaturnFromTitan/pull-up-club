@@ -11,20 +11,27 @@ import "package:pull_up_club/common/utils/utils.dart";
 import "package:pull_up_club/common/widgets/core/dismissible_dialog.dart";
 import "package:pull_up_club/common/widgets/core/gradient_button.dart";
 import "package:pull_up_club/common/widgets/shared/set_cards.dart";
-import "package:pull_up_club/common/widgets/shared/total_card.dart";
 import "package:pull_up_club/domain/models.dart";
 
-class HistoryScreen extends StatelessWidget {
+class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
 
   static final Logger _logger = Logger("HistoryScreen");
 
   @override
+  State<HistoryScreen> createState() => _HistoryScreenState();
+}
+
+class _HistoryScreenState extends State<HistoryScreen> {
+  WorkoutType? _activeFilter;
+
+  @override
   Widget build(final BuildContext context) {
     final workoutHistoryProvider = context.watch<WorkoutHistoryProvider>();
-    final workouts = workoutHistoryProvider.completedWorkouts.reversed.toList();
-    final numWorkouts = workouts.length;
-    final totalReps = workouts.fold(0, (final t, final w) => t + w.totalReps());
+    final allWorkouts = workoutHistoryProvider.completedWorkouts;
+    final workouts = allWorkouts.reversed
+        .where((final w) => _activeFilter == null || w.workoutType == _activeFilter)
+        .toList();
 
     return Column(
       children: [
@@ -35,32 +42,26 @@ class HistoryScreen extends StatelessWidget {
         ),
         const SizedBox(height: AppSpacing.md),
         Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Expanded(
-              child: TotalCard(
-                value: numWorkouts.toString(),
-                text: "Total Workouts",
-                emoji: "🏋",
-                color: AppColors.glassBackground,
+            for (final type in WorkoutType.values) ...[
+              _FilterPill(
+                label: type.name,
+                isActive: _activeFilter == type,
+                onTap: () => setState(() {
+                  _activeFilter = _activeFilter == type ? null : type;
+                }),
               ),
-            ),
-            const SizedBox(width: AppSpacing.sm),
-            Expanded(
-              child: TotalCard(
-                value: totalReps.toString(),
-                text: "Total Reps",
-                emoji: "💪",
-                color: AppColors.glassBackground,
-              ),
-            ),
+              if (type != WorkoutType.values.last) const SizedBox(width: AppSpacing.sm),
+            ],
           ],
         ),
         const SizedBox(height: AppSpacing.md),
         Expanded(
           child: workouts.isEmpty
-              ? const Center(
+              ? Center(
                   child: Text(
-                    "No workouts yet",
+                    allWorkouts.isEmpty ? "No workouts yet" : "No matching workouts",
                     style: AppTypography.headlineMedium,
                     textAlign: TextAlign.center,
                   ),
@@ -76,6 +77,43 @@ class HistoryScreen extends StatelessWidget {
         ),
       ],
     );
+  }
+}
+
+class _FilterPill extends StatelessWidget {
+  const _FilterPill({required this.label, required this.isActive, required this.onTap});
+
+  final String label;
+  final bool isActive;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(final BuildContext context) => GestureDetector(
+    onTap: onTap,
+    child: AnimatedContainer(
+      duration: const Duration(milliseconds: 150),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.xs,
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.glassBackground,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
+        border: Border.all(
+          color: isActive ? AppColors.glassBorderActive : AppColors.glassBorderInactive,
+        ),
+      ),
+      child: Text(label, style: AppTypography.bodyMedium),
+    ),
+  );
+
+  @override
+  void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(StringProperty("label", label))
+      ..add(DiagnosticsProperty<bool>("isActive", isActive))
+      ..add(ObjectFlagProperty<VoidCallback>.has("onTap", onTap));
   }
 }
 
@@ -195,7 +233,6 @@ class _PastWorkout extends StatelessWidget {
               ),
             ],
           ),
-
           const SizedBox(height: AppSpacing.md),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
