@@ -93,6 +93,14 @@ class WorkoutHistoryProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Returns the most recent completed workout of the given type, or null if none exists.
+  Workout? getPreviousWorkoutOfType(final WorkoutType type) {
+    final matching = _completedWorkouts
+        .where((final w) => w.workoutType == type)
+        .toList();
+    return matching.isNotEmpty ? matching.last : null;
+  }
+
   /// Determines the next workout type based on the most recent workout.
   /// Cycles through WorkoutType enum values: maxSets -> submaxVolume -> ladders -> maxSets
   WorkoutType? getNextWorkoutType() {

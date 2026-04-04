@@ -14,6 +14,7 @@ class GradientButton extends StatelessWidget {
     this.onPressed,
     this.border,
     this.textColor,
+    this.height = AppSpacing.buttonHeight,
   });
   final String text;
   final VoidCallback? onPressed;
@@ -21,6 +22,7 @@ class GradientButton extends StatelessWidget {
   final LinearGradient gradient;
   final Border? border;
   final Color? textColor;
+  final double height;
 
   @override
   Widget build(final BuildContext context) {
@@ -30,7 +32,7 @@ class GradientButton extends StatelessWidget {
         opacity: onPressed == null ? 0.5 : 1.0,
         child: GradientSurface(
           gradient: gradient,
-          height: AppSpacing.buttonHeight,
+          height: height,
           borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
           border: border,
           boxShadow: AppBoxShadows.dark,
@@ -62,6 +64,7 @@ class GradientButton extends StatelessWidget {
       ..add(DiagnosticsProperty<IconData>("icon", icon))
       ..add(DiagnosticsProperty<LinearGradient>("gradient", gradient))
       ..add(DiagnosticsProperty<Border?>("border", border))
-      ..add(DiagnosticsProperty<Color?>("textColor", textColor));
+      ..add(DiagnosticsProperty<Color?>("textColor", textColor))
+      ..add(DiagnosticsProperty<double?>("height", height));
   }
 }

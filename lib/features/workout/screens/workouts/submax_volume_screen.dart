@@ -72,6 +72,7 @@ class _SubmaxVolumeScreenState extends BaseWorkoutState<SubmaxVolumeScreen> {
             completedReps: targetReps,
           );
         },
+        height: AppSpacing.buttonHeightLg,
         text: "I did $targetReps",
         icon: LucideIcons.check,
         gradient: AppGradients.secondary,
@@ -83,6 +84,7 @@ class _SubmaxVolumeScreenState extends BaseWorkoutState<SubmaxVolumeScreen> {
             completedReps: targetReps - 1,
           );
         },
+        height: AppSpacing.buttonHeightLg,
         text: "I did ${targetReps - 1}",
         icon: LucideIcons.thumbsUp,
         gradient: AppGradients.accentGreen,
@@ -97,6 +99,7 @@ class _SubmaxVolumeScreenState extends BaseWorkoutState<SubmaxVolumeScreen> {
               completedReps: targetReps - 2,
             );
           },
+          height: AppSpacing.buttonHeightLg,
           text: "I did ${targetReps - 2}",
           icon: LucideIcons.batteryMedium,
           gradient: AppGradients.accentPurple,
@@ -110,6 +113,7 @@ class _SubmaxVolumeScreenState extends BaseWorkoutState<SubmaxVolumeScreen> {
             _showCustomRepsForm = !_showCustomRepsForm;
           });
         },
+        height: AppSpacing.buttonHeightLg,
         text: "Custom",
         icon: Icons.question_mark_outlined,
         gradient: AppGradients.light,

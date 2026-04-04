@@ -20,6 +20,7 @@ class _MaxSetsScreenState extends BaseWorkoutState<MaxSetsScreen> {
 
   @override
   Widget getInputs() => RepsForm(
+    autofocus: false,
     onValidSubmit: (final reps) {
       final workoutProvider = context.read<WorkoutProvider>();
       finishSet(group: workoutProvider.workout.sets.length + 1, completedReps: reps);

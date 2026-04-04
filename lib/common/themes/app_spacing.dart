@@ -27,7 +27,8 @@ class AppSpacing {
 
   // Specific spacing values from design
   static const double buttonHeight = 60;
-  static const double buttonDistance = sm;
+  static const double buttonHeightLg = 70;
+  static const double buttonDistance = 12;
 }
 
 class Screen {

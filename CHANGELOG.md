@@ -1,8 +1,13 @@
 # Changelog
 
-## 1.2.2
+## 1.3.0
 
-TBA ... (so far only technical changes, which aren't relevant to end users).
+🖥️ UX:
+
+- increase the button size and distance for the input shortcuts during workout
+- Press and hold the set cards during a workout or rest to peek at your previous workout's results
+- Keyboard opens automatically when entering custom reps
+- Workout history can now be filtered by workout type
 
 ## 1.2.1
 
