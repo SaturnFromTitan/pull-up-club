@@ -11,6 +11,7 @@ class RepsForm extends StatefulWidget {
   const RepsForm({
     required this.onValidSubmit,
     super.key,
+    this.autofocus = true,
     this.submitText = "Submit",
     this.submitIcon = LucideIcons.check,
     this.submitGradient = AppGradients.secondary,
@@ -21,6 +22,7 @@ class RepsForm extends StatefulWidget {
     this.initialValue,
     this.infoText,
   });
+  final bool autofocus;
   final String submitText;
   final IconData submitIcon;
   final LinearGradient submitGradient;
@@ -39,6 +41,7 @@ class RepsForm extends StatefulWidget {
   void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
     properties
+      ..add(DiagnosticsProperty<bool>("autofocus", autofocus))
       ..add(StringProperty("submitText", submitText))
       ..add(DiagnosticsProperty<IconData>("submitIcon", submitIcon))
       ..add(DiagnosticsProperty<LinearGradient?>("submitGradient", submitGradient))
@@ -89,6 +92,7 @@ class _RepsFormState extends State<RepsForm> {
           SizedBox(
             height: AppSpacing.buttonHeight,
             child: TextFormField(
+              autofocus: widget.autofocus,
               controller: _controller,
               maxLength: 2,
               decoration: InputDecoration(

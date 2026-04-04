@@ -6,6 +6,7 @@
 
 - increase the button size and distance for the input shortcuts during workout
 - Press and hold the set cards during a workout or rest to peek at your previous workout's results
+- Keyboard opens automatically when entering custom reps
 
 ## 1.2.1
 
