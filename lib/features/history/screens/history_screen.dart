@@ -219,7 +219,7 @@ class _PastWorkout extends StatelessWidget {
                 children: [
                   Text(workout.workoutType.name, style: AppTypography.headlineMedium),
                   Text(
-                    "📅 ${datetimeToString(workout.start.toLocal())}",
+                    "📅 ${relativeDateString(workout.start.toLocal())}",
                     style: AppTypography.bodySmall,
                   ),
                 ],

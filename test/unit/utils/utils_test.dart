@@ -1,3 +1,4 @@
+import "package:clock/clock.dart";
 import "package:flutter/material.dart";
 import "package:flutter_test/flutter_test.dart";
 import "package:pull_up_club/common/utils/utils.dart";
@@ -38,12 +39,83 @@ void main() {
     });
   });
 
-  group("datetimeToString", () {
-    test("formats date and time correctly", () {
-      final dt = DateTime(2024, 1, 5, 9, 2);
-      final result = datetimeToString(dt);
+  group("relativeDateString", () {
+    final now = DateTime(2024, 6, 15, 12);
 
-      expect(result, "Fri, Jan 05 2024 09:02");
+    test("returns 'just now' for less than a minute ago", () {
+      withClock(Clock.fixed(now), () {
+        expect(relativeDateString(now), "just now");
+        expect(
+          relativeDateString(now.subtract(const Duration(seconds: 30))),
+          "just now",
+        );
+        expect(
+          relativeDateString(now.subtract(const Duration(seconds: 59))),
+          "just now",
+        );
+      });
+    });
+
+    test("returns minutes ago for less than an hour", () {
+      withClock(Clock.fixed(now), () {
+        expect(
+          relativeDateString(now.subtract(const Duration(minutes: 1))),
+          "1 minute ago",
+        );
+        expect(
+          relativeDateString(now.subtract(const Duration(minutes: 5))),
+          "5 minutes ago",
+        );
+        expect(
+          relativeDateString(now.subtract(const Duration(minutes: 59))),
+          "59 minutes ago",
+        );
+      });
+    });
+
+    test("returns hours ago for less than a day", () {
+      withClock(Clock.fixed(now), () {
+        expect(
+          relativeDateString(now.subtract(const Duration(hours: 1))),
+          "1 hour ago",
+        );
+        expect(
+          relativeDateString(now.subtract(const Duration(hours: 5))),
+          "5 hours ago",
+        );
+        expect(
+          relativeDateString(now.subtract(const Duration(hours: 23))),
+          "23 hours ago",
+        );
+      });
+    });
+
+    test("returns days ago for less than 30 days", () {
+      withClock(Clock.fixed(now), () {
+        expect(relativeDateString(now.subtract(const Duration(days: 1))), "1 day ago");
+        expect(relativeDateString(now.subtract(const Duration(days: 7))), "7 days ago");
+        expect(
+          relativeDateString(now.subtract(const Duration(days: 29))),
+          "29 days ago",
+        );
+      });
+    });
+
+    test("returns ISO date for 30 days or older", () {
+      withClock(Clock.fixed(now), () {
+        expect(
+          relativeDateString(now.subtract(const Duration(days: 30))),
+          "2024-05-16",
+        );
+        expect(relativeDateString(DateTime(2023, 1, 5)), "2023-01-05");
+        expect(relativeDateString(DateTime(2020, 12, 31)), "2020-12-31");
+      });
+    });
+
+    test("treats future dates as 'just now'", () {
+      withClock(Clock.fixed(now), () {
+        expect(relativeDateString(now.add(const Duration(hours: 1))), "just now");
+      });
     });
   });
 

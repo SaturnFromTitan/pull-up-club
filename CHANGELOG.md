@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.1
+
+🖥️ UX:
+
+- Workout history now shows relative dates (e.g. "5 minutes ago", "2 days ago") and falls back to ISO date for workouts older than a month
+
 ## 1.3.0
 
 🖥️ UX:

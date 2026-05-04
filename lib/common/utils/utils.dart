@@ -1,5 +1,6 @@
 import "dart:async";
 
+import "package:clock/clock.dart";
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:pull_up_club/common/providers/navigation_provider.dart";
@@ -41,29 +42,27 @@ List<String> getSetCardValues(final Workout workout) {
   return entries.map((final e) => e.value.toString()).toList();
 }
 
-String datetimeToString(final DateTime dt) {
-  const weekdayNames = <String>["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-  const monthNames = <String>[
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
+String relativeDateString(final DateTime dt) {
+  final diff = clock.now().difference(dt);
 
-  final weekday = weekdayNames[dt.weekday % 7]; // DateTime.weekday 1=Mon ... 7=Sun
-  final month = monthNames[dt.month - 1];
+  if (diff.inMinutes < 1) {
+    return "just now";
+  }
+  if (diff.inHours < 1) {
+    final minutes = diff.inMinutes;
+    return "$minutes ${minutes == 1 ? "minute" : "minutes"} ago";
+  }
+  if (diff.inDays < 1) {
+    final hours = diff.inHours;
+    return "$hours ${hours == 1 ? "hour" : "hours"} ago";
+  }
+  if (diff.inDays < 30) {
+    final days = diff.inDays;
+    return "$days ${days == 1 ? "day" : "days"} ago";
+  }
+
+  final year = dt.year.toString().padLeft(4, "0");
+  final month = dt.month.toString().padLeft(2, "0");
   final day = dt.day.toString().padLeft(2, "0");
-  final year = dt.year.toString();
-  final hour = dt.hour.toString().padLeft(2, "0");
-  final minute = dt.minute.toString().padLeft(2, "0");
-
-  return "$weekday, $month $day $year $hour:$minute";
+  return "$year-$month-$day";
 }

@@ -12,8 +12,8 @@ set shell := ["bash", "-c"]
 install:
   flutter pub get
 
-# Run the app in debug mode on iPhone 15 simulator
-run DEVICE="iPhone 15":
+# Run the app in debug mode on iPhone 16 simulator
+run DEVICE="iPhone 16":
     flutter run -d "{{DEVICE}}"
 
 # watches for code changes and generates code with incremental rebuilds
@@ -37,7 +37,7 @@ test:
   flutter test test/
 
 # run integration tests
-test-integration DEVICE="iPhone 15":
+test-integration DEVICE="iPhone 16":
   flutter test integration_test/ -d "{{DEVICE}}" --dart-define=TEST_MODE=true
 
 # update privacy policy date from git commit history
