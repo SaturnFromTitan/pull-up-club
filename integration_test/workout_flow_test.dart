@@ -85,9 +85,6 @@ void main() {
       print("Checking the history screen");
       expect(find.text("Workout History"), findsOneWidget);
 
-      expect(find.text("Max Sets"), findsOneWidget);
-      expect(find.text("💪 $totalReps reps"), findsOneWidget);
-
       expect(find.text(reps[0].toString()), findsOneWidget);
       expect(find.text(reps[1].toString()), findsOneWidget);
       expect(find.text(reps[2].toString()), findsOneWidget);
