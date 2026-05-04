@@ -1,6 +1,6 @@
 ## Verification in the cloud sandbox
 
-This is a Linux environment. iOS builds, Fastlane, the iPhone 15 simulator,
+This is a Linux environment. iOS builds, Fastlane, the iPhone 16 simulator,
 and integration tests under `integration_test/` cannot run here.
 
 Use the project's `just` recipes for verification:
@@ -11,7 +11,7 @@ Use the project's `just` recipes for verification:
 3. `just test` — runs unit tests in `test/`
 
 **Do not run `just all`** in this environment. It chains `test-integration`,
-which requires the iPhone 15 simulator and will fail. Run the three recipes
+which requires the iPhone 16 simulator and will fail. Run the three recipes
 above individually instead.
 
 **Do not run `just test-integration` or `just run`.** Both require a
