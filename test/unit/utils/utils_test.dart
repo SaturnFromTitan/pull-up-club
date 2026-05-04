@@ -92,14 +92,8 @@ void main() {
 
     test("returns days ago for less than 30 days", () {
       withClock(Clock.fixed(now), () {
-        expect(
-          relativeDateString(now.subtract(const Duration(days: 1))),
-          "1 day ago",
-        );
-        expect(
-          relativeDateString(now.subtract(const Duration(days: 7))),
-          "7 days ago",
-        );
+        expect(relativeDateString(now.subtract(const Duration(days: 1))), "1 day ago");
+        expect(relativeDateString(now.subtract(const Duration(days: 7))), "7 days ago");
         expect(
           relativeDateString(now.subtract(const Duration(days: 29))),
           "29 days ago",
@@ -120,10 +114,7 @@ void main() {
 
     test("treats future dates as 'just now'", () {
       withClock(Clock.fixed(now), () {
-        expect(
-          relativeDateString(now.add(const Duration(hours: 1))),
-          "just now",
-        );
+        expect(relativeDateString(now.add(const Duration(hours: 1))), "just now");
       });
     });
   });
