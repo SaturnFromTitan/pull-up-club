@@ -15,8 +15,13 @@ import "package:pull_up_club/features/workout/widgets/destructive_workout_button
 import "package:pull_up_club/features/workout/widgets/previous_workout_set_cards.dart";
 
 class RestScreen extends StatefulWidget {
-  const RestScreen({required this.numCompletedGroups, super.key});
+  const RestScreen({
+    required this.numCompletedGroups,
+    required this.onUndoLastSet,
+    super.key,
+  });
   final int numCompletedGroups;
+  final VoidCallback onUndoLastSet;
 
   @override
   State<RestScreen> createState() => _RestScreenState();
@@ -24,7 +29,9 @@ class RestScreen extends StatefulWidget {
   @override
   void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(IntProperty("numCompletedGroups", numCompletedGroups));
+    properties
+      ..add(IntProperty("numCompletedGroups", numCompletedGroups))
+      ..add(ObjectFlagProperty<VoidCallback>.has("onUndoLastSet", onUndoLastSet));
   }
 }
 
@@ -59,10 +66,8 @@ class _RestScreenState extends State<RestScreen> {
   }
 
   void _undoLastSet() {
-    final removedSet = _workoutProvider.undoLastSet();
-    if (removedSet != null) {
-      _workoutProvider.resume();
-    }
+    widget.onUndoLastSet();
+    _workoutProvider.resume();
   }
 
   @override
