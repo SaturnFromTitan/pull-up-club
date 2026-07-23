@@ -1,16 +1,14 @@
 # Changelog
 
-## 1.3.2
-
-🪲 Fixes:
-
-- Undo Set during rest in a ladders workout now resets the rep counter to the previous rung
-
 ## 1.3.1
 
 🖥️ UX:
 
 - Workout history now shows relative dates (e.g. "5 minutes ago", "2 days ago") and falls back to ISO date for workouts older than a month
+
+🪲 Fixes:
+
+- Undo Set during rest in a ladders workout now resets the rep counter to the previous rung
 
 ## 1.3.0
 
