@@ -2,7 +2,7 @@
 
 ## 1.3.2
 
-🐛 Bug Fixes:
+🪲 Fixes:
 
 - Undo Set during rest in a ladders workout now resets the rep counter to the previous rung
 
