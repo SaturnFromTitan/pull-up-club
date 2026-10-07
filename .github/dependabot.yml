@@ -9,3 +9,12 @@ updates:
     groups:
       github-actions-updates:
         patterns: ["*"]
+  - package-ecosystem: "pub"
+    directory: "/"
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 3
+    groups:
+      dart-updates:
+        patterns: ["*"]
