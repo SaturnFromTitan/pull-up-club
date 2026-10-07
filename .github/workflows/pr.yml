@@ -16,10 +16,12 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v5
+      uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      with:
+        persist-credentials: false
 
     - name: Setup Flutter
-      uses: subosito/flutter-action@v2
+      uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
       with:
         flutter-version-file: pubspec.yaml
         cache: true
@@ -41,10 +43,12 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v5
+      uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      with:
+        persist-credentials: false
 
     - name: Setup Flutter
-      uses: subosito/flutter-action@v2
+      uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
       with:
         flutter-version-file: pubspec.yaml
         cache: true
@@ -63,10 +67,12 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v5
+      uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      with:
+        persist-credentials: false
 
     - name: Setup Flutter
-      uses: subosito/flutter-action@v2
+      uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
       with:
         flutter-version-file: pubspec.yaml
         cache: true
@@ -78,7 +84,7 @@ jobs:
       run: flutter pub run build_runner build
 
     - name: Launch iOS Simulator
-      uses: futureware-tech/simulator-action@v4
+      uses: futureware-tech/simulator-action@dab10d813144ef59b48d401cd95da151222ef8cd # v4
       with:
         model: 'iPhone 16'
         wait_for_boot: true
@@ -94,8 +100,9 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v5
+      uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
       with:
+        persist-credentials: false
         fetch-depth: 0  # Fetch full history to get commit dates
 
     - name: Check privacy policy date
