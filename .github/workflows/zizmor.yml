@@ -6,11 +6,13 @@ on:
     branches: [main]
   merge_group:
   workflow_dispatch:
+  schedule:
+    - cron: "38 7 * * 1"
 
 permissions: {}
 
 concurrency:
-  group: zizmor-${{ github.ref }}
+  group: zizmor-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -28,4 +30,3 @@ jobs:
         with:
           advanced-security: false
           annotations: true
-          version: v1.30.1
