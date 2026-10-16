@@ -4,8 +4,8 @@ publish_to: "none"
 version: 1.3.2
 
 environment:
-  sdk: 3.10.4
-  flutter: 3.38.5
+  sdk: 3.12.2
+  flutter: 3.44.9
 
 dependencies:
   audioplayers: ">=6.7.1"
@@ -17,13 +17,13 @@ dependencies:
     sdk: flutter
   http: ">=1.2.0"
   logging: ">=1.3.0"
-  lucide_icons_flutter: ">=3.1.8"
+  lucide_icons_flutter: ">=4.0.0"
   package_info_plus: ">=10.2.2"
   path_provider: ">=2.1.6"
   provider: ">=6.1.5"
   pub_semver: ">=2.2.1"
   sentry_flutter: ">=9.8.0"
-  sign_in_with_apple: ">=7.0.1 <8.0.0"  # v8 requires Flutter 3.41.0 or later
+  sign_in_with_apple: ">=8.2.0"
   supabase_flutter: ">=2.18.3"
   url_launcher: ">=6.3.1"
   uuid: ">=4.6.0"
