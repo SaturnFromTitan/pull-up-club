@@ -170,12 +170,7 @@ class _YouTubePlayerState extends State<_YouTubePlayer> {
       children: [
         ClipRRect(
           borderRadius: BorderRadius.circular(8),
-          child: Column(
-            children: [
-              YoutubePlayer(controller: _controller),
-              _PlaybackProgressIndicator(controller: _controller),
-            ],
-          ),
+          child: YoutubePlayer(controller: _controller),
         ),
         const SizedBox(height: AppSpacing.xs),
         Text(
@@ -186,60 +181,6 @@ class _YouTubePlayerState extends State<_YouTubePlayer> {
           ),
         ),
       ],
-    );
-  }
-}
-
-class _PlaybackProgressIndicator extends StatelessWidget {
-  const _PlaybackProgressIndicator({required this.controller});
-
-  final YoutubePlayerController controller;
-
-  @override
-  Widget build(final BuildContext context) {
-    return StreamBuilder<YoutubeVideoState>(
-      stream: controller.videoStateStream,
-      builder: (final context, final snapshot) {
-        final position = snapshot.data?.position ?? Duration.zero;
-        final duration = controller.metadata.duration;
-        if (position <= const Duration(milliseconds: 100) ||
-            duration == Duration.zero) {
-          return const SizedBox.shrink();
-        }
-
-        final played = (position.inMilliseconds / duration.inMilliseconds).clamp(
-          0.0,
-          1.0,
-        );
-        final buffered = (snapshot.data?.loadedFraction ?? 0.0).clamp(0.0, 1.0);
-
-        return Stack(
-          children: [
-            LinearProgressIndicator(
-              value: buffered,
-              minHeight: 2,
-              color: Colors.white70,
-              backgroundColor: Theme.of(
-                context,
-              ).colorScheme.primaryContainer.withValues(alpha: 0.38),
-            ),
-            LinearProgressIndicator(
-              value: played,
-              minHeight: 2,
-              color: AppColors.gradientPrimary.first,
-              backgroundColor: Colors.transparent,
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  @override
-  void debugFillProperties(final DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties.add(
-      DiagnosticsProperty<YoutubePlayerController>("controller", controller),
     );
   }
 }
