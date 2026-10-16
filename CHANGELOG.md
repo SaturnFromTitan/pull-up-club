@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.2
+
+🪲 Fixes:
+
+- Updated app dependencies
+
 ## 1.3.1
 
 🖥️ UX:

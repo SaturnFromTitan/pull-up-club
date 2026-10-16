@@ -1,3 +1,5 @@
+import "dart:async";
+
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:pull_up_club/common/themes/app_colors.dart";
@@ -152,15 +154,12 @@ class _YouTubePlayerState extends State<_YouTubePlayer> {
   @override
   void initState() {
     super.initState();
-    _controller = YoutubePlayerController(
-      initialVideoId: "w9Mu-azxol8",
-      flags: const YoutubePlayerFlags(autoPlay: false),
-    );
+    _controller = YoutubePlayerController.fromVideoId(videoId: "w9Mu-azxol8");
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    unawaited(_controller.close());
     super.dispose();
   }
 
@@ -171,15 +170,7 @@ class _YouTubePlayerState extends State<_YouTubePlayer> {
       children: [
         ClipRRect(
           borderRadius: BorderRadius.circular(8),
-          child: YoutubePlayer(
-            controller: _controller,
-            showVideoProgressIndicator: true,
-            progressIndicatorColor: AppColors.gradientPrimary.first,
-            progressColors: ProgressBarColors(
-              playedColor: AppColors.gradientPrimary.first,
-              handleColor: AppColors.gradientPrimary.first,
-            ),
-          ),
+          child: YoutubePlayer(controller: _controller),
         ),
         const SizedBox(height: AppSpacing.xs),
         Text(

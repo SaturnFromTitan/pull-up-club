@@ -31,7 +31,7 @@ class BackendService {
     }
 
     try {
-      await Supabase.initialize(url: backendUrl, anonKey: backendPublishableKey);
+      await Supabase.initialize(url: backendUrl, publishableKey: backendPublishableKey);
       _client = Supabase.instance.client;
       _initialized = true;
       _logger.info("Backend initialized successfully");
