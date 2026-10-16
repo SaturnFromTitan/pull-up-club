@@ -3,10 +3,14 @@ import "package:pull_up_club/common/themes/app_colors.dart";
 import "package:pull_up_club/common/themes/app_spacing.dart";
 // import 'app_colors.dart';
 import "package:pull_up_club/common/themes/app_typography.dart";
+import "package:youtube_player_flutter/youtube_player_flutter.dart";
 
 final appTheme = ThemeData(
   useMaterial3: true,
   brightness: Brightness.dark,
+  extensions: [
+    YoutubePlayerTheme(progressBarActiveColor: AppColors.gradientPrimary.first),
+  ],
 
   // surface and text colors
   scaffoldBackgroundColor: Colors.transparent,
