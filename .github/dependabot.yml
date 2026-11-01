@@ -13,6 +13,8 @@ updates:
     directory: "/"
     schedule:
       interval: monthly
+    # The >= constraints already allow newer releases; update the lockfile without rewriting them.
+    versioning-strategy: increase-if-necessary
     cooldown:
       default-days: 3
     groups:
