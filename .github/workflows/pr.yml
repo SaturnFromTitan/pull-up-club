@@ -64,6 +64,7 @@ jobs:
 
   test-integration:
     runs-on: macos-15
+    timeout-minutes: 35
 
     steps:
     - name: Checkout repository
@@ -93,7 +94,8 @@ jobs:
       run: flutter devices
 
     - name: Run integration tests
-      run: flutter test integration_test/ -d "iPhone 16" --dart-define=TEST_MODE=true
+      timeout-minutes: 20
+      run: flutter test integration_test/ -d "iPhone 16" --dart-define=TEST_MODE=true --reporter expanded
 
   check-privacy-date:
     runs-on: ubuntu-latest
