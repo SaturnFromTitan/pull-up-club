@@ -2,7 +2,7 @@ class TestConfig {
   TestConfig._();
 
   /// Whether the app is running in test mode
-  /// In test mode, rest durations are shortened to 5 seconds
+  /// In test mode, rest durations are shortened to 8 seconds.
   static bool get isTestMode {
     // the environment is only used for the integration tests
     // ignore: do_not_use_environment
@@ -11,5 +11,5 @@ class TestConfig {
     return testModeEnv.toLowerCase() == "true";
   }
 
-  static const int testRestDurationMillis = 4 * 1_000;
+  static const int testRestDurationMillis = 8 * 1_000;
 }
