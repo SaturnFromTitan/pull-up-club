@@ -3,8 +3,10 @@
 import "package:flutter/material.dart";
 import "package:flutter_test/flutter_test.dart";
 import "package:lucide_icons_flutter/lucide_icons.dart";
+import "package:provider/provider.dart";
 import "package:pull_up_club/common/providers/navigation_provider.dart";
 import "package:pull_up_club/domain/models.dart";
+import "package:pull_up_club/features/workout/providers/workout_provider.dart";
 import "package:pull_up_club/features/workout/screens/selection_screen.dart";
 import "package:pull_up_club/main.dart";
 
@@ -83,10 +85,16 @@ Future<void> enterRepsAndSkipRest(
   print("entering $reps reps and skipping the rest via button");
   await _enterReps(tester, reps: reps);
   // skip rest via button
-  await tester.pump(const Duration(milliseconds: 1_000));
   final skipRestButton = find.text("Skip Rest");
+  for (var attempt = 0; attempt < 20 && skipRestButton.evaluate().isEmpty; attempt++) {
+    await tester.pump(const Duration(milliseconds: 100));
+  }
   expect(skipRestButton, findsOneWidget);
+  await tester.pump(const Duration(milliseconds: 500));
+  final workoutProvider = tester.element(skipRestButton).read<WorkoutProvider>();
+  expect(workoutProvider.isResting(), isTrue);
   await tester.tap(skipRestButton);
+  expect(workoutProvider.isResting(), isFalse);
   await tester.pumpAndSettle();
 }
 
