@@ -42,6 +42,9 @@ dev_dependencies:
     sdk: flutter
 
 flutter:
+  config:
+    # Xcode 26.2 crashes while resolving Sentry's Swift packages in TestFlight CI.
+    enable-swift-package-manager: false
   uses-material-design: true
   assets:
     - assets/sounds/
