@@ -22,7 +22,8 @@ dependencies:
   path_provider: ">=2.1.6"
   provider: ">=6.1.5"
   pub_semver: ">=2.2.1"
-  sentry_flutter: ">=10.2.0"
+  # Sentry 10 requires SwiftPM, which crashes in the Xcode 26.2 release runner.
+  sentry_flutter: ">=9.8.0 <10.0.0"
   sign_in_with_apple: ">=8.2.0"
   supabase_flutter: ">=2.18.3"
   url_launcher: ">=6.3.3"
