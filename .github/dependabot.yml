@@ -3,7 +3,7 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: monthly
+      interval: quarterly
     cooldown:
       default-days: 3
     groups:
@@ -12,7 +12,7 @@ updates:
   - package-ecosystem: "pub"
     directory: "/"
     schedule:
-      interval: monthly
+      interval: quarterly
     # The >= constraints already allow newer releases; update the lockfile without rewriting them.
     versioning-strategy: increase-if-necessary
     cooldown:
