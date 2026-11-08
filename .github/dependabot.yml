@@ -23,6 +23,9 @@ updates:
     versioning-strategy: increase-if-necessary
     cooldown:
       default-days: 3
+    # Sentry 10 requires SwiftPM, which currently crashes in the TestFlight runner.
+    ignore:
+      - dependency-name: "sentry_flutter"
     groups:
       dart-updates:
         patterns: ["*"]
